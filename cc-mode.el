@@ -900,6 +900,11 @@ supported list, along with the values for this variable:
   "Buffer local language-specific access key regexp.")
 (defvar c-class-key nil
   "Buffer local language-specific class key regexp.")
+(defconst c-baseclass-key
+  (concat
+   ":?[ \t]*\\(virtual[ \t]+\\)?\\("
+   c-protection-key "[ \t]+\\)" c-symbol-key)
+  "Regexp describing C++ base classes in a derived class definition.")
 
 ;; minor mode variables
 (make-variable-buffer-local 'c-auto-newline)
@@ -910,6 +915,7 @@ supported list, along with the values for this variable:
 (make-variable-buffer-local 'c-conditional-key)
 (make-variable-buffer-local 'c-access-key)
 (make-variable-buffer-local 'c-class-key)
+(make-variable-buffer-local 'c-baseclass-key)
 (make-variable-buffer-local 'c-recognize-knr-p)
 ;; style variables are made buffer local at tail end of this file.
 
@@ -940,11 +946,6 @@ behavior that users are familiar with.")
 (defconst c-protection-key
   "\\<\\(public\\|protected\\|private\\)\\>"
   "Regexp describing protection keywords.")
-(defconst c-baseclass-key
-  (concat
-   ":?[ \t]*\\(virtual[ \t]+\\)?\\("
-   c-protection-key "[ \t]+\\)" c-symbol-key)
-  "Regexp describing base classes in a derived class definition.")
 (defconst c-switch-label-key
   "\\(\\(case[( \t]+\\S .*\\)\\|default[ \t]*\\):"
   "Regexp describing a switch's case or default label")
@@ -1070,6 +1071,7 @@ Key bindings:
 	comment-multi-line t
 	c-conditional-key c-C-conditional-key
 	c-class-key c-C-class-key
+	c-baseclass-key nil
 	c-comment-start-regexp "/\\*")
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'c-mode-hook))
@@ -1110,6 +1112,7 @@ Key bindings:
 	c-conditional-key c-C-conditional-key
 	c-comment-start-regexp "//\\|/\\*"
  	c-class-key c-ObjC-class-key
+	c-baseclass-key nil
 	c-access-key c-ObjC-access-key)
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'objc-mode-hook))
@@ -3544,7 +3547,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ))
 	   ;; CASE 5C: inheritance line. could be first inheritance
 	   ;; line, or continuation of a multiple inheritance
-	   ((looking-at c-baseclass-key)
+	   ((and c-baseclass-key (looking-at c-baseclass-key))
 	    (cond
 	     ;; CASE 5C.1: non-hanging colon on an inher intro
 	     ((= char-after-ip ?:)
@@ -3773,10 +3776,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-syntax 'arglist-cont (c-point 'boi)))
 	   ))
 	 ;; CASE 7: func-local multi-inheritance line
-	 ((save-excursion
-	    (goto-char indent-point)
-	    (skip-chars-forward " \t")
-	    (looking-at c-baseclass-key))
+	 ((and c-baseclass-key
+	       (save-excursion
+		 (goto-char indent-point)
+		 (skip-chars-forward " \t")
+		 (looking-at c-baseclass-key)))
 	  (goto-char indent-point)
 	  (skip-chars-forward " \t")
 	  (cond
