@@ -3221,16 +3221,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 ((/= (char-after containing-sexp) ?{)
 	  (c-backward-syntactic-ws containing-sexp)
 	  (cond
-	   ;; CASE 6A: we are looking at the first argument in an empty
-	   ;; argument list
-	   ((memq char-before-ip '(?\( ?\[))
-	    (goto-char containing-sexp)
-	    (c-add-syntax 'arglist-intro (c-point 'boi)))
-	   ;; CASE 6B: we are looking at the arglist closing paren
+	   ;; CASE 6A: we are looking at the arglist closing paren
 	   ((and (/= char-before-ip ?,)
 		 (memq char-after-ip '(?\) ?\])))
 	    (goto-char containing-sexp)
 	    (c-add-syntax 'arglist-close (c-point 'boi)))
+	   ;; CASE 6B: we are looking at the first argument in an empty
+	   ;; argument list. Use arglist-close if we're actually
+	   ;; looking at a close paren or bracket.
+	   ((memq char-before-ip '(?\( ?\[))
+	    (goto-char containing-sexp)
+	    (c-add-syntax 'arglist-intro (c-point 'boi)))
 	   ;; CASE 6C: we are inside a conditional test clause. treat
 	   ;; these things as statements
 	   ((save-excursion
