@@ -716,6 +716,10 @@ literal, nothing special happens."
   (interactive "P")
   (let* ((bod (cc-point 'bod))
 	 (literal (cc-in-literal bod))
+	 ;; we want to inhibit blinking the paren since this will be
+	 ;; most disruptive. we'll blink it ourselves later on
+	 (old-blink-paren-function blink-paren-function)
+	 (blink-paren-function nil)
 	 semantics newlines)
     (if (or literal
 	    arg
@@ -780,7 +784,14 @@ literal, nothing special happens."
 		 (not (cc-in-literal)))
 	    (delete-region mbeg mend))
 	(goto-char (- (point-max) pos))
-	))))
+	)
+      (and (= last-command-char ?\})
+	   old-blink-paren-function
+	   (save-excursion
+	     (cc-backward-syntactic-ws bod)
+	     (funcall old-blink-paren-function)))
+      )))
+      
 
 (defun cc-electric-slash (arg)
   "Insert slash, possibly indenting line as a comment.
