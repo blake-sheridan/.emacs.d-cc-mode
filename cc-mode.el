@@ -2726,14 +2726,19 @@ Useful for defining cpp macros.  If called with a prefix argument,
 it will remove trailing backslashes."
   (interactive "r\nP")
   (save-excursion
-    (save-restriction
-      (narrow-to-region
-       (progn (goto-char beg) (c-point 'bol))
-       (progn (goto-char end) (c-point 'bonl)))
-      (goto-char (point-min))
-      (while (not (eobp))
-	(c-backslashify-current-line (null arg))
-	(forward-line 1))))
+    (let ((do-lastline-p (progn (goto-char end) (not (bolp)))))
+      (save-restriction
+	(narrow-to-region beg end)
+	(goto-char (point-min))
+	(while (not (save-excursion
+		      (forward-line 1)
+		      (eobp)))
+	  (c-backslashify-current-line (null arg))
+	  (forward-line 1)))
+      (and do-lastline-p
+	   (progn (goto-char end)
+		  (c-backslashify-current-line (null arg))))
+      ))
   (c-keep-region-active))
 
 (defun c-comment-region (beg end arg)
@@ -2744,9 +2749,7 @@ region."
   (interactive "*r\nP")
   (save-excursion
     (save-restriction
-      (narrow-to-region
-       (progn (goto-char beg) (c-point 'bol))
-       (progn (goto-char end) (c-point 'bonl)))
+      (narrow-to-region beg end)
       (goto-char (point-min))
       (if (not arg)
 	  (progn
