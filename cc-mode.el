@@ -426,7 +426,7 @@ is necessary under GNU Emacs 18, please refer to the texinfo manual.")
     ;; now cobble up the necessary list
     (list mse-spec scanner flavor))
   "A list of features extant in the Emacs you are using.
-There are many flavors of Emacs out on the net, each with different
+There are many flavors of Emacs out there, each with different
 features supporting those needed by cc-mode.  Here's the current
 supported list, along with the values for this variable:
 
