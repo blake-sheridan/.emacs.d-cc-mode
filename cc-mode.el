@@ -1636,11 +1636,8 @@ BOD is the beginning of the C++ definition."
 			    ;; may not be in col zero
 			    (progn (goto-char (or containing-sexp bod))
 				   (current-indentation))
-			  ;; member init, so add offset, but
-			  ;; subtract inclass-shift
-			  (message "at questionable member init code...")
-			  (sit-for 4)
-			  (- c++-member-init-indent c-indent-level))
+			  ;; member init, so add offset
+			  c++-member-init-indent)
 		      (if (or (= (preceding-char) ?})
 			      (= (preceding-char) ?\))
 			      (save-excursion
