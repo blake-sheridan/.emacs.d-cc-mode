@@ -4083,6 +4083,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			 (c-backward-syntactic-ws lim)))
 	      (if (= (preceding-char) ?\))
 		  (backward-sexp 1))
+	      (setq placeholder (point))
+	      (save-excursion
+		(and (c-safe (backward-sexp 1) t)
+		     (looking-at "throw[^_]")
+		     (c-safe (backward-sexp 1) t)
+		     (setq placeholder (point))))
+	      (goto-char placeholder)
 	      (c-add-syntax 'member-init-intro (c-point 'boi))
 	      ;; we don't need to add any class offset since this
 	      ;; should be relative to the ctor's indentation
