@@ -447,7 +447,7 @@ this variable to nil defeats backscan limits.")
 (defconst c++-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
 	  c++-class-key
-	  "[ \t]+\\(\\w+[ \t]*:[ \t]*\\)?")
+	  "[ \t]+\\(\\(\\w\\|_\\)+[ \t]*:[ \t]*\\)?")
   "Regexp which describes a class inheritance declaration.")
 
 
