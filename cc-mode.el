@@ -2919,12 +2919,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (goto-char class)
 		  (skip-chars-forward " \t\n")
 		  (setq foundp (vector (c-point 'boi) search-end))
+		  ;; make sure we're really looking at the start of
+		  ;; a class definition, and not a forward decl,
+		  ;; return arg, template arg list, or an ObjC method.
 		  (if (eq major-mode 'objc-mode)
-		      nil		;this is enough for Objective-C
-		    ;; make sure we're really looking at the start of
-		    ;; a class definition, and not a forward decl,
-		    ;; return arg, or template arg list. Its
-		    ;; impossible to define a regexp for this, and
+		      (if (re-search-forward c-ObjC-method-key search-end t)
+			  (setq foundp nil))
+		    ;; Its impossible to define a regexp for this, and
 		    ;; nearly so to do it programmatically.
 		    ;;
 		    ;; ; picks up forward decls
