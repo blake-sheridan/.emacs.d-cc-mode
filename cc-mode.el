@@ -1149,6 +1149,31 @@ behavior that users are familiar with.")
 (defvar c-indentation-style c-site-default-style
   "Name of style installed in the current buffer.")
 
+(defvar c-style-variables-are-local-p t
+  "*Whether style variables should be buffer local by default.
+If non-nil, then all indentation style related variables will be made
+buffer local by default.  If nil, they will remain global.  Variables
+are made buffer local when this file is loaded, and once buffer
+localized, they cannot be made global again.
+
+The list of variables to buffer localize are:
+    c-offsets-alist
+    c-basic-offset
+    c-file-style
+    c-file-offsets
+    c-comment-only-line-offset
+    c-cleanup-list
+    c-hanging-braces-alist
+    c-hanging-colons-alist
+    c-hanging-comment-ender-p
+    c-backslash-column
+    c-label-minimum-indentation
+    c-special-indent-hook
+    c-indentation-style")
+
+;; these variables should always be buffer local.  they do not affect
+;; indentation styles.
+;;
 ;; minor mode variables
 (make-variable-buffer-local 'c-auto-newline)
 (make-variable-buffer-local 'c-hungry-delete-key)
@@ -1162,7 +1187,6 @@ behavior that users are familiar with.")
 (make-variable-buffer-local 'c-double-slash-is-comments-p)
 (make-variable-buffer-local 'c-baseclass-key)
 (make-variable-buffer-local 'c-recognize-knr-p)
-(make-variable-buffer-local 'c-indentation-style)
 ;; style variables are made buffer local at tail end of this file.
 
 ;; cmacexp is lame because it uses no preprocessor symbols.
@@ -1439,7 +1463,9 @@ For use with the variable `java-mode-hook'."
 
 (defun c-common-init ()
   ;; Common initializations for c++-mode and c-mode.
-  ;; make local variables
+  ;;
+  ;; these variables should always be buffer local; they do not affect
+  ;; indentation style.
   (make-local-variable 'paragraph-start)
   (make-local-variable 'paragraph-separate)
   (make-local-variable 'paragraph-ignore-fill-prefix)
@@ -5190,19 +5216,22 @@ command to conveniently insert and align the necessary backslashes."
       ;; c-mode-common-hook or {c,c++,objc,java}-mode-hook.
       (c-set-style c-site-default-style)))
 
-;; style variables
-(make-variable-buffer-local 'c-offsets-alist)
-(make-variable-buffer-local 'c-basic-offset)
-(make-variable-buffer-local 'c-file-style)
-(make-variable-buffer-local 'c-file-offsets)
-(make-variable-buffer-local 'c-comment-only-line-offset)
-(make-variable-buffer-local 'c-cleanup-list)
-(make-variable-buffer-local 'c-hanging-braces-alist)
-(make-variable-buffer-local 'c-hanging-colons-alist)
-(make-variable-buffer-local 'c-hanging-comment-ender-p)
-(make-variable-buffer-local 'c-backslash-column)
-(make-variable-buffer-local 'c-label-minimum-indentation)
-(make-variable-buffer-local 'c-special-indent-hook)
+(if c-style-variables-are-local-p
+    (progn
+      ;; style variables
+      (make-variable-buffer-local 'c-offsets-alist)
+      (make-variable-buffer-local 'c-basic-offset)
+      (make-variable-buffer-local 'c-file-style)
+      (make-variable-buffer-local 'c-file-offsets)
+      (make-variable-buffer-local 'c-comment-only-line-offset)
+      (make-variable-buffer-local 'c-cleanup-list)
+      (make-variable-buffer-local 'c-hanging-braces-alist)
+      (make-variable-buffer-local 'c-hanging-colons-alist)
+      (make-variable-buffer-local 'c-hanging-comment-ender-p)
+      (make-variable-buffer-local 'c-backslash-column)
+      (make-variable-buffer-local 'c-label-minimum-indentation)
+      (make-variable-buffer-local 'c-special-indent-hook)
+      (make-variable-buffer-local 'c-indentation-style)))
 
 
 ;; fsets for compatibility with BOCM
