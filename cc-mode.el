@@ -1297,7 +1297,8 @@ of the expression are preserved."
 	    ;; check for continued statements
 	    (if (save-excursion
 		  (c++-backward-syntactic-ws (car contain-stack))
-		  (and (not (memq (preceding-char)
+		  (and (not (c++-in-parens-p))
+		       (not (memq (preceding-char)
 				  '(nil ?\000 ?\, ?\; ?\} ?\: ?\{)))
 		       (progn
 			 (beginning-of-line)
