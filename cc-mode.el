@@ -1,8 +1,8 @@
 ;;; cc-mode.el --- major mode for editing C, C++, Objective-C, and Java code
 
-;; Copyright (C) 1985, 87, 92, 93, 94, 95, 96 Free Software Foundation, Inc.
+;; Copyright (C) 1985,87,92,93,94,95,96,97 Free Software Foundation, Inc.
 
-;; Authors: 1992-1996 Barry A. Warsaw
+;; Authors: 1992-1997 Barry A. Warsaw
 ;;          1987 Dave Detlefs and Stewart Clamen
 ;;          1985 Richard M. Stallman
 ;; Created: a long, long, time ago. adapted from the original c-mode.el
