@@ -80,6 +80,9 @@
 ;;; Code:
 
 
+(eval-when-compile
+  (require 'cc-make))
+
 (require 'cc-defs)
 
 ;; sigh.  give in to the pressure, but make really sure all the
@@ -118,16 +121,20 @@ other non-CC Mode mode that calls `c-initialize-cc-mode'
 ;; (c-initialize-cc-mode)
 
 ;;;###autoload
-(defun c-initialize-cc-mode (&optional skip-styles)
+(defun c-initialize-cc-mode ()
   (setq c-buffer-is-cc-mode t)
-  (let ((initprop 'cc-mode-is-initialized))
-    ;; run the initialization hook, but only once
-    (or (get 'c-initialize-cc-mode initprop)
-	(progn
-	  (or skip-styles
-	      (c-initialize-builtin-style))
-	  (run-hooks 'c-initialization-hook)
-	  (put 'c-initialize-cc-mode initprop t)))
+  (let ((initprop 'cc-mode-is-initialized)
+	c-initialization-ok)
+    (unless (get 'c-initialize-cc-mode initprop)
+      (put 'c-initialize-cc-mode initprop t)
+      (c-initialize-builtin-style)
+      (unwind-protect
+	  (progn
+	    (run-hooks 'c-initialization-hook)
+	    (setq c-initialization-ok t))
+	;; Will try initialization hooks again if they failed.
+	(unless c-initialization-ok
+	  (put 'c-initialize-cc-mode initprop nil))))
     ))
 
 
