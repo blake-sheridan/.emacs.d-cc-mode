@@ -2117,7 +2117,10 @@ move backward across a preprocessor conditional."
 		    ;; If this line exits a level of conditional, exit
 		    ;; inner loop.
 		    (if (< depth 0)
-			(setq found (point)))))))
+			(setq found (point))))
+		;; else
+		(if forward (forward-line 1))
+		)))
 	  (or found
 	      (error "No containing preprocessor conditional"))
 	  (goto-char (setq new found)))
