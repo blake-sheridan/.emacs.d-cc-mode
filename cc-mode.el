@@ -4847,7 +4847,8 @@ definition and conveniently use this command."
 
 (defconst c-version "$Revision$"
   "cc-mode version number.")
-(defconst c-mode-help-address "bug-gnu-emacs@prep.ai.mit.edu"
+(defconst c-mode-help-address
+  "bug-gnu-emacs@prep.ai.mit.edu, cc-mode-help@python.org"
   "Address for cc-mode bug reports.")
 
 (defun c-version ()
