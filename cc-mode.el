@@ -678,7 +678,8 @@ for member initialization list."
 		    (not (c++-in-comment-p bod))
 		    (not (c++-in-open-string-p bod))))
 	(progn (delete-region insertion-point (point))
-	       (setq c++-auto-newline nil)))
+	       (setq c++-auto-newline nil
+		     insertion-point (point))))
        ;; check for ?: construct which may be at any level
        ((progn (goto-char insertion-point)
 	       (backward-sexp 1)
