@@ -214,7 +214,7 @@ with previous initializations rather than with the colon on the first line.")
 list.  Nil indicates to just after the paren.")
 (defvar c++-comment-only-line-offset 0
   "*Indentation offset for line which contains only C or C++ style comments.")
-(defvar c++-C-block-comments-indent-p t
+(defvar c++-C-block-comments-indent-p nil
   "*4 styles of C block comments are supported. If this variable is nil,
 then styles 1-3 are supported. If this variable is non-nil, style 4 is
 supported.
