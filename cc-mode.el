@@ -61,11 +61,14 @@
 ;;             ("\\.h$"  . c-mode)   ; to edit C code
 ;;            ) auto-mode-alist))
 ;;
-;; CC-MODE is not compatible with BOCM.  If your Emacs is dumped with
-;; c-mode, you will need to add the following to your .emacs file:
+;; CC-MODE is not compatible with BOCM.  If your Emacs session already
+;; has either c-mode.el or c++-mode.el loaded in, you will need to add
+;; the following to your .emacs file:
 ;;
 ;; (fmakunbound 'c-mode)
 ;; (makunbound 'c-mode-map)
+;; (fmakunbound 'c++-mode)
+;; (makunbound 'c++-mode-map)
 
 ;; If you would like to join the beta testers list, send add/drop
 ;; requests to cc-mode-victims-request@anthem.nlm.nih.gov.
