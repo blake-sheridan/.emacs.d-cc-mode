@@ -877,7 +877,7 @@ if it is embedded in an expression."
 	       ((string= "\"" match)
 		(if (not (save-restriction
 			   (narrow-to-region (point) here)
-			   (re-search-forward "\`\"\\|[^\\]?\"" here 'move)))
+			   (re-search-forward "\`\"\\|[^\\]\"" here 'move)))
 		    'string))
 	       ;; looking at the opening of a single quote string
 	       ((string= "'" match)
