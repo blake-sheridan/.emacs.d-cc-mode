@@ -743,11 +743,14 @@ supported list, along with the values for this variable:
   "Variable containing semantics list during indentation.")
 (defvar c-comment-start-regexp nil
   "Buffer local variable describing how comment are introduced.")
+(defvar c-conditional-key nil
+  "Buffer-local language-specific conditional keyword regexp.")
 
 (make-variable-buffer-local 'c-auto-newline)
 (make-variable-buffer-local 'c-hungry-delete-key)
 (make-variable-buffer-local 'c-auto-hungry-string)
 (make-variable-buffer-local 'c-comment-start-regexp)
+(make-variable-buffer-local 'c-conditional-key)
 
 ;; cmacexp is lame because it uses no preprocessor symbols.
 ;; It isn't very extensible either -- hardcodes /lib/cpp.
@@ -794,9 +797,12 @@ behavior that users are familiar with.")
 (defconst c-label-key
   (concat c-symbol-key ":\\([^:]\\|$\\)")
   "Regexp describing any label.")
-(defconst c-conditional-key
+(defconst c-C-conditional-key
   "\\b\\(for\\|if\\|do\\|else\\|while\\|switch\\)\\b[^_]"
   "Regexp describing a conditional control.")
+(defconst c-C++-conditional-key
+  "\\b\\(for\\|if\\|do\\|else\\|while\\|switch\\|try\\|catch\\)\\b[^_]"
+  "Regexp describing a conditional control for C++.")
 
 ;; main entry points for the modes
 ;;;###autoload
@@ -828,6 +834,7 @@ Key bindings:
   (c-common-init)
   (setq comment-start "// "
 	comment-end ""
+	c-conditional-key c-C++-conditional-key
 	c-comment-start-regexp "//\\|/\\*")
   (run-hooks 'c++-mode-hook))
 
@@ -860,6 +867,7 @@ Key bindings:
   (c-common-init)
   (setq comment-start "/* "
 	comment-end   " */"
+	c-conditional-key c-C-conditional-key
 	c-comment-start-regexp "/\\*")
   (run-hooks 'c-mode-hook))
 
