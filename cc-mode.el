@@ -4515,6 +4515,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			 (c-backward-syntactic-ws safepos)
 			 (/= (preceding-char) ?\;)))
 		  (c-beginning-of-statement-1 safepos))
+	      (if (and inswitch-p
+		       (looking-at c-switch-label-key))
+		  (progn
+		    (goto-char placeholder)
+		    (end-of-line)
+		    (forward-sexp -1)))
 	      (c-add-syntax 'statement (c-point 'boi))
 	      (if (= char-after-ip ?{)
 		  (c-add-syntax 'block-open))))
