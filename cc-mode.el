@@ -1145,7 +1145,7 @@ Key bindings:
   (make-local-variable 'comment-column)
   (make-local-variable 'comment-start-skip)
   ;; now set their values
-  (setq paragraph-start (concat "^$\\|" page-delimiter)
+  (setq paragraph-start (concat "$\\|" page-delimiter)
 	paragraph-separate paragraph-start
 	paragraph-ignore-fill-prefix t
 	require-final-newline t
@@ -2028,11 +2028,11 @@ preserving the comment indentation or line-starting decorations."
 	       ;; should not be filled into paragraphs they are next to.
 	       (concat 
 		paragraph-start
-		"\\|^[ \t]*/\\*[ \t]*$\\|^[ \t]*\\*/[ \t]*$\\|^[ \t/*]*$"))
+		"\\|[ \t]*/\\*[ \t]*$\\|[ \t]*\\*/[ \t]*$\\|[ \t/*]*$"))
 	      (paragraph-separate
 	       (concat
 		paragraph-separate
-		"\\|^[ \t]*/\\*[ \t]*$\\|^[ \t]*\\*/[ \t]*$\\|^[ \t/*]*$")))
+		"\\|[ \t]*/\\*[ \t]*$\\|[ \t]*\\*/[ \t]*$\\|[ \t/*]*$")))
 	  (save-excursion
 	    (beginning-of-line)
 	    ;; Move up to first line of this comment.
@@ -2123,11 +2123,11 @@ preserving the comment indentation or line-starting decorations."
 		 ;; should not be filled into paragraphs they are next to.
 		 (concat 
 		  paragraph-start
-		  "\\|^[ \t]*/\\*[ \t]*$\\|^[ \t]*\\*/[ \t]*$\\|^[ \t/*]*$"))
+		  "\\|[ \t]*/\\*[ \t]*$\\|[ \t]*\\*/[ \t]*$\\|[ \t/*]*$"))
 		(paragraph-separate
 		 (concat
 		  paragraph-separate
-		  "\\|^[ \t]*/\\*[ \t]*$\\|^[ \t]*\\*/[ \t]*$\\|^[ \t/*]*$"))
+		  "\\|[ \t]*/\\*[ \t]*$\\|[ \t]*\\*/[ \t]*$\\|[ \t/*]*$"))
 		(chars-to-delete 0))
 	    (save-restriction
 	      ;; Don't fill the comment together with the code
