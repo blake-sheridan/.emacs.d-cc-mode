@@ -2215,7 +2215,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (beginning-of-defun 2)
 		   (point)))
 	    (here (save-excursion
-		    (skip-chars-forward " \t}")
+		    ;;(skip-chars-forward " \t}")
 		    (point)))
 	    state sexp-end)
 	(modify-syntax-entry ?\( ".")
@@ -2519,6 +2519,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(save-excursion
 	  (goto-char indent-point)
 	  (skip-chars-forward " \t}")
+	  (skip-chars-backward " \t")
 	  (while (and state (not containing-sexp))
 	    (setq containing-sexp (car state)
 		  state (cdr state))
@@ -2701,7 +2702,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (c-add-semantics 'access-label (c-point 'bonl))
 	    (c-add-semantics 'inclass (aref inclass-p 0)))
 	   ;; CASE 4F: we are looking at the brace which closes the
-	   ;; enclosing class decl
+	   ;; enclosing nested class decl
 	   ((and inclass-p
 		 (= char-after-ip ?})
 		 (save-excursion
@@ -2953,16 +2954,18 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			      (c-beginning-of-statement nil lim))
 			  (point))))
 	    (cond
-	     ;; CASE 13.A: inclass-p means this closes an inline
-	     (inclass-p
+	     ;; CASE 13.A: does this close an inline?
+	     ((progn
+		(goto-char containing-sexp)
+		(c-search-uplist-for-classkey state))
 	      (goto-char relpos)
 	      (c-add-semantics 'inline-close (c-point 'boi)))
 	     ;; CASE 13.B: state means this is a block-close
 	     (state
 	      (goto-char relpos)
 	      (c-add-semantics 'block-close (c-point 'boi)))
-	     ;; CASE 13.C: find out whether we're closing a class or a
-	     ;; regular old top-level defun
+	     ;; CASE 13.C: find out whether we're closing a top-level
+	     ;; class or a defun
 	     (t
 	      (save-restriction
 		(narrow-to-region (point-min) indent-point)
