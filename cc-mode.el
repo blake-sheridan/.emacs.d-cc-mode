@@ -2348,7 +2348,10 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
   "Set cc-mode variables to use one of several different indentation styles.
 STYLENAME is a string representing the desired style from the list of
 styles described in the variable `c-style-alist'.  See that variable
-for details of setting up styles."
+for details of setting up styles.
+
+The variable `c-buffer-style' always contains the buffer's current
+style name."
   (interactive (list (let ((completion-ignore-case t)
 			   (prompt (format "Which %s indentation style? "
 					   mode-name)))
