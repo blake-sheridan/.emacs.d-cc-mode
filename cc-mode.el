@@ -1450,7 +1450,7 @@ point of the beginning of the C++ definition."
 	   (if (listp indent) (setq indent (car indent)))
 	   (cond ((looking-at c++-access-key)
 		  (setq indent (+ indent c++-access-specifier-offset)))
-		 ((looking-at "default:")
+		 ((looking-at "default\\b")
 		  (setq indent (+ indent c-label-offset)))
 		 ((or (looking-at "case\\b")
 		      (and (looking-at "[A-Za-z]")
