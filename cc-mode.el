@@ -503,30 +503,6 @@ as described in `c-offsets-alist'.  These are passed directly to
 `c-set-offset' so there is no need to set every syntactic symbol in
 your style, only those that are different from the default.")
 
-;; dynamically append the default value of most variables
-(or (assoc "Default" c-style-alist)
-    (let* ((varlist '(c-inhibit-startup-warnings-p
-		      c-strict-syntax-p
-		      c-echo-syntactic-information-p
-		      c-basic-offset
-		      c-offsets-alist
-		      c-tab-always-indent
-		      c-comment-only-line-offset
-		      c-block-comments-indent-p
-		      c-cleanup-list
-		      c-hanging-braces-alist
-		      c-hanging-colons-alist
-		      c-backslash-column
-		      c-electric-pound-behavior))
-	   (default (cons "Default"
-			  (mapcar
-			   (function
-			    (lambda (var)
-			      (cons var (symbol-value var))
-			      ))
-			   varlist))))
-      (setq c-style-alist (cons default c-style-alist))))
-
 (defvar c-file-style nil
   "*Variable interface for setting style via File Local Variables.
 In a file's Local Variable section, you can set this variable to a
@@ -4579,6 +4555,30 @@ it trailing backslashes are removed."
   (popup-menu (cons (concat mode-name " Mode Commands") c-mode-menu))
   (c-keep-region-active))
     
+
+;; dynamically append the default value of most variables. This is
+;; crucial because future c-set-style calls will always reset the
+;; variables first to the "Default" style before instituting the new
+;; style.
+(c-add-style "Default"
+	     (mapcar
+	      (function
+	       (lambda (var)
+		 (cons var (symbol-value var))))
+	      '(c-inhibit-startup-warnings-p
+		c-strict-syntax-p
+		c-echo-syntactic-information-p
+		c-basic-offset
+		c-offsets-alist
+		c-tab-always-indent
+		c-comment-only-line-offset
+		c-block-comments-indent-p
+		c-cleanup-list
+		c-hanging-braces-alist
+		c-hanging-colons-alist
+		c-backslash-column
+		c-electric-pound-behavior)))
+
 
 ;; fsets for compatibility with BOCM
 (fset 'electric-c-brace      'c-electric-brace)
