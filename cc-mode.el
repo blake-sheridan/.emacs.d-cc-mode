@@ -712,72 +712,76 @@ you want to add a comment to the end of a line."
 (defun c++-electric-semi (arg)
   "Insert character and correct line's indentation."
   (interactive "P")
-  (let ((here (point-marker)))
-    (if (and (memq 'defun-close-semi c++-cleanup-list)
-	     c++-auto-newline
-	     (progn
-	       (skip-chars-backward " \t\n")
-	       (= (preceding-char) ?})))
-	(delete-region here (point)))
-    (goto-char here)
-    (set-marker here nil))
-  (c++-electric-terminator arg))
+  (if (c++-in-literal)
+      (self-insert-command (prefix-numeric-value arg))
+    (let ((here (point-marker)))
+      (if (and (memq 'defun-close-semi c++-cleanup-list)
+	       c++-auto-newline
+	       (progn
+		 (skip-chars-backward " \t\n")
+		 (= (preceding-char) ?})))
+	  (delete-region here (point)))
+      (goto-char here)
+      (set-marker here nil))
+    (c++-electric-terminator arg)))
 
 (defun c++-electric-colon (arg)
   "Electrify colon.  De-auto-newline double colons. No auto-new-lines
 for member initialization list."
   (interactive "P")
-  (let ((c++-auto-newline c++-auto-newline)
-	(insertion-point (point))
-	(bod (c++-point-bod)))
-    (save-excursion
-      (cond
-       ;; check for double-colon where the first colon is not in a
-       ;; comment or literal region
-       ((progn (skip-chars-backward " \t\n")
-	       (and (= (preceding-char) ?:)
-		    (not (c++-in-comment-p bod))
-		    (not (c++-in-open-string-p bod))))
-	(progn (delete-region insertion-point (point))
-	       (setq c++-auto-newline nil
-		     insertion-point (point))))
-       ;; check for ?: construct which may be at any level
-       ((progn (goto-char insertion-point)
-	       (condition-case premature-end
-		   (backward-sexp 1)
-		 (error nil))
-	       (c++-backward-to-noncomment bod)
-	       (= (preceding-char) ?\?))
-	(setq c++-auto-newline nil))
-       ;; check for being at top level or top with respect to the
-       ;; class. if not, process as normal
-       ((progn (goto-char insertion-point)
-	       (not (c++-at-top-level-p t))))
-       ;; if at top level, check to see if we are introducing a member
-       ;; init list. if not, continue
-       ((progn (c++-backward-to-noncomment bod)
-	       (= (preceding-char) ?\)))
-	(goto-char insertion-point)
-	;; at a member init list, figure out about auto newlining. if
-	;; nil or before then put a newline before the colon and
-	;; adjust the insertion point, but *only* if there is no
-	;; newline already before the insertion point
-	(if (memq c++-hanging-member-init-colon '(nil before))
-	    (if (not (save-excursion (skip-chars-backward " \t")
-				     (bolp)))
-		(let ((c++-auto-newline t))
-		  (c++-auto-newline)
-		  (setq insertion-point (point)))))
-	;; if hanging colon is after or nil, then newline is inserted
-	;; after colon. set up variable so c++-electric-terminator
-	;; places the newline correctly
-	(setq c++-auto-newline
-	      (memq c++-hanging-member-init-colon '(nil after))))
-       ;; last condition is always put newline after colon
-       (t (setq c++-auto-newline nil))
-       )) ; end-cond, end-save-excursion
-    (goto-char insertion-point)
-    (c++-electric-terminator arg)))
+  (if (c++-in-literal)
+      (self-insert-command (prefix-numeric-value arg))
+    (let ((c++-auto-newline c++-auto-newline)
+	  (insertion-point (point))
+	  (bod (c++-point-bod)))
+      (save-excursion
+	(cond
+	 ;; check for double-colon where the first colon is not in a
+	 ;; comment or literal region
+	 ((progn (skip-chars-backward " \t\n")
+		 (and (= (preceding-char) ?:)
+		      (not (c++-in-comment-p bod))
+		      (not (c++-in-open-string-p bod))))
+	  (progn (delete-region insertion-point (point))
+		 (setq c++-auto-newline nil
+		       insertion-point (point))))
+	 ;; check for ?: construct which may be at any level
+	 ((progn (goto-char insertion-point)
+		 (condition-case premature-end
+		     (backward-sexp 1)
+		   (error nil))
+		 (c++-backward-to-noncomment bod)
+		 (= (preceding-char) ?\?))
+	  (setq c++-auto-newline nil))
+	 ;; check for being at top level or top with respect to the
+	 ;; class. if not, process as normal
+	 ((progn (goto-char insertion-point)
+		 (not (c++-at-top-level-p t))))
+	 ;; if at top level, check to see if we are introducing a member
+	 ;; init list. if not, continue
+	 ((progn (c++-backward-to-noncomment bod)
+		 (= (preceding-char) ?\)))
+	  (goto-char insertion-point)
+	  ;; at a member init list, figure out about auto newlining. if
+	  ;; nil or before then put a newline before the colon and
+	  ;; adjust the insertion point, but *only* if there is no
+	  ;; newline already before the insertion point
+	  (if (memq c++-hanging-member-init-colon '(nil before))
+	      (if (not (save-excursion (skip-chars-backward " \t")
+				       (bolp)))
+		  (let ((c++-auto-newline t))
+		    (c++-auto-newline)
+		    (setq insertion-point (point)))))
+	  ;; if hanging colon is after or nil, then newline is inserted
+	  ;; after colon. set up variable so c++-electric-terminator
+	  ;; places the newline correctly
+	  (setq c++-auto-newline
+		(memq c++-hanging-member-init-colon '(nil after))))
+	 ;; last condition is always put newline after colon
+	 (t (setq c++-auto-newline nil))
+	 ))				; end-cond, end-save-excursion
+      (goto-char insertion-point)
+      (c++-electric-terminator arg))))
 
 (defun c++-electric-terminator (arg)
   "Insert character and correct line's indentation."
