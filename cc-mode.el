@@ -3752,15 +3752,22 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 (defun c-lineup-math (langelem)
   ;; line up math statement-cont after the equals
   (save-excursion
-    (let ((equalp (save-excursion
-		    (goto-char (c-point 'boi))
-		    (skip-chars-forward "^=" (c-point 'eol))
-		    (and (= (following-char) ?=)
-			 (- (point) (c-point 'boi)))))
-	  (curcol (progn
-		    (goto-char (cdr langelem))
-		    (current-column))))
-      (skip-chars-forward "^=" (c-point 'eol))
+    (let* ((relpos (cdr langelem))
+	   (equalp (save-excursion
+		     (goto-char (c-point 'boi))
+		     (skip-chars-forward "^=" (c-point 'eol))
+		     (and (= (following-char) ?=)
+			  (- (point) (c-point 'boi)))))
+	   (curcol (progn
+		     (goto-char relpos)
+		     (current-column)))
+	   donep)
+      (while (and (not donep)
+		  (< (point) (c-point 'eol)))
+	(skip-chars-forward "^=" (c-point 'eol))
+	(if (c-in-literal (cdr langelem))
+	    (forward-char 1)
+	  (setq donep t)))
       (if (/= (following-char) ?=)
 	  ;; there's no equal sign on the line
 	  c-basic-offset
