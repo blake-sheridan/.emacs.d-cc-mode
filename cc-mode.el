@@ -547,16 +547,14 @@ Key bindings:
    (memq cc-auto-hungry-initial-state '(auto-only   auto-hungry t))
    (memq cc-auto-hungry-initial-state '(hungry-only auto-hungry t))))
 
-(defmacro cc-setup-comment-indent-variable ()
-  ;; shut the byte compiler up
+(defun cc-setup-comment-indent-variable ()
+  ;; ignore any byte compiler warnings you might get here
   (if (boundp 'comment-indent-function)
-      (` (progn
+      (progn
 	   (make-local-variable 'comment-indent-function)
-	   (setq comment-indent-function 'cc-comment-indent)))
-    (` (progn
-	 (make-local-variable 'comment-indent-hook)
-	 (setq comment-indent-hook 'cc-comment-indent)))
-    ))
+	   (setq comment-indent-function 'cc-comment-indent))
+    (make-local-variable 'comment-indent-hook)
+    (setq comment-indent-hook 'cc-comment-indent)))
 
 (defun cc-common-init ()
   ;; Common initializations for cc-c++-mode and cc-c-mode.
@@ -636,14 +634,13 @@ Key bindings:
 
 
 ;; auto-newline/hungry delete key
-(defmacro cc-keep-region-active ()
-  ;; macro to keep region active in Emacs 19
-  (cond
-   ((boundp 'zmacs-region-stays)
-    (` (if (interactive-p) (setq zmacs-region-stays t))))
-   ((boundp 'deactivate-mark)
-    (` (if (interactive-p) (setq deactivate-mark (not mark-active)))))
-   ))
+(defun cc-keep-region-active ()
+  ;; macro to keep region active in Emacs 19. Ignore any byte-compiler
+  ;; warnings you might see
+  (if (boundp 'zmacs-region-stays)
+      (setq zmacs-region-stays t)
+   (if (boundp 'deactivate-mark)
+       (setq deactivate-mark (not mark-active)))))
 
 (defun cc-set-auto-hungry-state (auto-p hungry-p)
   ;; Set auto/hungry to state indicated by AUTO-P and HUNGRY-P, and
