@@ -1916,7 +1916,10 @@ preserving the comment indentation or line-starting decorations."
 		(beginning-of-line)
 		(if (and c-hanging-comment-ender-p
 			 (looking-at "[ \t]*\\*/"))
-		    (delete-indentation)))))
+		    ;(delete-indentation)))))
+		    (let ((fill-column (+ fill-column 9999)))
+		      (forward-line -1)
+		      (fill-region-as-paragraph (point) (point-max)))))))
 	;; Outside of comments: do ordinary filling.
 	(fill-paragraph arg)))))
 
