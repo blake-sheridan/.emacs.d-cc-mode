@@ -152,7 +152,7 @@ reported and the syntactic symbol is ignored.")
     ;;(statement-cont        . c-lineup-math)
     (statement-block-intro . +)
     (statement-case-intro  . +)
-    (statement-case-open   . +)
+    (statement-case-open   . 0)
     (substatement          . +)
     (substatement-open     . +)
     (case-label            . 0)
@@ -2783,6 +2783,27 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
      (if (looking-at "\\<\\(do\\|else\\)\\>")
 	 1 2))))
 
+(defun c-skip-case-statement-forward (&optional lim)
+  ;; skip forward over case/default bodies, with optional maximal
+  ;; limit. if no next case body is found, nil is returned and point
+  ;; is not moved
+  (let ((lim (or lim (point-max)))
+	(here (point))
+	donep foundp)
+    (while (and (< (point) lim)
+		(not donep))
+      (if (and (re-search-forward c-switch-label-key lim 'move)
+	       (save-match-data
+		 (not (c-in-literal)))
+	       (/= (match-beginning 0) here))
+	  (progn
+	    (goto-char (match-beginning 0))
+	    (setq donep t
+		  foundp t))))
+    (if (not foundp)
+	(goto-char here))
+    foundp))
+
 (defun c-search-uplist-for-classkey (brace-state)
   ;; search for the containing class, returning a 2 element vector if
   ;; found. aref 0 contains the bufpos of the class key, and aref 1
@@ -3492,7 +3513,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		inswitch-p)
 	    (while (looking-at ignore-re)
 	      (if (looking-at c-switch-label-key)
-		  (setq inswitch-p t))
+		  (progn
+		    (setq inswitch-p t)
+		    ;; we also want to skip over the body of the
+		    ;; case/switch statement if that doesn't put us at
+		    ;; after the indent-point
+		    (while (c-skip-case-statement-forward indent-point))))
 	      (forward-line 1)
 	      (c-forward-syntactic-ws indent-point))
 	    (cond
@@ -3532,13 +3558,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-syntax 'statement-cont (c-point 'boi)))
 	     ;; CASE 15D: any old statement
 	     ((< (point) indent-point)
-	      ;; calculate relpos relative to beginning of previous
-	      ;; statement, unless we're looking at a conditional key,
-	      ;; possible nested
-	      (if (looking-at c-conditional-key)
-		  nil
-		(goto-char indent-point)
-		(c-beginning-of-statement 1))
 	      (c-add-syntax 'statement (c-point 'boi))
 	      (if (= char-after-ip ?{)
 		  (c-add-syntax 'block-open)))
