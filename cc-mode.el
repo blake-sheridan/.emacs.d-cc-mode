@@ -1184,6 +1184,7 @@ Key bindings:
   (make-local-variable 'comment-end)
   (make-local-variable 'comment-column)
   (make-local-variable 'comment-start-skip)
+  (make-local-variable 'comment-multi-line)
   (make-local-variable 'outline-regexp)
   (make-local-variable 'outline-level)
   (make-local-variable 'adaptive-fill-regexp)
