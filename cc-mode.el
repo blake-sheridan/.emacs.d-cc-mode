@@ -307,9 +307,9 @@ is necessary under GNU Emacs 18, please refer to the texinfo manual.")
     (if (= 8 (length (parse-partial-sexp (point) (point))))
 	;; we know we're using v19 style dual-comment specifications.
 	;; All Lemacsen use 8-bit modify-syntax-entry flags, as do all
-	;; patched FSF19, GNU18, Epoch4's.  Only vanilla FSF19 uses
-	;; 1-bit flag.  Lets be as smart as we can about figuring this
-	;; out.
+	;; patched FSF19 (obsolete), GNU18, Epoch4's.  Only vanilla
+	;; FSF19 uses 1-bit flag.  Lets be as smart as we can about
+	;; figuring this out.
 	(let ((table (copy-syntax-table)))
 	  (modify-syntax-entry ?a ". 12345678" table)
 	  (if (= (logand (lsh (aref table ?a) -16) 255) 255)
@@ -328,16 +328,17 @@ is necessary under GNU Emacs 18, please refer to the texinfo manual.")
   "A list of features extant in the Emacs you are using.
 There are many flavors of Emacs out on the net, each with different
 features supporting those needed by cc-mode.  Here's the current
-known list, along with the values for this variable:
+supported list, along with the values for this variable:
 
  Vanilla GNU 18/Epoch 4:   (no-dual-comments v18)
  GNU 18/Epoch 4 (patch2):  (8-bit v19)
  Lemacs 19.8 and beyond:   (8-bit v19)
  FSFmacs 19:               (1-bit v19)
 
-Note that older, pre-19.8 Lemacsen, and version 1 patches for
-GNU18/Epoch4 are no longer supported.  If cc-mode generates an error
-when loaded, you should upgrade your Emacs.")
+Note that older, pre-19.8 Lemacsen, version 1 patches for
+GNU18/Epoch4, and FSFmacs19 8-bit patches are no longer supported.  If
+cc-mode generates an error when loaded, you should upgrade your
+Emacs.")
 
 (defvar cc-c++-mode-abbrev-table nil
   "Abbrev table in use in cc-mode C++ buffers.")
