@@ -129,7 +129,7 @@ with previous initializations rather than with the colon on the first line.")
 (defvar c++-empty-arglist-indent nil
   "*Indicates how far to indent an line following an empty argument
 list.  Nil indicates to just after the paren.")
-(defvar c++-comment-only-line-offset 4
+(defvar c++-comment-only-line-offset 0
   "*Indentation offset for line which contains only C or C++ style comments.")
 (defvar c++-cleanup-brace-else-brace-p nil
   "*Controls whether } else { style should remain on a single line.
