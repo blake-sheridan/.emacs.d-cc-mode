@@ -51,6 +51,7 @@ Copyright @copyright{} 1995 Free Software Foundation, Inc.
 @center @titlefont{CC-MODE Version 4}
 @sp 2
 @center A GNU Emacs mode for editing C, C++, and Objective-C code.
+@center (manual revision: $Revision$)
 @sp 2
 @center Barry A. Warsaw
 @center @code{bwarsaw@@cnri.reston.va.us}
