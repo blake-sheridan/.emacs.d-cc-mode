@@ -1208,6 +1208,7 @@ of the expression are preserved."
 		 (progn (end-of-line)
 			(while (eq (c++-in-literal) 'c)
 			  (forward-line 1)
+			  (c++-indent-line)
 			  (end-of-line))
 			(skip-chars-backward " \t")
 			(end-of-line)
