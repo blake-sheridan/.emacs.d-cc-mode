@@ -908,18 +908,7 @@ supported list, along with the values for this variable:
 (make-variable-buffer-local 'c-access-key)
 (make-variable-buffer-local 'c-class-key)
 (make-variable-buffer-local 'c-recognize-knr-p)
-;; style variables
-(make-variable-buffer-local 'c-offsets-alist)
-(make-variable-buffer-local 'c-basic-offset)
-(make-variable-buffer-local 'c-file-style)
-(make-variable-buffer-local 'c-file-offsets)
-(make-variable-buffer-local 'c-comment-only-line-offset)
-(make-variable-buffer-local 'c-block-comments-indent-p)
-(make-variable-buffer-local 'c-cleanup-list)
-(make-variable-buffer-local 'c-hanging-braces-alist)
-(make-variable-buffer-local 'c-hanging-colons-alist)
-(make-variable-buffer-local 'c-hanging-comment-ender-p)
-(make-variable-buffer-local 'c-backslash-column)
+;; style variables are made buffer local at tail end of this file.
 
 ;; cmacexp is lame because it uses no preprocessor symbols.
 ;; It isn't very extensible either -- hardcodes /lib/cpp.
@@ -1185,10 +1174,7 @@ Key bindings:
   (or (assq 'c-auto-hungry-string minor-mode-alist)
       (setq minor-mode-alist
 	    (cons '(c-auto-hungry-string c-auto-hungry-string)
-		  minor-mode-alist)))
-  ;; the default style is now GNU.  This can be overridden in
-  ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
-  (c-set-style "GNU"))
+		  minor-mode-alist))))
 
 (defun c-postprocess-file-styles ()
   "Function that post processes relevent file local variables.
@@ -4594,6 +4580,24 @@ it trailing backslashes are removed."
 		c-hanging-colons-alist
 		c-backslash-column
 		c-electric-pound-behavior)))
+
+;; the default style is now GNU.  This can be overridden in
+;; c-mode-common-hook or {c,c++,objc}-mode-hook.
+(c-set-style "GNU")
+
+;; style variables
+(make-variable-buffer-local 'c-offsets-alist)
+(make-variable-buffer-local 'c-basic-offset)
+(make-variable-buffer-local 'c-file-style)
+(make-variable-buffer-local 'c-file-offsets)
+(make-variable-buffer-local 'c-comment-only-line-offset)
+(make-variable-buffer-local 'c-block-comments-indent-p)
+(make-variable-buffer-local 'c-cleanup-list)
+(make-variable-buffer-local 'c-hanging-braces-alist)
+(make-variable-buffer-local 'c-hanging-colons-alist)
+(make-variable-buffer-local 'c-hanging-comment-ender-p)
+(make-variable-buffer-local 'c-backslash-column)
+
 
 
 ;; fsets for compatibility with BOCM
