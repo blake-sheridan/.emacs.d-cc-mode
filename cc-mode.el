@@ -1279,8 +1279,15 @@ of the expression are preserved."
 	    ;; looking at a comment only line?
 	    (if (looking-at comment-start-skip)
 		;; different indentation base on whether this is a
-		;; col0 comment only line or not
-		(setq this-indent (c++-comment-offset (bolp) this-indent)))
+		;; col0 comment only line or not. also, if comment is
+		;; in, or to the right of comment-column, the comment
+		;; doesn't move
+		(progn
+		  (skip-chars-forward " \t")
+		  (setq this-indent
+			(if (>= (current-column) comment-column)
+			    (current-column)
+			  (c++-comment-offset (bolp) this-indent)))))
 	    (if (looking-at "friend[ \t]")
 		(setq this-indent (+ this-indent c++-friend-offset)))
 	    (if (= (following-char) ?})
