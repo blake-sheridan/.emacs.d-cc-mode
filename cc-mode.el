@@ -1211,11 +1211,11 @@ it finds in `c-file-offsets'."
 	     )))
 	c-file-offsets)))
 
-;; Add the function to hack-local-variables-hook. as of 14-Dec-1994
-;; no Emacs supports this, although it is hoped XEmacs 19.12 and Emacs
-;; 19.29 will when they are released.
+;; Add the posprocessing function to hack-local-variables-hook. as of
+;; 14-Dec-1994 no Emacs supports this, although it is hoped XEmacs
+;; 19.12 and Emacs 19.29 will when they are released.
 (and (fboundp 'add-hook)
-     (add-hook 'hack-local-variables-hooks 'c-postprocess-file-styles))
+     (add-hook 'hack-local-variables-hook 'c-postprocess-file-styles))
 
 
 ;; macros must be defined before first use
