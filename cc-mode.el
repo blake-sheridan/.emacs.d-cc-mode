@@ -1570,10 +1570,11 @@ the brace is inserted inside a literal."
 	      (if (zerop (car (parse-partial-sexp bol (1- (point)))))
 		  (setq c-state-cache (c-whack-state bol c-state-cache)
 			syntax (c-guess-basic-syntax))
-		;; gotta punt. this includes some horrible kludgery
+		;; gotta punt. this requires some horrible kludgery
 		(beginning-of-line)
 		(makunbound 'c-state-cache)
-		(setq c-state-cache (c-parse-state)))))
+		(setq c-state-cache (c-parse-state)
+		      syntax nil))))
 	  )
 	;; now adjust the line's indentation. don't update the state
 	;; cache since c-guess-basic-syntax isn't called when the
