@@ -952,8 +952,7 @@ Key bindings:
 (defun c-keep-region-active ()
   ;; do whatever is necessary to keep the region active in
   ;; Lucid. ignore byte-compiler warnings you might see
-  (and (interactive-p)
-       (boundp 'zmacs-region-stays)
+  (and (boundp 'zmacs-region-stays)
        (setq zmacs-region-stays t)))
 
 (defun c-update-modeline ()
@@ -3290,8 +3289,7 @@ region."
 		    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n")
 	  "\n")
 	)))
-    ))
-  (c-keep-region-active))
+    )))
 
 
 ;; menus for Lucid
