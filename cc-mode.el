@@ -1360,7 +1360,7 @@ point of the beginning of the C++ definition."
 				 (back-to-indentation)
 				 (skip-chars-forward "{ \t")
 				 (current-column))))
-		 ((looking-at "friend\[ \t]")
+		 ((looking-at "\\<friend\\>")
 		  (setq indent (+ indent c++-friend-offset)))
 		 ((and (= (following-char) ?\))
 		       c++-paren-as-block-close-p)
@@ -1515,7 +1515,10 @@ BOD is the beginning of the C++ definition."
 			    ;; subtract inclass-shift
 			    (- c++-member-init-indent c++-class-member-indent))
 			(if (or (= (preceding-char) ?})
-				(= (preceding-char) ?\)))
+				(= (preceding-char) ?\))
+				(save-excursion
+				  (beginning-of-line)
+				  (looking-at "[ \t]*\\<friend\\>")))
 			    0
 			  (beginning-of-line) ; cont arg decls or member inits
 			  (skip-chars-forward " \t")
