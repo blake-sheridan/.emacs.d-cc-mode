@@ -2211,7 +2211,7 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 		  ;; if you're not running a patched lemacs, the new byte
 		  ;; compiler will complain about this function. ignore that
 		  (backward-syntactic-ws)
-		  (if (not (looking-at "#\\|/\\*\\|//"))
+		  (if (not (looking-at "#\\|/\\*\\|//\\|\n"))
 		      (forward-char 1))
 		  (setq boi (c++-point 'boi)
 			char (char-after boi))
