@@ -823,9 +823,12 @@ Key bindings:
     (setq comment-indent-hook 'c-comment-indent))
   ;; put C menu into menubar for Lucid 19. I think this happens
   ;; automatically for FSF 19.
-  (and (memq 'Lucid c-emacs-features)
-       current-menubar
-       (add-menu nil "C/C++" c-mode-menu))
+  (if (and (memq 'Lucid c-emacs-features)
+	   current-menubar
+	   (not (assoc mode-name current-menubar)))
+      (progn
+	(set-buffer-menubar (copy-sequence current-menubar))
+	(add-menu nil mode-name c-mode-menu)))
   ;; put auto-hungry designators onto minor-mode-alist, but only once
   (or (assq 'c-auto-hungry-string minor-mode-alist)
       (setq minor-mode-alist
@@ -3296,7 +3299,7 @@ region."
 (defun c-popup-menu (e)
   "Pops up the C/C++ menu."
   (interactive "@e")
-  (popup-menu (cons "C/C++ Mode Commands" c-mode-menu))
+  (popup-menu (cons (concat mode-name " Mode Commands") c-mode-menu))
   (c-keep-region-active))
     
 
