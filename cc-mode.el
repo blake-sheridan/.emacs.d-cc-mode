@@ -120,6 +120,8 @@ with previous initializations rather than with the colon on the first line.")
   "*Indentation level of member initializations in function declarations.")
 (defvar c++-friend-offset -4
   "*Offset of C++ friend class declarations relative to member declarations.")
+(defvar c++-access-specifier-offset c-label-offset
+  "*Extra indentation given to public, protected, and private labels.")
 (defvar c++-empty-arglist-indent nil
   "*Indicates how far to indent an line following an empty argument
 list.  Nil indicates to just after the paren.")
@@ -249,6 +251,8 @@ from their c-mode cousins.
     if they are on a separate line beginning with a colon.
  c++-friend-offset
     Offset of C++ friend class declarations relative to member declarations.
+ c++-access-specifier-offset
+    Extra indentation given to public, protected, and private keyword lines.
  c++-empty-arglist-indent
     If non-nil, a function declaration or invocation which ends a line with a
     left paren is indented this many extra spaces, instead of flush with the
@@ -326,6 +330,7 @@ Settings for K&R, BSD, and Stroustrup indentation styles are
   c-brace-imaginary-offset                0
   c-argdecl-indent              0    8    4
   c-label-offset               -5   -8   -4
+  c++-access-specifier-offset  -5   -8   -4
   c++-empty-arglist-indent                4
   c++-friend-offset                       0
 
@@ -776,7 +781,9 @@ Return the amount the indentation changed by."
 	  (t
 	   (skip-chars-forward " \t")
 	   (if (listp indent) (setq indent (car indent)))
-	   (cond ((looking-at "\\(default\\|public\\|private\\|protected\\):")
+	   (cond ((looking-at "\\(public\\|private\\|protected\\):")
+		  (setq indent (+ indent c++-access-specifier-offset)))
+		 ((looking-at "default:")
 		  (setq indent (+ indent c-label-offset)))
 		 ((or (looking-at "case\\b")
 		      (and (looking-at "[A-Za-z]")
@@ -1661,6 +1668,7 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 	(varlist (list 'c++-continued-member-init-offset
 		       'c++-member-init-indent
 		       'c++-friend-offset
+		       'c++-access-specifier-offset
 		       'c++-empty-arglist-indent
 		       'c++-always-arglist-indent-p
 		       'c++-comment-only-line-offset
