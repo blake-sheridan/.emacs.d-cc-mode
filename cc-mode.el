@@ -5241,6 +5241,7 @@ command to conveniently insert and align the necessary backslashes."
       (function
        (lambda ()
 	 (insert
+	  "Buffer Style: " c-indentation-style "\n\n"
 	  (if c-special-indent-hook
 	      (concat "\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
 		      "c-special-indent-hook is set to '"
