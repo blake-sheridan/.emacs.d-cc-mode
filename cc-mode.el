@@ -479,9 +479,8 @@ that users are familiar with.")
    cc-symbol-key)
   "Regexp describing base classes in a derived class definition.")
 (defconst cc-case-statement-key
-  (concat "\\(case[ \t]+"
-	  cc-symbol-key
-	  "\\)\\|\\(default[ \t]*\\):")
+  (concat "\\(case[ \t]+\\(\\w\\|[_']\\)+[ \t]*\\)"
+	  "\\|\\(default[ \t]*\\):")
   "Regexp describing a switch's case or default label")
 (defconst cc-access-key "\\<\\(public\\|protected\\|private\\)\\>:"
   "Regexp describing access specification keywords.")
