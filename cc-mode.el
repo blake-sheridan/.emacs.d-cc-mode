@@ -14,8 +14,8 @@
 ;;
 ;; Want to be a c++-mode victim, er, beta-tester?  Send add/drop
 ;; requests to c++-mode-victims-request@anthem.nlm.nih.gov.
-;; Discussions go to c++-mode-victims, but bug reports and such should
-;; still be sent to c++-mode-help only.
+;; Discussions go to c++-mode-victims@anthem.nlm.nih.gov, but bug
+;; reports and such should still be sent to c++-mode-help only.
 ;;
 ;; The latest version of this file should always be available for
 ;; anonymous ftp on the elisp archive machine:
