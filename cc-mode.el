@@ -41,11 +41,12 @@
 ;; This package is called "cc-mode" to distinguish it from its
 ;; ancestors, but there really is no top-level cc-mode.
 
-;; Details on how to use cc-mode will some day be contained in an
+;; Details on how to use cc-mode will eventually be contained in an
 ;; accompanying texinfo manual.  Volunteers to help finish this manual
-;; would be greatly appreciated!  Contact me at the address above if
-;; you'd like to volunteer. Until the manual is finished, an
-;; accompanying README is the only documentation available.
+;; would be greatly appreciated!  Contact me or the FSF if you'd like
+;; to volunteer.  Until the manual is finished, an accompanying README
+;; is the only documentation available.  If you did not get the README
+;; with your copy of cc-mode, contact the help address above.
 
 ;; To submit bug reports, hit "C-c C-b", and please try to include a
 ;; code sample and exact recipe so I can reproduce your problem.  If
