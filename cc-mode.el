@@ -358,7 +358,7 @@ following form: (SYNTACTIC-SYMBOL . ACTION).
 When a brace (either opening or closing) is inserted, the syntactic
 context it defines is looked up in this list, and if found, the
 associated ACTION is used to determine where newlines are inserted.
-If the context is not found, the defalt is to insert a newline both
+If the context is not found, the default is to insert a newline both
 before and after the brace.
 
 SYNTACTIC-SYMBOL can be any of: defun-open, defun-close, class-open,
