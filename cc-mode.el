@@ -504,7 +504,7 @@ this variable to nil defeats backscan limits.")
   (make-local-variable 'comment-column)
   (make-local-variable 'comment-start-skip)
   (make-local-variable
-   (if (memq 'v19 c++-emacs-features)
+   (if (boundp 'comment-indent-function)
        'comment-indent-function
      'comment-indent-hook))
   ;; now set their values
@@ -517,8 +517,7 @@ this variable to nil defeats backscan limits.")
 	indent-region-function 'c-indent-region
 	comment-column 32
 	comment-start-skip "/\\*+ *\\|// *")
-  ;; set comment indentation hook based on emacs version
-  (if (memq 'v19 c++-emacs-features)
+  (if (boundp 'comment-indent-function)
       (setq comment-indent-function 'c++-comment-indent)
     (setq comment-indent-hook 'c++-comment-indent))
   ;; hack auto-hungry designators into mode-line-format
