@@ -2047,7 +2047,9 @@ VALUE.  This function also sets the current style to STYLE using
   "Like \\[fill-paragraph] but handles C and C++ style comments.
 If any of the current line is a comment or within a comment,
 fill the comment or the paragraph of it that point is in,
-preserving the comment indentation or line-starting decorations."
+preserving the comment indentation or line-starting decorations.
+
+Optional prefix ARG means justify paragraph as well."
   (interactive "P")
   (let* (comment-start-place
 	 (first-line
