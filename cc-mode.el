@@ -570,12 +570,10 @@ as designated in the variable `c-file-style'.")
 ;; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ;; NO USER DEFINABLE VARIABLES BEYOND THIS POINT
 
-;; shut the byte-compiler up as best as possible
-(defvar c-verbose-byte-compiler-warnings nil)
-
-(and (fboundp 'byte-compiler-options)
-     c-verbose-byte-compiler-warnings
-     (byte-compiler-options (warnings nil)))
+;; Shut the byte-compiler up. Requires Emacs 19 or JWZ's improved
+;; byte-compiler. Otherwise, comment this line out and ignore
+;; any warnings.
+;(byte-compiler-options (warnings nil))
 
 ;; figure out what features this Emacs has
 (defconst c-emacs-features
