@@ -634,6 +634,11 @@ Returns nil if line starts inside a string, t if in a comment."
 	    ((c++-in-comment-p)
 	     ;; in a C comment.
 	     t)
+	    ;; is this a comment-only line in the first column?
+	    ((progn (goto-char indent-point)
+		    (beginning-of-line)
+		    (looking-at "^/[/*]"))
+	     0)
 	    ((null containing-sexp)
 	     ;; Line is at top level.  May be data or function definition, or
 	     ;; may be function argument declaration or member initialization.
