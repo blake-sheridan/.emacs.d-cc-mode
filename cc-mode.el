@@ -1394,12 +1394,14 @@ Optional LIM is used as the backward limit of the search."
 	    (= (char-after (or (scan-lists (point) -1 1) (point-min))) ?\()))
       (error nil))))
 
-(defun c++-in-function-p (&optional bod)
-  "Return t if inside a C++ function definition."
+(defun c++-in-function-p (&optional containing)
+  "Return t if inside a C++ function definition.
+Optional CONTAINING is position of containing s-exp open brace. If not
+supplied, point is used as search start."
   (save-excursion
-    (let ((here (if (not bod)
+    (let ((here (if (not containing)
 		    (point)
-		  (goto-char bod)
+		  (goto-char containing)
 		  (c++-backward-over-syntactic-ws)
 		  (point))))
       (if (and (= (preceding-char) ?t)
@@ -1829,8 +1831,9 @@ BOD is the beginning of the C++ definition."
 				   ;; check if this is a true
 				   ;; statement continuation, not a
 				   ;; list of enums or static arrays elems
-				   (if (and (= char-before-ip ?,)
-					    (c++-in-function-p bod))
+				   (if (and
+					(= char-before-ip ?,)
+					(c++-in-function-p containing-sexp))
 				       c-indent-level 0)))))
 		    ;; If no previous statement, indent it relative to
 		    ;; line brace is on.  For open brace in column
