@@ -1401,6 +1401,27 @@ value of `c-cleanup-list'."
 	(goto-char (- (point-max) pos)))
       )))
 
+(defun c-read-offset (langelem)
+  ;; read new offset value for LANGELEM from minibuffer. return a
+  ;; legal value only
+  (let ((oldoff (format "%s" (cdr-safe (assq langelem c-offsets-alist))))
+	(errmsg "Offset must be +, -, an integer, or function name: ")
+	(prompt "Offset: ")
+	offset input)
+    (while (not offset)
+      (setq input (read-string prompt oldoff)
+	    offset (cond ((string-equal "+" input) '+)
+			 ((string-equal "-" input) '-)
+			 ((string-match "^-?[0-9]+$" input)
+			  (string-to-int input))
+			 ((c-safe (symbol-function (intern input)))
+			  (intern input))
+			 ;; error
+			 (t (ding)
+			    (setq prompt errmsg)
+			    nil))))
+    offset))
+
 (defun c-set-offset (symbol offset &optional add-p)
   "Change the value of a syntactic element symbol in `c-offsets-alist'.
 SYMBOL is the syntactic element symbol to change and OFFSET is the new
@@ -1411,26 +1432,22 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
 	   (intern (completing-read
 		    (concat "Syntactic symbol to change"
 			    (if current-prefix-arg " or add" "")
-			    " (do not quote): ")
+			    ": ")
 		    (mapcar
 		     (function
 		      (lambda (langelem)
-			(cons (format "%s" (car langelem)) nil)
-			))
+			(cons (format "%s" (car langelem)) nil)))
 		     c-offsets-alist)
 		    nil (not current-prefix-arg))
 		   ))
-	  (oldoff (cdr-safe (assq langelem c-offsets-alist)))
-	  (offset (read-string "Offset: " (format "%s" oldoff))))
-     (list langelem (cond
-		     ((string-equal "+" offset) '+)
-		     ((string-equal "-" offset) '-)
-		     ((string-match "^-?[0-9]+$" offset)
-		      (string-to-int offset))
-		     ;; must be a function symbol
-		     (t (intern offset))
-		     )
-	   current-prefix-arg)))
+	  (offset (c-read-offset langelem)))
+     (list langelem offset current-prefix-arg)))
+  ;; sanity check offset
+  (or (eq offset '+)
+      (eq offset '-)
+      (integerp offset)
+      (c-safe (symbol-function offset))
+      (error "Offset is not +, -, an integer, or a function name: %s" offset))
   (let ((entry (assq symbol c-offsets-alist)))
     (if entry
 	(setcdr entry offset)
