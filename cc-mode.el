@@ -1069,6 +1069,10 @@ of the expression are preserved."
  			   (forward-sexp 1)
  			   (looking-at ":[^:]"))))
  		(setq this-indent (max 0 (+ this-indent c-label-offset))))
+	    ;; looking at a comment only line?
+	    (if (looking-at "//\\|/\\*")
+		(setq this-indent (+ this-indent
+				     c++-comment-only-line-offset)))
 	    (if (looking-at "friend[ \t]")
 		(setq this-indent (+ this-indent c++-friend-offset)))
 	    (if (= (following-char) ?})
