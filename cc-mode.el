@@ -257,7 +257,7 @@ Valid symbols are:
 			the closing brace.
  list-close-comma    -- cleans up commas following braces in array
                         and aggregate initializers.
- scope-operator      -- cleans up double colons which may be designate
+ scope-operator      -- cleans up double colons which may designate
                         a C++ scope operator split across multiple
 			lines. Note that certain C++ constructs can
 			generate ambiguous situations.")
