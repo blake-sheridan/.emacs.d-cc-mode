@@ -3231,7 +3231,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ((looking-at "do\\b[^_]")
 	      (if (zerop (setq do-level (1- do-level)))
 		  (setq foundp t)))
-	     ((< (point) lim)
+	     ((<= (point) lim)
 	      (setq do-level 0)
 	      (goto-char lim))))
 	(error
