@@ -849,9 +849,12 @@ Returns nil if line starts inside a string, t if in a comment."
 	  (goto-char parse-start)
 	(beginning-of-defun))
       (while (< (point) indent-point)
-	(setq parse-start (point))
-	(setq state (parse-partial-sexp (point) indent-point 0))
-	(setq containing-sexp (car (cdr state))))
+	(let ((here (point))
+	      (pps (parse-partial-sexp (point) indent-point 0)))
+	  (if (not (c++-in-comment-p))
+	      (setq parse-start (point)
+		    state pps
+		    containing-sexp (car (cdr pps))))))
       (cond ((nth 3 state)
 	     ;; in a string.
 	     nil)
