@@ -3052,7 +3052,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (unwind-protect
 	  (let ((c-tab-always-indent t)
 		;; shut up any echo msgs on indiv lines
-		(c-echo-syntactic-information-p nil))
+		(c-echo-syntactic-information-p nil)
+		fence)
 	    (c-progress-init start end 'c-indent-region)
 	    (setq endmark (copy-marker end))
 	    (while (and (bolp)
@@ -3067,6 +3068,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(beginning-of-line)
 		;; indent the current line
 		(c-indent-line)
+		(setq fence (point))
 		(if (save-excursion
 		      (beginning-of-line)
 		      (looking-at "[ \t]*#"))
@@ -3092,7 +3094,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			  (goto-char sexpend)
 			  (setq sexpend (point-marker))
 			  (c-safe (backward-sexp 1))
-			  (setq sexpbeg (point)))))
+			  (setq sexpbeg (point))))
+		    (if (and sexpbeg (< sexpbeg fence))
+			(setq sexpbeg fence)))
 		  ;; check to see if the next line starts a
 		  ;; comment-only line
 		  (save-excursion
@@ -3118,7 +3122,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (and sexpend
 		       (markerp sexpend)
 		       (set-marker sexpend nil))
-		  (forward-line 1)))))
+		  (forward-line 1)
+		  (setq fence (point))))))
 	(set-marker endmark nil)
 	(c-progress-fini 'c-indent-region)
 	))))
@@ -4136,6 +4141,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 				(point))))
 		   (save-excursion
 		     (c-backward-syntactic-ws limit)
+		     (setq placeholder (point))
 		     (while (and (memq (preceding-char) '(?\; ?,))
 				 (> (point) limit))
 		       (beginning-of-line)
