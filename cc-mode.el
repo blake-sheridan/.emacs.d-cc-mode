@@ -401,7 +401,7 @@ When set to nil, C block comment enders are left on their own line.
 When set to t, block comment enders will be placed at the end of the
 previous line (i.e. they `hang' on that line).")
 
-(defvar c-hanging-comment-starter-p nil
+(defvar c-hanging-comment-starter-p t
   "*Controls what \\[fill-paragraph] does to C block comment starters.
 When set to nil, C block comment starters are left on their own line.
 When set to t, text that follows a block comment starter will be
