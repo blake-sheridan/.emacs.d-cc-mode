@@ -1701,6 +1701,7 @@ search."
 			       (looking-at c-conditional-key)))
 		      )
 	    (if (and (not (c-in-literal))
+		     (not (looking-at c-switch-label-key))
 		     (not (looking-at c-label-key)))
 		(setq last-begin (point)
 		      first nil)))
