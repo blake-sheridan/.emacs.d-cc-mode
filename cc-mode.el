@@ -1713,6 +1713,8 @@ BOD is the beginning of the C++ definition."
 	       (current-column)))
 	    (t
 	     ;; Statement.  Find previous non-comment character.
+	     (goto-char indent-point)
+	     (c++-backward-over-syntactic-ws containing-sexp)
 	     (if (not (memq char-before-ip '(nil ?\, ?\; ?} ?: ?\{)))
 		 ;; This line is continuation of preceding line's statement;
 		 ;; indent  c-continued-statement-offset  more than the
