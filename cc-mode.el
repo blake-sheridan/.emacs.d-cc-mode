@@ -1025,7 +1025,9 @@ of the expression are preserved."
 		      ;; use the standard indent for this level.
 		      (if at-else
 			  (progn (c-backward-to-start-of-if opoint)
-				 (setq this-indent (current-indentation)))
+				 (back-to-indentation)
+				 (skip-chars-forward "{ \t")
+				 (setq this-indent (current-column)))
 			(setq this-indent (car indent-stack))))))
 	      ;; Just started a new nesting level.
 	      ;; Compute the standard indent for this level.
@@ -1298,7 +1300,9 @@ point of the beginning of the C++ definition."
 		       (not (looking-at "else\\s_")))
 		  (setq indent (save-excursion
 				 (c-backward-to-start-of-if)
-				 (current-indentation))))
+				 (back-to-indentation)
+				 (skip-chars-forward "{ \t")
+				 (current-column))))
 		 ((looking-at "friend\[ \t]")
 		  (setq indent (+ indent c++-friend-offset)))
 		 ((= (following-char) ?\))
