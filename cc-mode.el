@@ -4141,8 +4141,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 				  (setq done t))
 				 )
 			   (setq cont t)))
-		       injava-inher))
-		)
+		       injava-inher)
+		     (not (c-crosses-statement-barrier-p (cdr injava-inher)
+							 (point)))
+		     ))
 	    (cond
 	     ;; CASE 5C.1: non-hanging colon on an inher intro
 	     ((= char-after-ip ?:)
