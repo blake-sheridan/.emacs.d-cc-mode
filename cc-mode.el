@@ -903,15 +903,12 @@ If `c++-hungry-delete-key' is nil, just call `backward-delete-char-untabify'."
 (defun c++-electric-pound (arg)
   "Electric pound command."
   (interactive "p")
-  (if (memq (c++-in-literal) '(c c++ string))
+  (if (memq (c++-in-literal) '(c c++ string pound))
       (self-insert-command arg)
     (let ((here (point-marker))
-	  (char-at-boi (char-after (c++-point 'boi)))
 	  (bobp (bobp))
 	  (bolp (bolp)))
-      (if (and (memq 'alignleft c++-electric-pound-behavior)
-	       char-at-boi
-	       (/= char-at-boi ?#))
+      (if (memq 'alignleft c++-electric-pound-behavior)
 	  (progn (beginning-of-line)
 		 (delete-horizontal-space)))
       (if bobp
