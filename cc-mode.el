@@ -323,7 +323,8 @@ Valid symbols are:
 			whitespace between colons. Clean up occurs
 			when the second colon is typed.")
 
-(defvar c-hanging-braces-alist '((brace-list-open))
+(defvar c-hanging-braces-alist '((brace-list-open)
+				 (substatement-open after))
   "*Controls the insertion of newlines before and after braces.
 This variable contains an association list with elements of the
 following form: (SYNTACTIC-SYMBOL . (NL-LIST)).
