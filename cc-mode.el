@@ -922,9 +922,8 @@ If `c++-hungry-delete-key' is nil, just call `backward-delete-char-untabify'."
 		       ;; this may have auto-filled so we need to
 		       ;; indent the previous line. we also need to
 		       ;; indent the currently line, or
-		       ;; c++-beginning-of-defun will not be able to
-		       ;; correctly find the bod when
-		       ;; c++-match-headers-strongly is nil.
+		       ;; beginning-of-defun will not be able to
+		       ;; correctly find the bod.
 		       (progn (c++-indent-line bod)
 			      (save-excursion
 				(forward-line -1)
@@ -2623,147 +2622,6 @@ the leading `// ' from each line, if any."
 	      (delete-region (match-beginning 0) (match-end 0)))
 	  (forward-line 1))))))
 
-
-;; ======================================================================
-;; grammar parsing
-;; ======================================================================
-
-;;; Below are two regular expressions that attempt to match defuns
-;;; "strongly" and "weakly."  The strong one almost reconstructs the
-;;; grammar of C++; the weak one just figures anything id or curly on
-;;; the left begins a defun.  The constant "c++-match-header-strongly"
-;;; determines which to use; the default is the weak one.
-
-(defvar c++-match-header-strongly nil
-  "*If nil, use `c++-defun-header-weak' to identify beginning of definitions,
-if non-nil, use `c++-defun-header-strong'.")
-
-(defvar c++-defun-header-strong-struct-equivs
-  "\\(class\\|struct\\|union\\|enum\\)"
-  "Regexp to match names of structure declaration blocks in C++")
-
-(defconst c++-defun-header-strong
-  (let*
-      (; valid identifiers
-       ;; There's a real weirdness here -- if I switch the below
-       (id "\\(\\w\\|_\\)+")
-       ;; to be
-       ;; (id "\\(_\\|\\w\\)+")
-       ;; things no longer work right.  Try it and see!
-
-       ; overloadable operators
-       (op-sym1
-	 "[---+*/%^&|~!=<>]\\|[---+*/%^&|<>=!]=\\|<<=?\\|>>=?")
-       (op-sym2
-	 "&&\\|||\\|\\+\\+\\|--\\|()\\|\\[\\]")	 
-       (op-sym (concat "\\(" op-sym1 "\\|" op-sym2 "\\)"))
-       ; whitespace
-       (middle "[^\\*]*\\(\\*+[^/\\*][^\\*]*\\)*")
-       (c-comment (concat "/\\*" middle "\\*+/"))
-       (wh (concat "\\(\\s \\|\n\\|//.*$\\|" c-comment "\\)"))
-       (wh-opt (concat wh "*"))
-       (wh-nec (concat wh "+"))
-       (oper (concat "\\(" "operator" "\\("
-		     wh-opt op-sym "\\|" wh-nec id "\\)" "\\)"))
-       (dcl-list "([^():]*)")
-       (func-name (concat "\\(" oper "\\|" id "::" id "\\|" id "\\)"))
-       (inits
-	 (concat "\\(:"
-		 "\\(" wh-opt id "(.*\\()" wh-opt "," "\\)\\)*"
-		 wh-opt id "(.*)" wh-opt "{"
-		 "\\|" wh-opt "{\\)"))
-       (type-name (concat
-		    "\\(" c++-defun-header-strong-struct-equivs wh-nec "\\)?"
-		    id))
-       (type (concat "\\(const" wh-nec "\\)?"
-		     "\\(" type-name "\\|" type-name wh-opt "\\*+" "\\|"
-		     type-name wh-opt "&" "\\)"))
-       (modifier "\\(inline\\|virtual\\|overload\\|auto\\|static\\)")
-       (modifiers (concat "\\(" modifier wh-nec "\\)*"))
-       (func-header
-	 ;;     type               arg-dcl
-	 (concat modifiers type wh-nec func-name wh-opt dcl-list wh-opt inits))
-       (inherit (concat "\\(:" wh-opt "\\(public\\|protected\\|private\\)?"
-			wh-nec id "\\)"))
-       (cs-header (concat
-		    c++-defun-header-strong-struct-equivs
-		    wh-nec id wh-opt inherit "?" wh-opt "{")))
-    (concat "^\\(" func-header "\\|" cs-header "\\)"))
-  "Strongly-defined regexp to match beginning of structure or
-function definition.")
-
-
-;; This part has to do with recognizing defuns.
-
-;; The weak convention we will use is that a defun begins any time
-;; there is a left curly brace, or some identifier on the left margin,
-;; followed by a left curly somewhere on the line.  (This will also
-;; incorrectly match some continued strings, but this is after all
-;; just a weak heuristic.)  Suggestions for improvement (short of the
-;; strong scheme shown above) are welcomed.
-
-(defconst c++-defun-header-weak "^{\\|^[_a-zA-Z].*{"
-  "Weakly-defined regexp to match beginning of structure or function
-definition.")
-
-
-(defun c++-beginning-of-defun (&optional arg)
-  "Find the beginning of the C++ function or class."
-  (interactive "p")
-  (if (not arg) (setq arg 1))
-  (let ((c++-defun-header (if c++-match-header-strongly
-			      c++-defun-header-strong
-			    c++-defun-header-weak)))
-    (cond
-     ((or (= arg 0) (and (> arg 0) (bobp))) nil)
-     ((and (not (looking-at c++-defun-header))
-	   (let ((curr-pos (point))
-		 (open-pos (if (search-forward "{" nil 'move)
-			       (point)))
-		 (beg-pos
-		  (if (re-search-backward c++-defun-header nil 'move)
-		      (match-beginning 0))))
-	     (if (and open-pos beg-pos
-		      (< beg-pos curr-pos)
-		      (> open-pos curr-pos))
-		 (progn
-		   (goto-char beg-pos)
-		   (if (= arg 1) t nil));; Are we done?
-	       (goto-char curr-pos)
-	       nil))))
-     (t
-      (if (and (looking-at c++-defun-header) (not (bobp)))
-	  (forward-char (if (< arg 0) 1 -1)))
-      (and (re-search-backward c++-defun-header nil 'move (or arg 1))
-	   (goto-char (match-beginning 0)))))))
-
-
-(defun c++-end-of-defun (arg)
-  "Find the end of the C++ function or class."
-  (interactive "p")
-  (let ((c++-defun-header (if c++-match-header-strongly
-			      c++-defun-header-strong
-			    c++-defun-header-weak))
-	(parse-sexp-ignore-comments t))
-    (if (and (eobp) (> arg 0))
-	nil
-      (if (and (> arg 0) (looking-at c++-defun-header)) (forward-char 1))
-      (let ((pos (point)))
-	(c++-beginning-of-defun 
-	  (if (< arg 0)
-	      (- (- arg (if (eobp) 0 1)))
-	    arg))
-	(if (and (< arg 0) (bobp))
-	    t
-	  (if (re-search-forward c++-defun-header nil 'move)
-	      (progn (forward-char -1)
-		     (forward-sexp)
-		     (beginning-of-line 2)))
-	  (if (and (= pos (point)) 
-		   (re-search-forward c++-defun-header nil 'move))
-	      (c++-end-of-defun 1))))
-      t)))
-
 (defun c++-indent-defun ()
   "Indents the current function def, struct or class declaration."
   (interactive)
@@ -2818,7 +2676,6 @@ definition.")
      'c++-comment-only-line-offset
      'c++-continued-member-init-offset
      'c++-default-macroize-column
-     'c++-defun-header-strong-struct-equivs
      'c++-delete-function
      'c++-electric-pound-behavior
      'c++-empty-arglist-indent
@@ -2826,7 +2683,6 @@ definition.")
      'c++-hanging-braces
      'c++-hanging-member-init-colon
      'c++-hungry-delete-key
-     'c++-match-header-strongly
      'c++-member-init-indent
      'c++-paren-as-block-close-p
      'c++-relative-offset-p
