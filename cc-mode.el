@@ -2747,7 +2747,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
      (if (and (< (point) containing-sexp)
 	      (looking-at "\\(typedef[ \t]+\\)?enum[ \t\n]+")
 	      (save-excursion
-		(skip-chars-forward "^;" containing-sexp)
+		(skip-chars-forward "^;(" containing-sexp)
 		(= (point) containing-sexp)))
 	 (point)))
    ;; this will pick up array/aggregate init lists, even if they are nested.
