@@ -634,13 +634,19 @@ Key bindings:
 
 
 ;; auto-newline/hungry delete key
-(defun cc-keep-region-active ()
-  ;; macro to keep region active in Emacs 19. Ignore any byte-compiler
-  ;; warnings you might see
+(defmacro cc-keep-region-active ()
+  ;; cut down on bytecompiler warnings
+  (` (and (interactive-p)
+	  (cc-make-region-active))))
+
+(defun cc-make-region-active ()
+  ;; do whatever is necessary to keep the region active. ignore
+  ;; byte-compiler warnings you might see
   (if (boundp 'zmacs-region-stays)
       (setq zmacs-region-stays t)
-   (if (boundp 'deactivate-mark)
-       (setq deactivate-mark (not mark-active)))))
+    (if (boundp 'deactivate-mark)
+	(setq deactivate-mark (not mark-active))
+      )))
 
 (defun cc-set-auto-hungry-state (auto-p hungry-p)
   ;; Set auto/hungry to state indicated by AUTO-P and HUNGRY-P, and
