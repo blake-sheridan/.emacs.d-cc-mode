@@ -425,6 +425,8 @@ This hook gets called after a line is indented by the mode.")
 (defvar c-electric-pound-behavior nil
   "*List of behaviors for electric pound insertion.
 Only currently supported behavior is `alignleft'.")
+(defvar c-gnu-minimum-indentation 1
+  "*Minimum indentation for labels and case tags in `gnu' style.")
 
 (defvar c-progress-interval 5
   "*Interval used to update progress status during long re-indentation.
@@ -445,6 +447,7 @@ useful for Emacs 19.")
 			 (arglist-intro . c-lineup-arglist-intro-after-paren)
 			 (arglist-close . c-lineup-arglist)
 			 ))
+     (c-special-indent-hook . c-gnu-impose-minimum)
      )
     ("k&r"
      (c-basic-offset . 5)
@@ -2257,9 +2260,8 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
     (lambda (conscell)
       (let ((attr (car conscell))
 	    (val  (cdr conscell)))
-	;; KLUDGE ALERT: special case for c-offsets-alist
-	(if (not (eq attr 'c-offsets-alist))
-	    (set attr val)
+	(cond
+	 ((eq attr 'c-offsets-alist)
 	  (mapcar
 	   (function
 	    (lambda (langentry)
@@ -2268,6 +2270,13 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
 		(c-set-offset langelem offset)
 		)))
 	   val))
+	 ((eq attr 'c-special-indent-hook)
+	  (if (listp val)
+	      (while val
+		(add-hook 'c-special-indent-hook (car val))
+		(setq val (cdr val)))
+	    (add-hook 'c-special-indent-hook val)))
+	 (t (set attr val)))
 	)))
    stylevars))
 
@@ -4780,6 +4789,28 @@ ACTION associated with `block-close' syntax."
 	  '(before)
 	'(before after)))))
 
+(defun c-gnu-impose-minimum ()
+  "Imposes a minimum indentation for labels and case tags.
+The variable `c-gnu-minimum-indentation' specifies the minimum
+indentation amount."
+  (let ((non-top-levels '(defun-block-intro statement statement-cont
+			   statement-block-intro statement-case-intro
+			   statement-case-open substatement substatement-open
+			   case-label label do-while-closure else-clause
+			   ))
+	(syntax c-syntactic-context)
+	langelem)
+    (while syntax
+      (setq langelem (car (car syntax))
+	    syntax (cdr syntax))
+      (if (memq langelem non-top-levels)
+	  (save-excursion
+	    (setq syntax nil)
+	    (back-to-indentation)
+	    (if (zerop (current-column))
+		(insert (make-string c-gnu-minimum-indentation 32))))
+	))))
+
 
 ;;; This page handles insertion and removal of backslashes for C macros.
 
@@ -4901,6 +4932,7 @@ definition and conveniently use this command."
 		   'c-hanging-comment-ender-p
 		   'c-tab-always-indent
 		   'c-recognize-knr-p
+		   'c-gnu-minimum-indentation
 		   'defun-prompt-regexp
 		   'tab-width
 		   )))
@@ -4996,7 +5028,8 @@ definition and conveniently use this command."
 (make-variable-buffer-local 'c-hanging-colons-alist)
 (make-variable-buffer-local 'c-hanging-comment-ender-p)
 (make-variable-buffer-local 'c-backslash-column)
-
+(make-variable-buffer-local 'c-gnu-minimum-indentation)
+(make-variable-buffer-local 'c-special-indent-hook)
 
 
 ;; fsets for compatibility with BOCM
