@@ -758,6 +758,7 @@ Key bindings:
 	 (put 'mode-line-format 'c-hacked-mode-line t)
 	 ))
   (and (listp minor-mode-alist)
+       (not (assq 'c-style-name minor-mode-alist))
        (setq minor-mode-alist
 	     (append minor-mode-alist '((c-style-name c-style-name)))
 	     ))
@@ -1346,7 +1347,7 @@ GNU, K&R, BSD and Whitesmith."
     (or vars
 	(error "Invalid C indentation style `%s'" style))
     ;; set the c-style-name variable
-    (setq c-style-name style)
+    (setq c-style-name (concat " " style))
     ;; set all the variables
     (mapcar
      (function
