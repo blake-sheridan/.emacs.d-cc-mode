@@ -2855,7 +2855,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (progn
 	(set-marker (aref c-progress-info 1) nil)
 	(setq c-progress-info nil)
-	(message "indenting region... done."))))
+	(message "indenting region... done"))))
 
 
 ;; Skipping of "syntactic whitespace" for Emacs 19.  Syntactic
