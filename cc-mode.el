@@ -2889,14 +2889,21 @@ move backward across a preprocessor conditional."
 
 If `c-tab-always-indent' is t, always just indent the current line.
 If nil, indent the current line only if point is at the left margin or
-in the line's indentation; otherwise insert a tab.  If other than nil
-or t, then tab is inserted only within literals (comments and strings)
-and inside preprocessor directives, but line is always reindented.
+in the line's indentation; otherwise insert some whitespace[*].  If
+other than nil or t, then some whitespace[*] is inserted only within
+literals (comments and strings) and inside preprocessor directives,
+but the line is always reindented.
 
 A numeric argument, regardless of its value, means indent rigidly all
 the lines of the expression starting after point so that this line
 becomes properly indented.  The relative indentation among the lines
-of the expression are preserved."
+of the expression are preserved.
+
+  [*] The amount and kind of whitespace inserted is controlled by the
+  variable `c-insert-tab-function', which is called to do the actual
+  insertion of whitespace.  Normally this variable just inserts a tab
+  character, or the equivalent number of spaces, depending on the
+  variable `indent-tabs-mode'."
   (interactive "P")
   (let ((bod (c-point 'bod)))
     (if whole-exp
