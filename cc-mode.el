@@ -1038,7 +1038,10 @@ containing class definition (useful for inline functions)."
 	       (= (car state) 1)
 	       (let ((here (point)))
 		 (goto-char containing-sexp)
-		 (goto-char (scan-lists (point) -1 -1))
+		 (goto-char
+		  (condition-case scanlist-err
+		      (scan-lists (point) -1 -1)
+		    (error (point-min))))
 		 (re-search-forward "\\<\\(class\\|struct\\)\\>" here 'move)
 		 ))))))
 
