@@ -3148,6 +3148,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ))
 	   ;; CASE 5E: we are looking at a access specifier
 	   ((and inclass-p
+		 c-access-key
 		 (looking-at c-access-key))
 	    (c-add-syntax 'access-label (c-point 'bonl))
 	    (c-add-syntax 'inclass (aref inclass-p 0)))
@@ -3201,6 +3202,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ((progn
 	      (c-backward-syntactic-ws lim)
 	      (while (and inclass-p
+			  c-access-key
 			  (= (preceding-char) ?:)
 			  (not (and (eq major-mode 'objc-mode)
 				    (bobp)))
