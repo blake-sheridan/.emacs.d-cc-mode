@@ -1810,7 +1810,8 @@ BOD is the beginning of the C++ definition."
 	 ;; containing class
 	 (let ((shift/level (+ c-indent-level c-brace-imaginary-offset)))
 	   (setq inclass-shift (* shift/level inclass-depth)
-		 inclass-unshift (* shift/level (max 0 (1- inclass-depth)))))
+		 inclass-unshift (* shift/level (max 0 (1- inclass-depth))))
+	   inclass-shift)
 	 (progn
 	   (goto-char indent-point)
 	   (skip-chars-forward " \t")
