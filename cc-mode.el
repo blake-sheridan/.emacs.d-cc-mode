@@ -2401,11 +2401,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		      (goto-char class)
 		      (skip-chars-forward " \t\n")
 		      (setq foundp (vector (c-point 'boi) search-end))
-		      ;; make sure there's no semi-colon between class
-		      ;; and brace. Otherwise, we found a forward
-		      ;; declaration.
-		      (skip-chars-forward "^;" search-end)
-		      (if (= (following-char) ?\;)
+		      ;; make sure there's no semi-colon or equal sign
+		      ;; between class and brace. Otherwise, we found
+		      ;; a forward declaration or a struct init.
+		      (skip-chars-forward "^;=" search-end)
+		      (if (memq (following-char) '(?= ?\;))
 			  (setq foundp nil)
 			;; make sure we aren't looking at the `class'
 			;; keyword inside a template arg list
