@@ -569,7 +569,7 @@ backward-delete-char-untabify."
   (interactive "P")
   (cond ((or (not c++-hungry-delete-key) arg)
 	 (funcall c++-delete-function (prefix-numeric-value arg)))
-	((let ((bod (c++-point-bod)))
+	((let ((bod (c++-point 'bod)))
 	   (not (or (c++-in-comment-p bod)
 		    (c++-in-open-string-p bod)
 		    (save-excursion
@@ -602,7 +602,7 @@ backward-delete-char-untabify."
   (interactive "P")
   (let (insertpos
 	(last-command-char last-command-char)
-	(bod (c++-point-bod)))
+	(bod (c++-point 'bod)))
     (if (and (not arg)
 	     (eolp)
 	     (or (save-excursion
@@ -733,7 +733,7 @@ for member initialization list."
       (self-insert-command (prefix-numeric-value arg))
     (let ((c++-auto-newline c++-auto-newline)
 	  (insertion-point (point))
-	  (bod (c++-point-bod)))
+	  (bod (c++-point 'bod)))
       (save-excursion
 	(cond
 	 ;; check for double-colon where the first colon is not in a
@@ -845,7 +845,7 @@ the lines of the expression starting after point so that this line
 becomes properly indented.  The relative indentation among the lines
 of the expression are preserved."
   (interactive "P")
-  (let ((bod (c++-point-bod)))
+  (let ((bod (c++-point 'bod)))
     (if whole-exp
 	;; If arg, always indent this line as C
 	;; and shift remaining lines of expression the same amount.
@@ -868,7 +868,7 @@ of the expression are preserved."
 		   (skip-chars-backward " \t")
 		   (bolp))
 		 (or (looking-at "[ \t]*$")
-		     (/= (point) (c++-point-boi))))
+		     (/= (point) (c++-point 'boi))))
 	    (c++-indent-line bod)
 	  (insert-tab)))
        ((eq c++-tab-always-indent t)
@@ -1147,7 +1147,7 @@ used."
     (let* ((here (point))
 	   (state nil)
 	   (match nil)
-	   (backlim (or lim (c++-point-bod))))
+	   (backlim (or lim (c++-point 'bod))))
       (goto-char backlim)
       (while (< (point) here)
 	(setq match
@@ -1197,7 +1197,7 @@ Optional LIM is passed to c++-in-literal."
   "Return t if inside a paren expression.
 Optional LIM is used as the backward limit of the search."
   ;; hack to work around emacs comment bug
-  (let ((backlim (or lim (c++-point-bod))))
+  (let ((backlim (or lim (c++-point 'bod))))
     (condition-case ()
 	(save-excursion
 	  (save-restriction
@@ -1213,7 +1213,7 @@ Optional LIM is used as the backward limit of the search."
   "Indent current line as C++ code.
 Return the amount the indentation changed by.  Optional BOD is the
 point of the beginning of the C++ definition."
-  (let* ((bod (or bod (c++-point-bod)))
+  (let* ((bod (or bod (c++-point 'bod)))
 	 (indent (c++-calculate-indent nil bod))
 	 beg shift-amt
 	 (comcol nil)
@@ -1307,7 +1307,7 @@ BOD is the beginning of the C++ definition."
 	  state do-indentation
 	  containing-sexp streamop-pos
 	  (inclass-shift 0)
-	  (bod (or bod (c++-point-bod))))
+	  (bod (or bod (c++-point 'bod))))
       (if parse-start
 	  (goto-char parse-start)
 	(goto-char bod))
@@ -1320,7 +1320,7 @@ BOD is the beginning of the C++ definition."
       ;; c++-match-header-strongly, but there are performance questions
       (if (null state)
 	  (let* ((c++-match-header-strongly t)
-		 (bod (c++-point-bod)))
+		 (bod (c++-point 'bod)))
 	    (goto-char bod)
 	    (setq state (c++-parse-state indent-point)
 		  containing-sexp (nth 1 state)
@@ -1639,7 +1639,7 @@ optional LIM.  If LIM is ommitted, point-min is used."
       (skip-chars-backward " \t\n\r\f" lim)
       (setq literal (c++-in-literal))
       (cond ((eq literal 'c++)
-	     (let ((sblim (max (c++-point-bol) lim))
+	     (let ((sblim (max (c++-point 'bol) lim))
 		   (here (point)))
 	       (goto-char sblim)
 	       (if (search-forward "//" here 'move)
@@ -1654,14 +1654,14 @@ optional LIM.  If LIM is ommitted, point-min is used."
 			 (= (preceding-char) ?*)))
 	     (forward-char -1))
 	    ((and (eq literal 'pound)
-		  (> (c++-point-bol) lim))
+		  (> (c++-point 'bol) lim))
 	     (beginning-of-line))
 	    (t (setq stop t))
 	    ))))
 
 (defun c++-backward-to-start-of-do (&optional limit)
   "Move to the start of the last ``unbalanced'' do."
-  (setq limit (or limit (c++-point-bod)))
+  (setq limit (or limit (c++-point 'bod)))
   (let ((do-level 1)
 	(case-fold-search nil))
     (while (not (zerop do-level))
@@ -1686,35 +1686,29 @@ optional LIM.  If LIM is ommitted, point-min is used."
   "Insert a newline iff we're not in a literal.
 Literals are defined as being inside a C or C++ style comment or open
 string according to mode's syntax."
-  (let ((bod (c++-point-bod)))
+  (let ((bod (c++-point 'bod)))
     (and c++-auto-newline
 	 (not (c++-in-comment-p bod))
 	 (not (c++-in-open-string-p bod))
 	 (not (newline)))))
 
-(defun c++-point-bol ()
-  "Returns the value of the point at beginning of the current line."
-  (save-excursion
-    (beginning-of-line)
-    (point)))
-
-(defun c++-point-eol ()
-  "Returns the value of the point at end of the current line."
-  (save-excursion
-    (end-of-line)
-    (point)))
-
-(defun c++-point-bod ()
-  "Returns the value of point at c++-beginning-of-defun."
-  (save-excursion
-    (c++-beginning-of-defun)
-    (point)))
-
-(defun c++-point-boi ()
-  "Returns the value of point at back-to-indentation."
-  (save-excursion
-    (back-to-indentation)
-    (point)))
+(defun c++-point (position)
+  "Returns the value of point at certain commonly referenced POSITIONs.
+POSITION can be one of the following symbols:
+  bol -- beginning of line
+  eol -- end of line
+  bod -- beginning of defun
+  boi -- back to indentation
+This function does not modify point or mark."
+  (let ((here (point)) bufpos)
+    (cond ((eq position 'bol) (beginning-of-line))
+	  ((eq position 'eol) (end-of-line))
+	  ((eq position 'bod) (c++-beginning-of-defun))
+	  ((eq position 'boi) (back-to-indentation))
+	  )
+    (setq bufpos (point))
+    (goto-char here)
+    bufpos))
 
 
 ;; ======================================================================
