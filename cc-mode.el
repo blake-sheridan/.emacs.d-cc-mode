@@ -1311,9 +1311,9 @@ BOD is the beginning of the C++ definition."
       (if parse-start
 	  (goto-char parse-start)
 	(goto-char bod))
-      (setq state (c++-parse-state indent-point)
-	    containing-sexp (nth 1 state)
-	    parse-start (point))
+      (setq parse-start (point)
+	    state (c++-parse-state indent-point)
+	    containing-sexp (nth 1 state))
       ;; it is possible that c++-defun-header-weak could not find the
       ;; beginning of the C++ definition. The following code attempts
       ;; to work around this.  It is probably better to just use
