@@ -2037,7 +2037,7 @@ BOD is the beginning of the C++ definition."
 		 (progn
 		   (c++-backward-syntactic-ws parse-start)
 		   (bobp)))
-	     0)
+	     c-continued-brace-offset)
 	    ;; first arg decl or member init
 	    ((c++-in-function-p)
 	     (goto-char indent-point)
