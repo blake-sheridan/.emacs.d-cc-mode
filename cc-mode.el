@@ -2376,9 +2376,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      ))			;end if
 	;; right now this returns a cons cell, but later it will
 	;; return a vector for speed
-	(and foundp
-	     (cons (aref foundp 1) (aref foundp 0)))
-	))))
+	;;(cons (aref foundp 1) (aref foundp 0)))
+	foundp))))
 
 (defun c-inside-bracelist-p (containing-sexp)
   ;; return the buffer position of the beginning of the brace list
@@ -2446,18 +2445,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  )				;end-let
       ;; narrow out the enclosing class
       (save-restriction
-	(if (and (eq major-mode 'c++-mode)
-		 (setq inclass-p (c-search-uplist-for-classkey)))
+	(if (setq inclass-p (c-search-uplist-for-classkey))
 	    (progn
 	      (narrow-to-region
 	       (progn
-		 (goto-char (1+ (car inclass-p)))
+		 (goto-char (1+ (aref inclass-p 1)))
 		 (skip-chars-forward " \t\n" indent-point)
 		 ;; if point is now left of the class opening brace,
 		 ;; we're hosed, so try a different tact
-		 (if (<= (c-point 'bol) (car inclass-p))
+		 (if (<= (c-point 'bol) (aref inclass-p 1))
 		     (progn
-		       (goto-char (1+ (car inclass-p)))
+		       (goto-char (1+ (aref inclass-p 1)))
 		       (c-forward-syntactic-ws indent-point)))
 		 (c-point 'bol))
 	       (progn
@@ -2504,10 +2502,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ((save-excursion
 		(goto-char indent-point)
 		(skip-chars-forward " \t{")
-		(let ((decl (and (eq major-mode 'c++-mode)
-				 (c-search-uplist-for-classkey (point)))))
+		(let ((decl (c-search-uplist-for-classkey (point))))
 		  (and decl
-		       (setq placeholder (cdr decl)))
+		       (setq placeholder (aref decl 0)))
 		  ))
 	      (c-add-semantics 'class-open placeholder))
 	     ;; CASE 4A.2: brace list open
@@ -2522,7 +2519,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-semantics 'brace-list-open placeholder))
 	     ;; CASE 4A.3: inline defun open
 	     (inclass-p
-	      (c-add-semantics 'inline-open (cdr inclass-p)))
+	      (c-add-semantics 'inline-open (aref inclass-p 0)))
 	     ;; CASE 4A.4: ordinary defun open
 	     (t
 	      (c-add-semantics 'defun-open (c-point 'bol))
@@ -2553,11 +2550,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ;; CASE 4B.2: nether region after a C++ func decl
 	     ((eq major-mode 'c++-mode)
 	      (c-add-semantics 'c++-funcdecl-cont (c-point 'boi))
-	      (and inclass-p (c-add-semantics 'inclass (cdr inclass-p))))
+	      (and inclass-p (c-add-semantics 'inclass (aref inclass-p 0))))
 	     ;; CASE 4B.3: K&R arg decl intro
 	     (t
 	      (c-add-semantics 'knr-argdecl-intro (c-point 'boi))
-	      (and inclass-p (c-add-semantics 'inclass (cdr inclass-p))))
+	      (and inclass-p (c-add-semantics 'inclass (aref inclass-p 0))))
 	     ))
 	   ;; CASE 4C: inheritance line. could be first inheritance
 	   ;; line, or continuation of a multiple inheritance
@@ -2573,7 +2570,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ;; CASE 4C.2: hanging colon on an inher intro
 	     ((= char-before-ip ?:)
 	      (c-add-semantics 'inher-intro (c-point 'boi))
-	      (and inclass-p (c-add-semantics 'inclass (cdr inclass-p))))
+	      (and inclass-p (c-add-semantics 'inclass (aref inclass-p 0))))
 	     ;; CASE 4C.3: a continued inheritance line
 	     (t
 	      (c-beginning-of-inheritance-list lim)
@@ -2631,7 +2628,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ((and inclass-p
 		 (looking-at c-access-key))
 	    (c-add-semantics 'access-label (c-point 'bonl))
-	    (c-add-semantics 'inclass (cdr inclass-p)))
+	    (c-add-semantics 'inclass (aref inclass-p 0)))
 	   ;; CASE 4F: we are looking at the brace which closes the
 	   ;; enclosing class decl
 	   ((and inclass-p
@@ -2644,11 +2641,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		      (condition-case nil
 			  (progn (backward-sexp 1) t)
 			(error nil))
-		      (= (point) (car inclass-p))
+		      (= (point) (aref inclass-p 1))
 		      ))))
 	    (save-restriction
 	      (widen)
-	      (goto-char (cdr inclass-p))
+	      (goto-char (aref inclass-p 0))
 	      (c-add-semantics 'class-close (c-point 'boi))))
 	   ;; CASE 4G: we could be looking at subsequent knr-argdecls
 	   ((and (eq major-mode 'c-mode)
@@ -2675,7 +2672,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (or (bobp)
 		  (memq (preceding-char) '(?\; ?\}))))
 	    (c-add-semantics 'topmost-intro (c-point 'bol))
-	    (and inclass-p (c-add-semantics 'inclass (cdr inclass-p))))
+	    (and inclass-p (c-add-semantics 'inclass (aref inclass-p 0))))
 	   ;; CASE 4I: we are at a topmost continuation line
 	   (t
 	    (c-beginning-of-statement 1 lim)
@@ -2802,10 +2799,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ((save-excursion
 		(goto-char indent-point)
 		(skip-chars-forward " \t{")
-		(let ((decl (and (eq major-mode 'c++-mode)
-				 (c-search-uplist-for-classkey (point)))))
+		(let ((decl (c-search-uplist-for-classkey (point))))
 		  (and decl
-		       (setq placeholder (cdr decl)))
+		       (setq placeholder (aref decl 0)))
 		  ))
 	      (c-add-semantics 'class-open placeholder))
 	     ;; CASE 8B.2: brace-list-open
