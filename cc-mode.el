@@ -3236,6 +3236,14 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (c-narrow-out-enclosing-class state containing-sexp)
 		  (not (c-enclosing-brace state))))
 	      (goto-char containing-sexp)
+	      ;; if not at boi, then defun-opening braces are hung on
+	      ;; right side, so we need a different relpos
+	      (if (/= (point) (c-point 'boi))
+		  (progn
+		    (c-backward-syntactic-ws)
+		    (c-safe (forward-sexp (if (= (preceding-char) ?\))
+					      -1 -2)))
+		    ))
 	      (c-add-semantics 'defun-block-intro (c-point 'boi)))
 	     ;; CASE 14.F: first statement in a block
 	     (t (goto-char containing-sexp)
