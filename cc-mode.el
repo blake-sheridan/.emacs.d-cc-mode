@@ -2630,12 +2630,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 (defun c-lineup-streamop (langelem)
   ;; lineup stream operators
   (save-excursion
-    (let ((containing-sexp (cdr langelem))
-	  cs-curcol)
-      (goto-char containing-sexp)
-      (setq cs-curcol (current-column))
-      (skip-chars-forward "^><\n")
-      (- (current-column) cs-curcol))))
+    (let* ((relpos (cdr langelem))
+	   (curcol (progn (goto-char relpos)
+			  (current-column))))
+      (re-search-forward "<<\\|>>" (c-point 'eol) 'move)
+      (goto-char (match-beginning 0))
+      (- (current-column) curcol))))
 
 (defun c-lineup-multi-inher (langelem)
   ;; line up multiple inheritance lines
