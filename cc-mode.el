@@ -2378,8 +2378,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		      (setq class (point))
 		      ;; now find opening brace
 		      (if (= (1+ brace)
-			     (or (c-safe (scan-lists (point) 1 -1)) 0))
-			  (setq foundp (vector class brace)))
+			     (or (c-safe (scan-lists (point) 1 -1))
+				 0))
+			  (progn
+			    (goto-char class)
+			    (setq foundp (vector (c-point 'boi) brace))))
 		      ;; make sure there's no semi-colon between class
 		      ;; and brace. Otherwise, we found a forward
 		      ;; declaration.
