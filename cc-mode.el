@@ -83,9 +83,9 @@ reported and the semantic symbol is ignored.")
 (defvar cc-echo-semantic-information-p nil
   "*If non-nil, semantic info is echoed when the line is indented.")
 (defvar cc-basic-offset 4
-  "*Amount of basic offset used by + and - symbols in `cc-offset-alist'.")
+  "*Amount of basic offset used by + and - symbols in `cc-offsets-alist'.")
 (defvar cc-offsets-alist
-  '((string                . +)
+  '((string                . -1000)
     (c                     . cc-lineup-C-comments)
     (defun-open            . 0)
     (defun-close           . 0)
@@ -234,7 +234,7 @@ This variable contains an association list with elements of the
 following form: (LANGSYM . (NL-LIST)).
 
 LANGSYSM can be any of: defun-open, class-open, inline-open, and
-block-open (as defined by the `cc-offset-alist' variable).
+block-open (as defined by the `cc-offsets-alist' variable).
 
 NL-LIST can contain any combination of the symbols `before' or
 `after'. It also be nil.  When an open brace is inserted, the language
@@ -249,7 +249,7 @@ This variable contains an association list with elements of the
 following form: (LANGSYM . (NL-LIST)).
 
 LANGSYSM can be any of: member-init-intro, inher-intro, case-label,
-label, and access-label (as defined by the `cc-offset-alist' variable).
+label, and access-label (as defined by the `cc-offsets-alist' variable).
 
 NL-LIST can contain any combination of the symbols `before' or
 `after'. It also be nil.  When a colon is inserted, the language
