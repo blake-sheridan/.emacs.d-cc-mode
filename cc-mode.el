@@ -1470,11 +1470,13 @@ search."
 			(or first
 			    (not (re-search-forward "[;{}]" last-begin t))
 			    ))
-		      (not (looking-at c-conditional-key))
+		      (not (or (c-in-literal)
+			       (looking-at c-conditional-key)))
 		      )
 	    ;; this seems bogus, but necessary
 	    (skip-chars-backward "*&:.")
-	    (if (not (looking-at c-label-key))
+	    (if (and (not (c-in-literal))
+		     (not (looking-at c-label-key)))
 		(setq last-begin (point)
 		      first nil)))
 	  (cond
