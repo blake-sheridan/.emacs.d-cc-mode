@@ -2448,20 +2448,29 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 
 ;; This is for all v19 Emacsen supporting either 1-bit or 8-bit syntax
 (defun c-in-literal (&optional lim)
-  ;; Determine if point is in a C++ literal
-  (save-excursion
-    (let* ((lim (or lim (c-point 'bod)))
-	   (here (point))
-	   (state (parse-partial-sexp lim (point))))
-      (cond
-       ((nth 3 state) 'string)
-       ((nth 4 state) (if (nth 7 state) 'c++ 'c))
-       ((progn
-	  (goto-char here)
-	  (beginning-of-line)
-	  (looking-at "[ \t]*#"))
-	'pound)
-       (t nil)))))
+  ;; Determine if point is in a C++ literal. we cache the last point
+  ;; calculated if the cache is enabled
+  (if (and (boundp 'c-in-literal-cache)
+	   c-in-literal-cache
+	   (= (point) (aref c-in-literal-cache 0)))
+      (aref c-in-literal-cache 1)
+    (let ((rtn (save-excursion
+		 (let* ((lim (or lim (c-point 'bod)))
+			(here (point))
+			(state (parse-partial-sexp lim (point))))
+		   (cond
+		    ((nth 3 state) 'string)
+		    ((nth 4 state) (if (nth 7 state) 'c++ 'c))
+		    ((progn
+		       (goto-char here)
+		       (beginning-of-line)
+		       (looking-at "[ \t]*#"))
+		     'pound)
+		    (t nil))))))
+      ;; cache this result if the cache is enabled
+      (and (boundp 'c-in-literal-cache)
+	   (setq c-in-literal-cache (vector (point) rtn)))
+      rtn)))
 
 
 ;; utilities for moving and querying around syntactic elements
@@ -2851,7 +2860,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     (in-method-intro-p (and (eq major-mode 'objc-mode)
 				     (looking-at c-objc-method-key)))
 	     literal containing-sexp char-before-ip char-after-ip lim
-	     syntax placeholder
+	     syntax placeholder c-in-literal-cache
 	     ;; narrow out any enclosing class
 	     (inclass-p (c-narrow-out-enclosing-class state indent-point))
 	     )
