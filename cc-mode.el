@@ -126,6 +126,12 @@ Legal values are:
      'auto-hungry  -- both auto-newline and hungry-delete-key can be toggled.
 Nil is synonymous for 'none and t is synonymous for 'auto-hungry.")
 
+(defvar c++-delete-is-hungry-in-literals-p nil
+  "*Control whether hungry delete (if enabled) works in literals.
+Literals are defined as C and C++ style comments, and strings. If nil,
+hungry-delete will not consume inside literals.  If non-nil, it will
+act hungry even inside literals.")
+
 (defvar c++-auto-hungry-string ""
   "For mode-line indication of auto/hungry state.")
 (defvar c++-hungry-delete-key nil
@@ -209,6 +215,9 @@ c++-<thing> are unique for this mode.
     Initial state of auto/hungry mode when a C++ buffer is first visited.
  c++-auto-hungry-toggle
     Enable/disable toggling of auto/hungry states.
+ c++-delete-is-hungry-in-literals-p
+    Is the delete key hungry even in literals (defined as C and C++
+    style comments and strings)?
 
 Auto-newlining is no longer an all or nothing proposition. In
 particular its not possible to implement a perfect auto-newline
@@ -386,15 +395,22 @@ Optional argument has the following meanings when supplied:
 whitespace unless ARG is supplied, in which case it just calls
 backward-delete-char-untabify passing along ARG.
 
-If c++-hungry-delete-key is nil, just call backward-delete-char-untabify."
+If c++-hungry-delete-key is nil, just call
+backward-delete-char-untabify. c++-delete-is-hungry-in-literals-p
+controls whether whitespace is consumed inside of C and C++ style
+comments, and strings."
   (interactive "P")
   (if (or (not c++-hungry-delete-key) arg)
       (backward-delete-char-untabify (prefix-numeric-value arg))
-    (let ((here (point)))
-      (skip-chars-backward "[ \t\n]")
-      (if (/= (point) here)
-	  (delete-region (point) here)
-	(backward-delete-char-untabify 1)))))
+    (if (or c++-delete-is-hungry-in-literals-p
+	    (and (not (c++-in-comment-p))
+		 (not (c++-in-open-string-p))))
+	(let ((here (point)))
+	  (skip-chars-backward "[ \t\n]")
+	  (if (/= (point) here)
+	      (delete-region (point) here)
+	    (backward-delete-char-untabify 1)))
+      (backward-delete-char-untabify 1))))
 
 (defun electric-c++-brace (arg)
   "Insert character and correct line's indentation."
