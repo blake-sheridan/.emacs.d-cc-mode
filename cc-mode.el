@@ -2664,17 +2664,11 @@ the leading `// ' from each line, if any."
 (defun c++-indent-defun ()
   "Indents the current function def, struct or class declaration."
   (interactive)
-  (let ((restore (point)))
-    (end-of-defun 1)
-    (beginning-of-line 1)
-    (let ((end (point-marker)))
-      (beginning-of-defun)
-      (while (and (< (point) end))
-	(c++-indent-line)
-	(forward-line 1)
-	(beginning-of-line 1))
-      (set-marker end nil))
-    (goto-char restore)))
+  (let ((here (point-marker)))
+    (beginning-of-defun)
+    (c++-indent-exp)
+    (goto-char here)
+    (set-marker here nil)))
 
 
 ;; ======================================================================
