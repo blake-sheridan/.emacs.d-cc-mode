@@ -675,43 +675,50 @@ Returns nil if line starts inside a string, t if in a comment."
 		    (looking-at "^/[/*]"))
 	     0)
 	    ((null containing-sexp)
-	     ;; Line is at top level.  May be data or function definition, or
-	     ;; may be function argument declaration or member initialization.
-	     ;; Indent like the previous top level line unless
-	     ;; (1) the previous line ends in a closeparen without semicolon,
-	     ;; in which case this line is the first argument declaration or
-	     ;; member initialization, or
-	     ;; (2) the previous line begins with a colon,
-	     ;; in which case this is the second line of member inits.
-	     ;; It is assumed that arg decls and member inits are not mixed.
+	     ;; Line is at top level.  May be comment-only line, data
+	     ;; or function definition, or may be function argument
+	     ;; declaration or member initialization.  Indent like the
+	     ;; previous top level line unless (1) the previous line
+	     ;; ends in a closeparen without semicolon, in which case
+	     ;; this line is the first argument declaration or member
+	     ;; initialization, or (2) the previous line begins with a
+	     ;; colon, in which case this is the second line of member
+	     ;; inits.  It is assumed that arg decls and member inits
+	     ;; are not mixed.
 	     (goto-char indent-point)
 	     (skip-chars-forward " \t")
-	     (if (= (following-char) ?{)
-		 0   ; Unless it starts a function body
-	       (c++-backward-to-noncomment (or parse-start (point-min)))
-	       (if (= (preceding-char) ?\))
-		   (progn		; first arg decl or member init
-		     (goto-char indent-point)
+	     (if (looking-at "/[/*]")
+		 ;; comment only line, but must not be in the first
+		 ;; column since cond case above would have caught it
+		 0
+	       (if (= (following-char) ?{)
+		   0   ; Unless it starts a function body
+		 (c++-backward-to-noncomment (or parse-start (point-min)))
+		 (if (= (preceding-char) ?\))
+		     (progn		; first arg decl or member init
+		       (goto-char indent-point)
+		       (skip-chars-forward " \t")
+		       (if (= (following-char) ?:)
+			   c++-member-init-indent
+			 c-argdecl-indent))
+		   (if (= (preceding-char) ?\;)
+		       (backward-char 1))
+		   (if (= (preceding-char) ?})
+		       0
+		     (beginning-of-line) ; continued arg decls or member inits
 		     (skip-chars-forward " \t")
-		     (if (= (following-char) ?:)
-			 c++-member-init-indent
-		       c-argdecl-indent))
-		 (if (= (preceding-char) ?\;)
-		     (backward-char 1))
-		 (if (= (preceding-char) ?})
-		     0
-		   (beginning-of-line)	; continued arg decls or member inits
-		   (skip-chars-forward " \t")
-		   (if (= (following-char) ?:)
-		       (if c++-continued-member-init-offset
-			   (+ (current-indentation)
-			      c++-continued-member-init-offset)
-			 (progn
-			   (forward-char 1)
-			   (skip-chars-forward " \t")
-			   (current-column)))
-		     (current-indentation)))
-		 )))
+		     (if (looking-at "/[/*]")
+			 0
+		       (if (= (following-char) ?:)
+			   (if c++-continued-member-init-offset
+			       (+ (current-indentation)
+				  c++-continued-member-init-offset)
+			     (progn
+			       (forward-char 1)
+			       (skip-chars-forward " \t")
+			       (current-column)))
+			 (current-indentation))))
+		   ))))
 	    ((/= (char-after containing-sexp) ?{)
 	     ;; line is expression, not statement:
 	     ;; indent to just after the surrounding open -- unless
