@@ -1394,6 +1394,21 @@ Optional LIM is used as the backward limit of the search."
 	    (= (char-after (or (scan-lists (point) -1 1) (point-min))) ?\()))
       (error nil))))
 
+(defun c++-in-function-p (&optional bod)
+  "Return t if inside a C++ function definition."
+  (save-excursion
+    (let ((here (if (not bod)
+		    (point)
+		  (goto-char bod)
+		  (c++-backward-over-syntactic-ws)
+		  (point))))
+      (if (and (= (preceding-char) ?t)
+	       (forward-word -1)
+	       (looking-at "\\<const\\>"))
+	  (c++-backward-over-syntactic-ws)
+	(goto-char here))
+      (= (preceding-char) ?\)))))
+
 
 ;; ======================================================================
 ;; defuns for calculating indentation
@@ -1497,7 +1512,7 @@ BOD is the beginning of the C++ definition."
     (let ((indent-point (point))
 	  (case-fold-search nil)
 	  state do-indentation literal
-	  containing-sexp streamop-pos
+	  containing-sexp streamop-pos char-before-ip
 	  (inclass-shift 0) inclass-depth
 	  (bod (or bod (c++-point 'bod))))
       (if parse-start
@@ -1518,6 +1533,11 @@ BOD is the beginning of the C++ definition."
 		  containing-sexp (nth 1 state)
 		  parse-start (point))))
       (setq literal (c++-in-literal bod))
+      ;; cache char before indent point
+      (save-excursion
+	(goto-char indent-point)
+	(c++-backward-over-syntactic-ws)
+	(setq char-before-ip (preceding-char)))
       (cond ((memq literal '(string))
 	     ;; in a string.
 	     nil)
@@ -1569,11 +1589,7 @@ BOD is the beginning of the C++ definition."
 		  (if (= (following-char) ?{)
 		      0
 		    (c++-backward-over-syntactic-ws parse-start)
-		    (if (or (= (preceding-char) ?\))
-			    (and (= (preceding-char) ?t)
-				 (save-excursion
-				   (forward-word -1)
-				   (looking-at "\\<const\\>"))))
+		    (if (c++-in-function-p)
 			(progn		; first arg decl or member init
 			  (goto-char indent-point)
 			  (skip-chars-forward " \t")
@@ -1627,9 +1643,7 @@ BOD is the beginning of the C++ definition."
 				   (concat c++-class-key
 					   "[ \t]+"
 					   "\\(\\w+[ \t]*:[ \t]*\\)?"))
-				  (if (progn (goto-char indent-point)
-					     (c++-backward-over-syntactic-ws)
-					     (= (preceding-char) ?,))
+				  (if (= char-before-ip ?,)
 				      (progn (goto-char (match-end 0))
 					     (current-column))
 				    0)
@@ -1697,9 +1711,7 @@ BOD is the beginning of the C++ definition."
 	       (current-column)))
 	    (t
 	     ;; Statement.  Find previous non-comment character.
-	     (goto-char indent-point)
-	     (c++-backward-over-syntactic-ws containing-sexp)
-	     (if (not (memq (preceding-char) '(nil ?\, ?\; ?} ?: ?\{)))
+	     (if (not (memq char-before-ip '(nil ?\, ?\; ?} ?: ?\{)))
 		 ;; This line is continuation of preceding line's statement;
 		 ;; indent  c-continued-statement-offset  more than the
 		 ;; previous line of the statement.
@@ -1814,10 +1826,11 @@ BOD is the beginning of the C++ definition."
 			   ;; if it is before the line we want to indent.
 			   (and (< (point) indent-point)
 				(+ (current-column)
-				   (if (save-excursion
-					 (goto-char indent-point)
-					 (c++-backward-over-syntactic-ws)
-					 (= (preceding-char) ?,))
+				   ;; check if this is a true
+				   ;; statement continuation, not a
+				   ;; list of enums or static arrays elems
+				   (if (and (= char-before-ip ?,)
+					    (c++-in-function-p bod))
 				       c-indent-level 0)))))
 		    ;; If no previous statement, indent it relative to
 		    ;; line brace is on.  For open brace in column
