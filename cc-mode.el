@@ -1188,25 +1188,6 @@ of the expression are preserved."
 		     (save-excursion (end-of-line) (point)) t)
 		    (progn (indent-for-comment) (beginning-of-line))))))))))
 
-(defun c++-fill-C-comment ()
-  "Fill a C style comment."
-  (interactive)
-  (save-excursion
-    (let ((fill-prefix fill-prefix))
-      (beginning-of-line 1)
-      (save-excursion
-	(re-search-forward comment-start-skip
-			   (save-excursion (end-of-line) (point))
-			   t)
-	(goto-char (match-end 0))
-	(set-fill-prefix))
-      (while (looking-at fill-prefix)
-	(forward-line -1))
-      (forward-line 1)
-      (insert-string "\n")
-      (fill-paragraph nil)
-      (delete-char -1))))
-
 (defun c++-insert-header ()
   "Insert header denoting C++ code at top of buffer."
   (interactive)
