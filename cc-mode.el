@@ -698,7 +698,7 @@ supported list, along with the values for this variable:
   (define-key c-mode-map "\C-c\C-t"  'c-toggle-auto-hungry-state)
   (define-key c-mode-map "\C-c\C-v"  'c-version)
   ;; FSF Emacs 19 defines menus in the mode map
-  (if (not (fboundp 'set-keymap-parent))
+  (if (not (fboundp 'add-menu))
       (progn
 	(define-key c-mode-map [menu-bar] (make-sparse-keymap))
 
