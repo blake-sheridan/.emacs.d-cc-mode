@@ -1443,9 +1443,16 @@ BOD is the beginning of the C++ definition."
 				      ;; looking at a blank line, indent
 				      ;; next line to zero
 				      0
-				    (- (current-indentation)
-				       c++-class-member-indent)
-				    )))))))
+				    ;; are we looking at a member init
+				    ;; continuation line?
+				    (if (save-excursion
+					  (end-of-line)
+					  (c++-backward-over-syntactic-ws)
+					  (= (preceding-char) ?,))
+					(current-indentation)
+				      (- (current-indentation)
+					 c++-class-member-indent)
+				      ))))))))
 		      ))))))
 	    ((/= (char-after containing-sexp) ?{)
 	     ;; line is expression, not statement:
