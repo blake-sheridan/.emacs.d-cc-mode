@@ -1262,7 +1262,7 @@ BOD is the beginning of the C++ definition."
     (let ((indent-point (point))
 	  (case-fold-search nil)
 	  state do-indentation
-	  containing-sexp
+	  containing-sexp streamop-pos
 	  (inclass-shift 0)
 	  (bod (or bod (c++-point-bod))))
       (if parse-start
@@ -1455,11 +1455,17 @@ BOD is the beginning of the C++ definition."
 		 (progn
 		   (c-backward-to-start-of-continued-exp containing-sexp)
 		   ;; take care of << and >> while in streams
-		   (if (save-excursion
-			 (goto-char indent-point)
-			 (looking-at "[ \t]*\\(<<\\|>>\\)"))
-		       (progn (skip-chars-forward "^><")
-			      (current-column))
+		   (if (let ((here (point)))
+			 (save-excursion
+			   (and (progn
+				  (goto-char indent-point)
+				  (looking-at "[ \t]*\\(<<\\|>>\\)"))
+				(progn
+				  (goto-char here)
+				  (skip-chars-forward "^><\n")
+				  (setq streamop-pos (current-column))
+				  (looking-at "\\(<<\\|>>\\)")))))
+		       streamop-pos
 		     (+ (current-column)
 			;; j.peck hack to prevent repeated continued
 			;; indentation:
@@ -1646,6 +1652,12 @@ string according to mode's syntax."
   "Returns the value of the point at beginning of the current line."
   (save-excursion
     (beginning-of-line)
+    (point)))
+
+(defun c++-point-eol ()
+  "Returns the value of the point at end of the current line."
+  (save-excursion
+    (end-of-line)
     (point)))
 
 (defun c++-point-bod ()
