@@ -925,10 +925,10 @@ If `c++-hungry-delete-key' is nil, just call `backward-delete-char-untabify'."
 		       ;; c++-beginning-of-defun will not be able to
 		       ;; correctly find the bod when
 		       ;; c++-match-headers-strongly is nil.
-		       (progn (c++-indent-line)
+		       (progn (c++-indent-line bod)
 			      (save-excursion
 				(forward-line -1)
-				(c++-indent-line))))
+				(c++-indent-line bod))))
 		   t)))
 	(progn
 	  (if (and (memq last-command-char c++-untame-characters)
@@ -939,7 +939,7 @@ If `c++-hungry-delete-key' is nil, just call `backward-delete-char-untabify'."
 	  ;; really might not.
 	  (and (= last-command-char ?{)
 	       (bolp)
-	       (c++-indent-line))
+	       (c++-indent-line bod))
 	  (insert last-command-char)
 	  ;; try to clean up empty defun braces if conditions apply
 	  (let ((here (point-marker)))
@@ -974,7 +974,7 @@ If `c++-hungry-delete-key' is nil, just call `backward-delete-char-untabify'."
 		  (set-marker here nil))
 	      (goto-char here)
 	      (set-marker here nil)))
-	  (c++-indent-line)
+	  (c++-indent-line bod)
 	  (if (c++-auto-newline)
 	      (progn
 		;; c++-auto-newline may have done an auto-fill
@@ -2025,12 +2025,13 @@ BOD is the beginning of the C++ definition."
       ;; to work around this.  It is probably better to just use
       ;; c++-match-header-strongly, but there are performance questions
       (if (null state)
-	  (let* ((c++-match-header-strongly t)
-		 (bod (c++-point 'bod)))
-	    (goto-char bod)
-	    (setq state (c++-parse-state indent-point)
-		  containing-sexp (nth 1 state)
-		  parse-start (point))))
+	  (error "null state!"))
+;;	  (let* ((c++-match-header-strongly t)
+;;		 (bod (c++-point 'bod)))
+;;	    (goto-char bod)
+;;	    (setq state (c++-parse-state indent-point)
+;;		  containing-sexp (nth 1 state)
+;;		  parse-start (point))))
       (setq literal (c++-in-literal bod))
       ;; cache char before indent point
       (save-excursion
