@@ -1009,7 +1009,7 @@ Returns nil if line starts inside a string, t if in a comment."
 	     ;; empty arg list, in which case we do what
 	     ;; c++-empty-arglist-indent says to do.
 	     (if (and c++-empty-arglist-indent
-		      (or c++-always-arglist-indent
+		      (or c++-always-arglist-indent-p
 			  (null (nth 2 state))	;; indicates empty arg
 						;; list.
 			  ;; Use a heuristic: if the first
