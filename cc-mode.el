@@ -3520,8 +3520,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (if (save-excursion
 	    (beginning-of-line)
 	    (looking-at "[ \t]*)"))
-	  (progn (beginning-of-line)
-		 (skip-chars-forward " \t)")
+	  (progn (goto-char (match-end 0))
 		 (forward-sexp -1)
 		 (forward-char 1)
 		 (c-forward-syntactic-ws)
