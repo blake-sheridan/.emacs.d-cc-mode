@@ -49,7 +49,7 @@
     (string . -1000)
     (comment-intro . c-lineup-comment)
     (arglist-cont-nonempty . c-lineup-arglist)
-    (cpp-macro . -1000))
+    (cpp-macro . -1000)))
   
 
 (defun cc-guess-region (start end &optional reset)
@@ -95,3 +95,5 @@ and `cc-guess-view-style' for viewing the guessed style."
 		      cc-guessed-style))
 	  ))
       (forward-line 1))))
+
+;;; cc-guess.el ends here
