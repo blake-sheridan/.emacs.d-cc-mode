@@ -1574,6 +1574,13 @@ BOD is the beginning of the C++ definition."
 					;; at beginning of buffer, if
 					;; nothing else, indent to zero 
 					0
+				      (if (c++-in-parens-p)
+					  ;; we are perhaps inside a
+					  ;; member init call
+					  (while (and (c++-in-parens-p)
+						      (< bod (point)))
+					    (forward-line -1)
+					    (skip-chars-forward " \t")))
 				      ;; subtract inclass-shift since
 				      ;; its already incorporated by
 				      ;; defaultin current-indentation
