@@ -1144,7 +1144,7 @@ non-whitespace characters on the line following the semicolon."
       ;; do some special stuff with the character
       (self-insert-command (prefix-numeric-value arg))
       (let ((pos (- (point-max) (point))))
-	;; possibly do some cleanups
+	;; possibly do some clean ups
 	(if (and c-auto-newline
 		 (or (and
 		      (= last-command-char ?,)
@@ -1192,7 +1192,7 @@ Also, the line is re-indented unless a numeric ARG is supplied, there
 are non-whitespace characters present on the line after the colon, or
 the colon is inserted inside a literal.
 
-This function will also cleanup double colon scope operators based on
+This function will also clean up double colon scope operators based on
 the value of `c-cleanup-list'."
   (interactive "P")
   (let* ((bod (c-point 'bod))
@@ -2969,7 +2969,6 @@ region."
     (list
      ;; report only the vars that affect indentation
      'c-emacs-features
-     'c-auto-hungry-initial-state
      'c-backscan-limit
      'c-basic-offset
      'c-offsets-alist
