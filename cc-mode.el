@@ -1888,14 +1888,14 @@ BOD is the beginning of the C++ definition."
 				 ;; its already incorporated by
 				 ;; default in current-column
 				 (- (cond
-				     ((save-excursion
-					(c++-cont-indent
-					 indent-point char-before-ip
-					 (or containing-sexp bod))))
-				     ((= char-before-ip ?\;)
-				      (goto-char (or containing-sexp bod))
-				      (+ (current-indentation)
-					 inclass-shift))
+				     ;;((save-excursion
+				     ;;(c++-cont-indent
+				     ;;indent-point char-before-ip
+				     ;;(or containing-sexp bod))))
+				     ;;((= char-before-ip ?\;)
+				     ;;(goto-char (or containing-sexp bod))
+				     ;;(+ (current-indentation)
+				     ;;inclass-shift))
 				     (t (current-column)))
 				    inclass-shift)
 				 )))))))))
