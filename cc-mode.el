@@ -1178,10 +1178,14 @@ of the expression are preserved."
   "Indent each line in block following pont.
 Optional SHUTUP-P if non-nil, inhibits message printing."
   (interactive "P")
+  (or (memq (following-char) '(?\( ?\[ ?\{))
+      (error "Character under point does not start an expression."))
   (let ((start (point))
 	(bod (cc-point 'bod))
 	(end (progn
-	       (forward-sexp 1)
+	       (condition-case nil
+		   (forward-sexp 1)
+		 (error (error "Cannot indent an unclosed expression.")))
 	       (point-marker)))
 	;; keep quiet for speed
 	(cc-echo-semantic-information-p nil))
