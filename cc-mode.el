@@ -3141,7 +3141,15 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(c-add-syntax 'statement (point))
 	      (c-add-syntax 'statement-cont (point))
 	      ))
-	   ;; CASE 6D: we are looking at an arglist continuation line,
+	   ;; CASE 6D: maybe a continued method call
+	   ((and (eq major-mode 'objc-mode)
+		 (save-excursion
+		   (goto-char (1- containing-sexp))
+		   (c-backward-syntactic-ws (c-point 'bod))
+		   (if (not (looking-at c-symbol-key))
+		       (c-add-syntax 'objc-method-call-cont containing-sexp))
+		   )))
+	   ;; CASE 6E: we are looking at an arglist continuation line,
 	   ;; but the preceding argument is on the same line as the
 	   ;; opening paren.  This case includes multi-line
 	   ;; mathematical paren groupings, but we could be on a
@@ -3156,14 +3164,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (<= (point) containing-sexp)))
 	    (goto-char containing-sexp)
 	    (c-add-syntax 'arglist-cont-nonempty (c-point 'boi)))
-	   ;; CASE 6E: maybe a continued method call
-	   ((and (eq major-mode 'objc-mode)
-		 (save-excursion
-		   (goto-char (1- containing-sexp))
-		   (c-backward-syntactic-ws (c-point 'bod))
-		   (if (not (looking-at c-symbol-key))
-		       (c-add-syntax 'objc-method-call-cont containing-sexp))
-		   )))
 	   ;; CASE 6F: we are looking at just a normal arglist
 	   ;; continuation line
 	   (t (c-beginning-of-statement 1 containing-sexp)
