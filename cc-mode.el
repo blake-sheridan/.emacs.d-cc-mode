@@ -690,14 +690,13 @@ of the expression are preserved."
 	       (save-excursion
 		 (back-to-indentation)
 		 (eq (char-after (point)) ?#)))
-	   (let ((boi (save-excursion
-		       (back-to-indentation)
-		       (point)))
+	   (let ((here (point))
+		 (boi (save-excursion (back-to-indentation) (point)))
 		 (indent-p nil))
 	     (c++-indent-line)
 	     (save-excursion
 	       (back-to-indentation)
-	       (setq indent-p (= (point) boi)))
+	       (setq indent-p (and (> here boi) (= (point) boi))))
 	     (if indent-p (insert-tab))))
 	  (t (c++-indent-line)))))
 
