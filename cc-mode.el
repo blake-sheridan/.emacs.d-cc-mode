@@ -1941,33 +1941,47 @@ of the expression are preserved."
 	)))))
 
 (defun c-indent-exp (&optional shutup-p)
-  "Indent each line in block following pont.
+  "Indent each line in balanced expression following point.
 Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (interactive "P")
-  (or (memq (following-char) '(?\( ?\[ ?\{))
-      shutup-p
-      (error "Character under point does not start an expression."))
-  (let ((start (point))
+  (let ((here (point))
 	(bod (c-point 'bod))
-	(end (progn
-	       (condition-case nil
-		   (forward-sexp 1)
-		 (error (error "Cannot indent an unclosed expression.")))
-	       (point-marker)))
-	;; keep quiet for speed
-	(c-echo-semantic-information-p nil))
+	(c-echo-semantic-information-p nil) ;keep quiet for speed
+	(start (progn
+		 ;; try to be smarter about finding the range of lines
+		 ;; to indent
+		 (skip-chars-forward " \t")
+		 (if (memq (following-char) '(?\( ?\[ ?\{))
+		     (point)
+		   (let ((state (parse-partial-sexp (point) (c-point 'eol))))
+		     (and (nth 1 state)
+			  (goto-char (nth 1 state))
+			  (memq (following-char) '(?\( ?\[ ?\{))
+			  (point))))))
+	;; find balanced expression end
+	(end (and (c-safe (progn (forward-sexp 1) t))
+		  (point-marker))))
+    ;; sanity check
+    (and (not start)
+	 (not shutup-p)
+	 (error "Cannot find start of balanced expression to indent."))
+    (and (not end)
+	 (not shutup-p)
+	 (error "Cannot find end of balanced expression to indent."))
     (or shutup-p
 	(message "indenting expression... (this may take a while)"))
     (goto-char start)
     (beginning-of-line)
-    (while (< (point) end)
-      (if (not (looking-at "[ \t]*$"))
-	  (c-indent-via-language-element bod))
-      (forward-line 1))
+    (unwind-protect
+	(while (< (point) end)
+	  (if (not (looking-at "[ \t]*$"))
+	      (c-indent-via-language-element bod))
+	  (forward-line 1))
+      ;; make sure marker is deleted
+      (set-marker end nil))
     (or shutup-p
 	(message "indenting expression... done."))
-    (goto-char start)
-    (set-marker end nil)))
+    (goto-char here)))
 
 (defun c-indent-defun ()
   "Re-indents the current top-level function def, struct or class declaration."
