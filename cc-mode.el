@@ -1150,6 +1150,7 @@ Key bindings:
   (make-local-variable 'comment-start-skip)
   (make-local-variable 'outline-regexp)
   (make-local-variable 'outline-level)
+  (make-local-variable 'adaptive-fill-regexp)
   ;; now set their values
   (setq paragraph-start (concat "^$\\|" page-delimiter)
 	paragraph-separate paragraph-start
@@ -1161,7 +1162,8 @@ Key bindings:
 	outline-regexp "[^#\n\^M]"
 	outline-level 'c-outline-level
 	comment-column 32
-	comment-start-skip "/\\*+ *\\|// *")
+	comment-start-skip "/\\*+ *\\|// *"
+	adaptive-fill-regexp nil)
   ;; we have to do something special for c-offsets-alist so that the
   ;; buffer local value has its own alist structure.
   (setq c-offsets-alist (copy-alist c-offsets-alist))
