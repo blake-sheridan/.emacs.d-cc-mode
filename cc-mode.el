@@ -3612,7 +3612,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ))
 	   ;; CASE 5C: inheritance line. could be first inheritance
 	   ;; line, or continuation of a multiple inheritance
-	   ((and c-baseclass-key (looking-at c-baseclass-key))
+	   ((or (and c-baseclass-key (looking-at c-baseclass-key))
+		(and (or (= char-before-ip ?:)
+			 (= char-after-ip ?:))
+		     (save-excursion
+		       (c-backward-syntactic-ws lim)
+		       (if (= char-before-ip ?:)
+			   (progn
+			     (forward-char -1)
+			     (c-backward-syntactic-ws lim)))
+		       (back-to-indentation)
+		       (looking-at c-class-key))))
 	    (cond
 	     ;; CASE 5C.1: non-hanging colon on an inher intro
 	     ((= char-after-ip ?:)
