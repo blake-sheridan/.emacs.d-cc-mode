@@ -341,7 +341,7 @@ When non-nil (the default), indentation is calculated relative to the
 first statement in the block.  When nil, the indentation is calculated
 without regard to how the first statement is indented.")
 
-(defvar c++-untame-characters (and c++-emacs-is-fixed-p '(?\'))
+(defvar c++-untame-characters (and (not c++-emacs-is-fixed-p) '(?\'))
   "*Utilize a backslashing workaround of an emacs syntax parsing bug.
 If non-nil, this variable should contain a list of characters which
 will be prepended by a backslash in comment regions.  By default, the
