@@ -2200,10 +2200,13 @@ of the expression are preserved."
 		     (setq checkpnt (point))
 		     (looking-at cc-case-statement-key)))
 	      (cc-add-semantics 'statement-case-intro checkpnt))
-	     ;; CASE 13.B: any old statement
+	     ;; CASE 13.B: an embedded block open
+	     ((= char-after-ip ?{)
+	      (cc-add-semantics 'block-open (cc-point 'boi)))
+	     ;; CASE 13.C: any old statement
 	     ((< (point) indent-point)
 	      (cc-add-semantics 'statement (cc-point 'boi)))
-	     ;; CASE 13.C: first statement in a block
+	     ;; CASE 13.D: first statement in a block
 	     (t
 	      (goto-char containing-sexp)
 	      (cc-add-semantics 'statement-block-intro (cc-point 'boi)))
