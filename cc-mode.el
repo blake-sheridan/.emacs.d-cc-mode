@@ -1629,9 +1629,11 @@ BOD is the beginning of the C++ definition."
 	      (progn
 		(goto-char indent-point)
 		(skip-chars-forward " \t")
-		(if (= (following-char) ?{)
+		(if (or (= (following-char) ?{)
+			(progn
+			  (c++-backward-over-syntactic-ws parse-start)
+			  (bobp)))
 		    0
-		  (c++-backward-over-syntactic-ws parse-start)
 		  (if (c++-in-function-p)
 		      (progn		; first arg decl or member init
 			(goto-char indent-point)
