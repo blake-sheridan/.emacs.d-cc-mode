@@ -4591,29 +4591,30 @@ it trailing backslashes are removed."
 ;; crucial because future c-set-style calls will always reset the
 ;; variables first to the "CC-MODE" style before instituting the new
 ;; style.  Only do this once!
-(if (featurep 'cc-mode) nil
-  (c-add-style "CC-MODE"
-	       (mapcar
-		(function
-		 (lambda (var)
-		   (cons var (symbol-value var))))
-		'(c-inhibit-startup-warnings-p
-		  c-strict-syntax-p
-		  c-echo-syntactic-information-p
-		  c-basic-offset
-		  c-offsets-alist
-		  c-tab-always-indent
-		  c-comment-only-line-offset
-		  c-block-comments-indent-p
-		  c-cleanup-list
-		  c-hanging-braces-alist
-		  c-hanging-colons-alist
-		  c-backslash-column
-		  c-electric-pound-behavior)))
+(or (assoc "CC-MODE" c-style-alist)
+    (c-add-style "CC-MODE"
+		 (mapcar
+		  (function
+		   (lambda (var)
+		     (cons var (symbol-value var))))
+		  '(c-inhibit-startup-warnings-p
+		    c-strict-syntax-p
+		    c-echo-syntactic-information-p
+		    c-basic-offset
+		    c-offsets-alist
+		    c-tab-always-indent
+		    c-comment-only-line-offset
+		    c-block-comments-indent-p
+		    c-cleanup-list
+		    c-hanging-braces-alist
+		    c-hanging-colons-alist
+		    c-backslash-column
+		    c-electric-pound-behavior))))
 
-  ;; the default style is now GNU.  This can be overridden in
-  ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
-  (c-set-style "GNU"))
+(or (featurep 'cc-mode)
+    ;; the default style is now GNU.  This can be overridden in
+    ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
+    (c-set-style "GNU"))
 
 ;; style variables
 (make-variable-buffer-local 'c-offsets-alist)
