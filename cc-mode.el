@@ -2057,9 +2057,6 @@ search."
 		(if (= (preceding-char) ?\()
 		    (setq last-begin (point))))
 	      (goto-char last-begin)
-	      ;; but we always do want to skip over non-whitespace
-	      ;; modifier characters that didn't get skipped above
-	      (skip-chars-backward "-+!*&:.~" (c-point 'boi))
 	      (setq last-begin (point)
 		    donep t)))
 
@@ -2134,7 +2131,10 @@ search."
 	 ;; CASE 8: nothing special
 	 (t (setq last-begin (point)))
 	 )))
-    (goto-char last-begin)))
+    (goto-char last-begin)
+    ;; we always do want to skip over non-whitespace modifier
+    ;; characters that didn't get skipped above
+    (skip-chars-backward "-+!*&:.~" (c-point 'boi))))
 
 (defun c-end-of-statement-1 ()
   (condition-case ()
