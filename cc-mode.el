@@ -754,6 +754,8 @@ behavior that users are familiar with.")
   (concat
    "\\(\\(extern\\|typedef\\)\\s +\\)?"
    "\\(template\\s *<[^>]*>\\s *\\)?"
+   ;; I'd like to add \\= in the first grouping below, but 1. its not
+   ;; defined in v18, and 2. doesn't seem to work in v19 anyway.
    "\\([^<a-zA-Z0-9_]\\|\\`\\)[ \t]*class\\|struct\\|union")
   "Regexp describing a class declaration, including templates.")
 (defconst c-inher-key
@@ -2361,7 +2363,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (progn
 	      (goto-char start)
 	      (while (and (not foundp)
-			  (re-search-forward c-class-key brace t))
+			  (save-restriction
+			    (c-forward-syntactic-ws)
+			    (widen)
+			    (narrow-to-region (point) end)
+			    (re-search-forward c-class-key brace t)))
 		(setq class (match-beginning 0))
 		(if (not (c-in-literal start))
 		    (progn
@@ -2372,6 +2378,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		      (if (= (1+ brace)
 			     (or (c-safe (scan-lists (point) 1 -1)) 0))
 			  (setq foundp (vector class brace)))
+		      ;; make sure there's no semi-colon between class
+		      ;; and brace. Otherwise, we found a forward
+		      ;; declaration.
+		      (goto-char class)
+		      (skip-chars-forward "^;" brace)
+		      (if (= (following-char) ?\;)
+			  (setq foundp nil))
 		      )))		;end while
 	      ))			;end if
 	;; right now this returns a cons cell, but later it will
