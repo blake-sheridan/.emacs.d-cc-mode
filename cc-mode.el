@@ -796,27 +796,29 @@ of the expression are preserved."
 	    (setq beg (point)))
 	  (if (> end beg)
 	      (indent-code-rigidly beg end shift-amt "#")))
-      (cond ((and (eq c++-tab-always-indent nil)
-		  (save-excursion
-		    (skip-chars-backward " \t")
-		    (not (bolp))))
-	     (insert-tab))
-	    ((eq c++-tab-always-indent t)
-	     (c++-indent-line bod))
-	    ((or (c++-in-open-string-p bod)
-		 (c++-in-comment-p bod)
-		 (save-excursion
-		   (back-to-indentation)
-		   (eq (char-after (point)) ?#)))
-	     (let ((here (point))
-		   (boi (save-excursion (back-to-indentation) (point)))
-		   (indent-p nil))
-	       (c++-indent-line bod)
-	       (save-excursion
-		 (back-to-indentation)
-		 (setq indent-p (and (> here boi) (= (point) boi))))
-	       (if indent-p (insert-tab))))
-	    (t (c++-indent-line bod))))))
+      (cond
+       ((eq c++-tab-always-indent nil)
+	(if (save-excursion
+	      (skip-chars-backward " \t")
+	      (bolp))
+	    (c++-indent-line bod)
+	  (insert-tab)))
+       ((eq c++-tab-always-indent t)
+	(c++-indent-line bod))
+       ((or (c++-in-open-string-p bod)
+	    (c++-in-comment-p bod)
+	    (save-excursion
+	      (back-to-indentation)
+	      (eq (char-after (point)) ?#)))
+	(let ((here (point))
+	      (boi (save-excursion (back-to-indentation) (point)))
+	      (indent-p nil))
+	  (c++-indent-line bod)
+	  (save-excursion
+	    (back-to-indentation)
+	    (setq indent-p (and (> here boi) (= (point) boi))))
+	  (if indent-p (insert-tab))))
+       (t (c++-indent-line bod))))))
 
 (defun c++-indent-exp ()
   "Indent each line of the C++ grouping following point."
