@@ -620,19 +620,21 @@ backward-delete-char-untabify."
 	  (if (and (memq last-command-char c++-untame-characters)
 		   (c++-in-comment-p bod))
 	      (insert "\\"))
+	  (insert last-command-char)
 	  ;; try to clean up empty defun braces if conditions apply
 	  (let ((here (point-marker)))
 	    (and c++-cleanup-empty-defun-braces-p
+		 (c++-at-top-level-p)
 		 c++-auto-newline
 		 (= last-command-char ?\})
-		 (progn (skip-chars-backward " \t\n")
+		 (progn (forward-char -1)
+			(skip-chars-backward " \t\n")
 			(= (preceding-char) ?\{))
 		 (not (c++-in-comment-p))
 		 (not (c++-in-open-string-p))
-		 (delete-region (point) here))
+		 (delete-region (point) (1- here)))
 	    (goto-char here)
 	    (set-marker here nil))
-	  (insert last-command-char)
 	  (let ((here (point-marker))
 		mbeg mend)
 	    (if (and c++-cleanup-brace-else-brace-p
