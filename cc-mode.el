@@ -1969,34 +1969,6 @@ optional LIM.  If LIM is ommitted, point-min is used."
 	    (t (setq stop t))
 	    ))))
 
-;;(defun c++-backward-over-syntactic-ws (&optional lim)
-;;  "Skip backwards over syntactic whitespace.
-;;Syntactic whitespace is defined as lexical whitespace, C and C++ style
-;;comments, and preprocessor directives. Search no farther back than
-;;optional LIM.  If LIM is ommitted, point-min is used."
-;;  (let ((lim (or lim (point-min)))
-;;	literal stop)
-;;    (if (> (- (point) lim) c++-backscan-limit)
-;;	(setq lim (- (point) c++-backscan-limit)))
-;;    (while (not stop)
-;;      (skip-chars-backward " \t\n\r\f" lim)
-;;      (setq literal (c++-in-literal))
-;;      (cond ((eq literal 'c++)
-;;	     (search-backward "//" lim 'move))
-;;	    ((eq literal 'c)
-;;	     (if (search-backward "/*" lim 'move)
-;;		 (goto-char (match-beginning 0))
-;;	       (setq stop t)))
-;;	    ((and (eq literal 'pound)
-;;		  (> (c++-point 'bol) lim))
-;;	     (beginning-of-line))
-;;	    ((and (= (preceding-char) ?/)
-;;		  (progn (forward-char -1)
-;;			 (= (preceding-char) ?*)))
-;;	     (forward-char -1))
-;;	    (t (setq stop t))
-;;	    ))))
-
 (defun c++-backward-to-start-of-do (&optional limit)
   "Move to the start of the last ``unbalanced'' do."
   (setq limit (or limit (c++-point 'bod)))
