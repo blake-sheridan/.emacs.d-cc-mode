@@ -437,6 +437,21 @@ as described in `c-offsets-alist'.  These are passed directly to
 `c-set-offset' so there is no need to set every syntactic symbol in
 your style, only those that are different from the default.")
 
+(defvar c-mode-menu
+  '(["Comment Out Region"     comment-region (mark)]
+    ["Macro Expand Region"    c-macro-expand (mark)]
+    ["Backslashify"           c-macroize-region (mark)]
+    ["Indent Expression"      c-indent-exp
+     (memq (following-char) '(?\( ?\[ ?\{))]
+    ["Indent Line"            c-indent-command t]
+    ["Fill Comment Paragraph" c-fill-paragraph t]
+    ["Up Conditional"         c-up-conditional t]
+    ["Backward Conditional"   c-backward-conditional t]
+    ["Forward Conditional"    c-forward-conditional t]
+    ["Backward Statement"     c-beginning-of-statement t]
+    ["Forward Statement"      c-end-of-statement t]
+    )
+  "Lucid Emacs menu for C/C++ modes.")
 
 
 ;; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -3288,22 +3303,6 @@ region."
 
 
 ;; menus for Lucid
-(defvar c-mode-menu
-  '(["Comment Out Region"     comment-region (mark)]
-    ["Macro Expand Region"    c-macro-expand (mark)]
-    ["Backslashify"           c-macroize-region (mark)]
-    ["Indent Expression"      c-indent-exp
-     (memq (following-char) '(?\( ?\[ ?\{))]
-    ["Indent Line"            c-indent-command t]
-    ["Fill Comment Paragraph" c-fill-paragraph t]
-    ["Up Conditional"         c-up-conditional t]
-    ["Backward Conditional"   c-backward-conditional t]
-    ["Forward Conditional"    c-forward-conditional t]
-    ["Backward Statement"     c-beginning-of-statement t]
-    ["Forward Statement"      c-end-of-statement t]
-    )
-  "Menu for C/C++ modes.")
-
 (defun c-popup-menu (e)
   "Pops up the C/C++ menu."
   (interactive "@e")
