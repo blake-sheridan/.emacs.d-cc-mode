@@ -2072,9 +2072,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; that the arglist we're in is really a forloop expression
 	   ;; and we are looking at one of the clauses broken up
 	   ;; across multiple lines.  ==> statement-cont
-	   ((not (memq char-before-ip '(?\; ?,)))
-	    (c-beginning-of-statement containing-sexp)
-	    (c-add-semantics 'statement-cont (point)))
+	   ((and (not (memq char-before-ip '(?\; ?,)))
+		 (save-excursion
+		   (c-beginning-of-statement containing-sexp)
+		   (setq placeholder (point))
+		   (/= (point) containing-sexp)))
+	    (c-add-semantics 'statement-cont placeholder))
 	   ;; CASE 5E: we are looking at just a normal arglist
 	   ;; continuation line
 	   (t (c-add-semantics 'arglist-cont (c-point 'boi)))
