@@ -736,7 +736,9 @@ no args, if that value is non-nil."
 (defun c++-c-mode ()
   "Major mode for editing K&R and ANSI C code.  $Revision$
 This mode is based on c++-mode.  Documentation for this mode is
-available by doing a `\\[describe-function] c++-mode'."
+available by doing a `\\[describe-function] c++-mode'.  Only real
+difference is that this sets up the buffer for editing C code, and it
+runs the hook `c++-c-mode-hook' instead of `c++-mode-hook'."
   (interactive)
   (c++-common-init)
   (set-syntax-table c++-c-mode-syntax-table)
