@@ -2861,14 +2861,16 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (let ((lim (or lim (point-max)))
 	(here (point))
 	donep foundp bufpos
+	(safepos (point))
 	(balanced (car state)))
     ;; search until we've passed the limit, or we've found our match
     (while (and (< (point) lim)
 		(not donep))
+      (setq safepos (point))
       ;; see if we can find a case statement, not in a literal
       (if (and (re-search-forward c-switch-label-key lim 'move)
-	       (progn (setq bufpos (match-beginning 0)) t)
-	       (not (c-in-literal))
+	       (setq bufpos (match-beginning 0))
+	       (not (c-in-literal safepos))
 	       (/= bufpos here))
 	  ;; if we crossed into a balanced sexp, we know the case is
 	  ;; not part of our switch statement, so just bound over the
