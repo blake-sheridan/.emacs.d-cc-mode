@@ -482,8 +482,62 @@ this variable to nil defeats backscan limits.")
 
 
 ;; ======================================================================
-;; c++-mode main entry point
-;; ======================================================================
+;; main entry points
+
+(defun c++-common-init ()
+  "Common initializations for c++-mode and c++-c-mode."
+  (use-local-map c++-mode-map)
+  (kill-all-local-variables)
+  ;; make local variables
+  (make-local-variable 'paragraph-start)
+  (make-local-variable 'paragraph-separate)
+  (make-local-variable 'paragraph-ignore-fill-prefix)
+  (make-local-variable 'require-final-newline)
+  (make-local-variable 'parse-sexp-ignore-comments)
+  (make-local-variable 'indent-line-function)
+  (make-local-variable 'indent-region-function)
+  (make-local-variable 'comment-start)
+  (make-local-variable 'comment-end)
+  (make-local-variable 'comment-column)
+  (make-local-variable 'comment-start-skip)
+  (make-local-variable
+   (if (memq 'v19 c++-emacs-features)
+       'comment-indent-function
+     'comment-indent-hook))
+  ;; now set their values
+  (setq paragraph-start (concat "^$\\|" page-delimiter)
+	paragraph-separate paragraph-start
+	paragraph-ignore-fill-prefix t
+	require-final-newline t
+	parse-sexp-ignore-comments (not (memq 'v18 c++-emacs-features))
+	indent-line-function 'c++-indent-line
+	indent-region-function 'c-indent-region
+	comment-column 32
+	comment-start-skip "/\\*+ *\\|// *")
+  ;; set comment indentation hook based on emacs version
+  (if (memq 'v19 c++-emacs-features)
+      (setq comment-indent-function 'c++-comment-indent)
+    (setq comment-indent-hook 'c++-comment-indent))
+  ;; hack auto-hungry designators into mode-line-format
+  (if (listp mode-line-format)
+      (setq mode-line-format
+	    (let ((modeline nil))
+	      (mapcar
+	       (function
+		(lambda (element)
+		  (setq modeline
+			(append modeline
+				(if (eq element 'mode-name)
+				    '(mode-name (c++-hungry-delete-key
+						 (c++-auto-newline "/ah" "/h")
+						 (c++-auto-newline "/a")))
+				  (list element))))))
+	       mode-line-format)
+	      modeline)))
+  (c++-set-auto-hungry-state
+   (memq c++-auto-hungry-initial-state '(auto-only   auto-hungry t))
+   (memq c++-auto-hungry-initial-state '(hungry-only auto-hungry t))))
+
 (defun c++-mode ()
   "Major mode for editing C++ code.  $Revision$
 To submit a problem report, enter `\\[c++-submit-bug-report]' from a
@@ -665,77 +719,28 @@ Settings for K&R, BSD, and Stroustrup indentation styles are
 Turning on C++ mode calls the value of the variable `c++-mode-hook' with
 no args, if that value is non-nil."
   (interactive)
-  (kill-all-local-variables)
-  (use-local-map c++-mode-map)
+  (c++-common-init)
   (set-syntax-table c++-mode-syntax-table)
   (setq major-mode 'c++-mode
 	mode-name "C++"
 	local-abbrev-table c++-mode-abbrev-table)
-  ;; make local variables
-  (make-local-variable 'paragraph-start)
-  (make-local-variable 'paragraph-separate)
-  (make-local-variable 'paragraph-ignore-fill-prefix)
-  (make-local-variable 'require-final-newline)
-  (make-local-variable 'parse-sexp-ignore-comments)
-  (make-local-variable 'indent-line-function)
-  (make-local-variable 'indent-region-function)
-  (make-local-variable 'comment-start)
-  (make-local-variable 'comment-end)
-  (make-local-variable 'comment-column)
-  (make-local-variable 'comment-start-skip)
-  (make-local-variable
-   (if (memq 'v19 c++-emacs-features)
-       'comment-indent-function
-     'comment-indent-hook))
   ;; now set their values
-  (setq paragraph-start (concat "^$\\|" page-delimiter)
-	paragraph-separate paragraph-start
-	paragraph-ignore-fill-prefix t
-	require-final-newline t
-	parse-sexp-ignore-comments (not (memq 'v18 c++-emacs-features))
-	indent-line-function 'c++-indent-line
-	indent-region-function 'c-indent-region
-	comment-start "// "
-	comment-end ""
-	comment-column 32
-	comment-start-skip "/\\*+ *\\|// *")
-  (if (memq 'v19 c++-emacs-features)
-      (setq comment-indent-function 'c++-comment-indent)
-    (setq comment-indent-hook 'c++-comment-indent))
-  ;; hack auto-hungry designators into mode-line-format
-  (if (listp mode-line-format)
-      (setq mode-line-format
-	    (let ((modeline nil))
-	      (mapcar
-	       (function
-		(lambda (element)
-		  (setq modeline
-			(append modeline
-				(if (eq element 'mode-name)
-				    '(mode-name (c++-hungry-delete-key
-						 (c++-auto-newline "/ah" "/h")
-						 (c++-auto-newline "/a")))
-				  (list element))))))
-	       mode-line-format)
-	      modeline)))
-  (run-hooks 'c++-mode-hook)
-  (c++-set-auto-hungry-state
-   (memq c++-auto-hungry-initial-state '(auto-only   auto-hungry t))
-   (memq c++-auto-hungry-initial-state '(hungry-only auto-hungry t))))
+  (setq comment-start "// "
+	comment-end "")
+  (run-hooks 'c++-mode-hook))
 
 (defun c++-c-mode ()
   "Major mode for editing K&R and ANSI C code.  $Revision$
 This mode is based on c++-mode.  Documentation for this mode is
 available by doing a `\\[describe-function] c++-mode'."
   (interactive)
-  (c++-mode)
+  (c++-common-init)
+  (set-syntax-table c++-c-mode-syntax-table)
   (setq major-mode 'c++-c-mode
 	mode-name "C"
 	local-abbrev-table c-mode-abbrev-table)
   (setq comment-start "/* "
 	comment-end   " */")
-  ;; some syntax differences are necessary for C vs. C++
-  (set-syntax-table c++-c-mode-syntax-table)
   (run-hooks 'c++-c-mode-hook))
 
 (defun c++-comment-indent ()
