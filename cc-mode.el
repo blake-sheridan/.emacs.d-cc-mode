@@ -1965,7 +1965,7 @@ search."
 	      ;; characters appearing at front of identifier
 	      (save-excursion
 		(c-backward-syntactic-ws)
-		(skip-chars-backward "-+!*&:.~")
+		(skip-chars-backward "-+!*&:.~ \t\n")
 		(if (= (preceding-char) ?\()
 		    (setq last-begin (point))))
 	      (goto-char last-begin)
