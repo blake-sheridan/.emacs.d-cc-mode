@@ -628,6 +628,13 @@ Return the amount the indentation changed by."
 				 (current-indentation))))
 		 ((looking-at "friend\[ \t]class[ \t]")
 		  (setq indent (+ indent c++-friend-offset)))
+		 ((= (following-char) ?\))
+		  (setq indent (+ (- indent c-indent-level)
+				  (if (save-excursion
+					(forward-char 1)
+					(c++-at-top-level-p))
+				      (- c++-block-close-brace-offset)
+				    c++-block-close-brace-offset))))
 		 ((= (following-char) ?})
 		  (setq indent (+ (- indent c-indent-level)
 				  (if (save-excursion
