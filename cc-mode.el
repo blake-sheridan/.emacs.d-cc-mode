@@ -1847,8 +1847,15 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	     ;; CASE 4D.3: perhaps a multiple inheritance line?
 	     ((looking-at cc-inher-key)
 	      (cc-add-semantics 'inher-cont-1 (cc-point 'boi)))
-	     ;; CASE 4D.4: I don't know what the heck we're looking-at
-	     (t (cc-add-semantics 'unknown-construct-1))
+	     ;; CASE 4D.4: perhaps a template list continuation?
+	     ((save-excursion
+		(skip-chars-backward "^<" lim)
+		(= (preceding-char) ?<))
+	      ;; we can probably indent it just like and arglist-cont
+	      (cc-add-semantics 'arglist-cont (point)))
+	     ;; CASE 4D.5: perhaps a top-level statement-cont
+	     (t (cc-beginning-of-statement lim)
+		(cc-add-semantics 'statement-cont (cc-point 'boi)))
 	     ))
 	   ;; CASE 4E: we are looking at a access specifier
 	   ((and inclass-p
@@ -2041,10 +2048,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	     ;; CASE 13.B: an embedded block open
 	     ((= char-after-ip ?{)
 	      (cc-add-semantics 'block-open (cc-point 'boi)))
-	     ;; CASE 13.C: any old statement
+	     ;; CASE 13.C: continued statement
+	     ((= char-before-ip ?,)
+	      (cc-add-semantics 'statement-cont (cc-point 'boi)))
+	     ;; CASE 13.D: a question/colon construct?
+	     ((or (memq char-before-ip '(?: ??))
+		  (memq char-after-ip '(?: ??)))
+	      (cc-add-semantics 'statement-cont (cc-point 'boi)))
+	     ;; CASE 13.E: any old statement
 	     ((< (point) indent-point)
 	      (cc-add-semantics 'statement (cc-point 'boi)))
-	     ;; CASE 13.D: first statement in a block
+	     ;; CASE 13.F: first statement in a block
 	     (t
 	      (goto-char containing-sexp)
 	      (cc-add-semantics 'statement-block-intro (cc-point 'boi)))
