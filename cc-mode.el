@@ -130,7 +130,7 @@ reported and the semantic symbol is ignored.")
     (member-init-cont      . 0)
     (inher-intro           . +)
     (inher-cont            . c-lineup-multi-inher)
-    ;;some people like this behavior instead
+    ;; some people might prefer
     ;;(block-open            . c-adaptive-block-open)
     (block-open            . 0)
     (block-close           . 0)
@@ -139,6 +139,8 @@ reported and the semantic symbol is ignored.")
     (brace-list-intro      . +)
     (brace-list-entry      . 0)
     (statement             . 0)
+    ;; some people might prefer
+    ;;(statement             . c-lineup-runin-statements)
     (statement-cont        . +)
     (statement-block-intro . +)
     (statement-case-intro  . +)
@@ -2996,6 +2998,19 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (car-safe c-comment-only-line-offset)
 	    -1000			;jam it against the left side
 	    )))))
+
+(defun c-lineup-runin-statements (langelem)
+  ;; line up statements in coding standards which place the first
+  ;; statement on the same line as the block opening brace.
+  (if (= (char-after (cdr langelem)) ?{)
+      (save-excursion
+	(let ((curcol (progn
+			(goto-char (cdr langelem))
+			(current-column))))
+	  (forward-char 1)
+	  (skip-chars-forward " \t")
+	  (- (current-column) curcol)))
+    0))
 
 
 ;; commands for "macroizations" -- making C++ parameterized types via
