@@ -3045,9 +3045,11 @@ region."
 (fset 'c++-beginning-of-defun 'beginning-of-defun)
 
 ;; set up bc warnings for obsolete variables
-(make-obsolete-variable
- 'c-auto-hungry-initial-state
- "Use `c-auto-newline' and `c-hungry-delete-key' instead.")
+(and (memq 'v19 c-emacs-features)
+     (make-obsolete-variable
+      'c-auto-hungry-initial-state
+      "Use `c-auto-newline' and `c-hungry-delete-key' instead.")
+     )
 
 (provide 'cc-mode)
 ;;; cc-mode.el ends here
