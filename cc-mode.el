@@ -1229,7 +1229,10 @@ of the expression are preserved."
 		;; Line is on an existing nesting level.
 		;; Lines inside parens are handled specially.
 		(if (or (/= (char-after (car contain-stack)) ?{)
-			(c++-at-top-level-p t))
+			;;(c++-at-top-level-p t))
+			;; baw hack for continued statement offsets
+			;; repercussions???
+			t)
 		    (setq this-indent (car indent-stack))
 		  ;; Line is at statement level.
 		  ;; Is it a new statement?  Is it an else?
@@ -1287,6 +1290,13 @@ of the expression are preserved."
 	    ;; check for stream operator
 	    (if (looking-at "\\(<<\\|>>\\)")
 		(setq this-indent (c++-calculate-indent)))
+	    ;; check for continued statements
+	    (if (save-excursion
+		  (c++-backward-syntactic-ws (car contain-stack))
+		  (not (memq (preceding-char)
+			     '(nil ?\000 ?\, ?\; ?\} ?\: ?\{))))
+		(setq this-indent (+ this-indent c-continued-statement-offset))
+	      )
 	    ;; Put chosen indentation into effect.
 	    (or (= (current-column) this-indent)
 		(= (following-char) ?\#)
