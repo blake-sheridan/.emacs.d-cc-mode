@@ -86,7 +86,7 @@ reported and the semantic symbol is ignored.")
   "*Amount of basic offset used by + and - symbols in `cc-offset-alist'.")
 (defvar cc-offsets-alist
   '((string                . +)
-    (c                     . +)
+    (c                     . cc-lineup-C-comments)
     (defun-open            . 0)
     (defun-close           . 0)
     (class-open            . 0)
@@ -197,7 +197,8 @@ Just an integer as value is equivalent to (<val> . 0)")
 then styles 1-3 are supported.  If this variable is non-nil, style 4
 only is supported.  Note that this currently has *no* effect on how
 comments are lined up or whether stars are inserted when C comments
-are auto-filled.
+are auto-filled.  In any case, you will still have to insert the stars
+manually.
 
  style 1:       style 2:       style 3:       style 4:
  /*             /*             /*             /*
@@ -2211,7 +2212,7 @@ of the expression are preserved."
       ;; now we need to look at any special additional indentations
       (goto-char indent-point)
       ;; look for a comment only line
-      (if (looking-at "\\s *//\\|/\\*")
+      (if (looking-at "\\s *\\(//\\|/\\*\\)")
 	  (cc-add-semantics 'comment-intro))
       ;; return the semantics
       semantics)))
@@ -2329,6 +2330,26 @@ of the expression are preserved."
 	  (cc-forward-syntactic-ws here))
       (- (current-column) cs-curcol)
       )))
+
+(defun cc-lineup-C-comments (langelem)
+  ;; line up C block comment continuation lines
+  (save-excursion
+    (let ((stars (progn
+		   (beginning-of-line)
+		   (skip-chars-forward " \t")
+		   (if (looking-at "\\*\\*?")
+		       (- (match-end 0) (match-beginning 0))
+		     0))))
+      (goto-char (cdr langelem))
+      (back-to-indentation)
+      (if (re-search-forward "/\\*[ \t]*" (1- (cc-point 'eol)) t)
+	  (goto-char (+ (match-beginning 0)
+			(cond
+			 (cc-C-block-comments-indent-p 0)
+			 ((= stars 1) 1)
+			 ((= stars 2) 0)
+			 (t (- (match-end 0) (match-beginning 0)))))))
+      (current-column))))
 
 (defun cc-indent-for-comment (langelem)
   ;; support old behavior for comment indentation. we look at
