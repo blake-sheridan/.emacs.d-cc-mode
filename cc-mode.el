@@ -372,9 +372,6 @@ Legal values are:
      'auto-hungry  -- both auto-newline and hungry-delete-key can be toggled.
 Nil is synonymous for 'none and t is synonymous for 'auto-hungry.")
 
-(defconst c++-mode-help-address "c++-mode-help@anthem.nlm.nih.gov"
-  "Address accepting submission of bug reports.")
-
 (defvar c++-relative-offset-p t
   "*Control the calculation for indentation.
 When non-nil (the default), indentation is calculated relative to the
@@ -2551,6 +2548,10 @@ function definition.")
 ;; ======================================================================
 (defconst c++-version "$Revision$"
   "c++-mode version number.")
+(defconst c++-mode-help-address "c++-mode-help@anthem.nlm.nih.gov"
+  "Address accepting submission of bug reports.")
+(defconst c++-mode-maintainer "Barry"
+  "First name of c++-mode maintainer.")
 
 (defun c++-version ()
   "Echo the current version of c++-mode."
@@ -2619,7 +2620,8 @@ function definition.")
 		  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n")
 	 "\n")
        )))
-   nil))
+   nil
+   c++-mode-maintainer))
 
 
 ;; this is sometimes useful
