@@ -1572,7 +1572,10 @@ comments, and preprocessor directives.  Search no farther back than
 optional LIM.  If LIM is ommitted, `beginning-of-defun' is used."
   (save-restriction
     (let ((lim (or lim (c++-point 'bod)))
-	  donep boi char)
+	  donep boi char
+	  (skipre (concat "#\\|/\\*\\|//\\|\n"
+			  (if (memq '1-bit c++-emacs-features)
+			      "\\|\\'" ""))))
       (if (< lim (point))
 	  (unwind-protect
 	      (progn
@@ -1580,7 +1583,7 @@ optional LIM.  If LIM is ommitted, `beginning-of-defun' is used."
 		(modify-syntax-entry ?# "< b" c++-mode-syntax-table)
 		(while (not donep)
 		  (forward-comment -1)
-		  (if (not (looking-at "#\\|/\\*\\|//\\|\n"))
+		  (if (not (looking-at skipre))
 		      (forward-char 1))
 		  (setq boi (c++-point 'boi)
 			char (char-after boi))
