@@ -989,7 +989,11 @@ Returns nil if line starts inside a string, t if in a comment."
 				"\\(class\\|struct\\)[ \t]+\\w+[ \t]+:[ \t]+")
 			       (progn (goto-char (match-end 0))
 				      (current-column))
-			     (current-indentation))))))
+			     (if (eolp)
+				 ;; looking at a blank line, indent
+				 ;; next line to zero
+				 0
+			       (current-indentation)))))))
 		   ))))
 	    ((/= (char-after containing-sexp) ?{)
 	     ;; line is expression, not statement:
