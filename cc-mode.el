@@ -588,8 +588,11 @@ experience performance degradations. Emacs 19 has some new built-in
 routines which will speed things up for you.
 
 Because of these inherent problems, cc-mode is no longer being
-actively maintained for Emacs 18, although patch contributions will be
-folded into the main release. "
+actively maintained for Emacs 18, however, until you can upgrade to
+Emacs 19, you may want to look at cc-mode-18.el in the cc-mode
+distribution.  THIS FILE IS COMPLETELY UNSUPPORTED!  If you use it,
+you are on your own, although patch contributions will be folded into
+the main release."
 			    emacs-version))))
     ;; Emacs 18 with the syntax patches are no longer supported
     (if (and (eq major 'v18) (not (eq comments 'no-dual-comments))
