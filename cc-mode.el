@@ -313,9 +313,9 @@ only controls how the lines within the block comment are indented when
 you hit ``\\[c-indent-command]''.
 
  style 1:    style 2 (GNU):    style 3:     style 4:     style 5:
- /*          /*                /*           /*           /*
-    blah        blah            * blah      ** blah      blah
-    blah        blah */         * blah      ** blah      blah
+ /*          /* Blah           /*           /*           /*
+    blah        blah.  */       * blah      ** blah      blah
+    blah                        * blah      ** blah      blah
     */                          */          */           */")
 
 (defvar c-cleanup-list '(scope-operator)
