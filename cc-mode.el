@@ -92,7 +92,7 @@ with previous initializations rather than with the colon on the first line.")
 list.  Nil indicates to just after the paren.")
 (defvar c++-comment-only-line-offset 4
   "*Indentation offset for line which contains only C or C++ style comments.")
-(defvar c++-cleanup-}-else-{ t
+(defvar c++-cleanup-}-else-{-p t
   "*Controls whether } else { style should remain on a single line.
 When t, cleans up this style (when only whitespace intervenes).")
 (defvar c++-hanging-braces t
@@ -203,7 +203,7 @@ c++-<thing> are unique for this mode.
     left paren. If nil, it lines up with the left paren.
  c++-comment-only-line-offset
     Extra indentation for a line containing only a C or C++ style comment.
- c++-cleanup-}-else-{
+ c++-cleanup-}-else-{-p
     Controls whether } else { style (with only whitespace intervening)
     should be cleaned up so that it sits on only a single line.
  c++-hanging-braces
@@ -429,7 +429,7 @@ backward-delete-char-untabify."
 		   t)))
 	(progn
 	  (insert last-command-char)
-	  (if (and c++-cleanup-}-else-{
+	  (if (and c++-cleanup-}-else-{-p
 		   (= (preceding-char) ?\{)
 		   (save-excursion
 		     (forward-char -1)
@@ -1430,7 +1430,7 @@ Send bug reports to c++-mode-help@anthem.nlm.nih.gov"
 		       'c++-friend-offset
 		       'c++-empty-arglist-indent
 		       'c++-comment-only-line-offset
-		       'c++-cleanup-}-else-{
+		       'c++-cleanup-}-else-{-p
 		       'c++-hanging-braces
 		       'c++-hanging-member-init-colon
 		       'c++-mode-line-format
