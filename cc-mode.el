@@ -853,50 +853,43 @@ if it is embedded in an expression."
 	(setq containing-sexp (car (cdr state))))
       (null containing-sexp))))
 
-(defun c++-in-comment-p ()
-  "Return t if in a C or C++ style comment as defined by mode's syntax."
+(defun c++-in-literal ()
+  "Return 'c if in a C-style comment, 'c++ if in a C++ style comment,
+'string if in a string literal or nil if not in a comment at all."
   (save-excursion
     (let* ((here (point))
-	   ;; we need to specially handle the case of hanging open
-	   ;; braces at the top level. they will mess up
-	   ;; parse-partial-sexp
-	   (bod (save-excursion
-		  (if (beginning-of-defun)
-		      (if (not (looking-at "\\s("))
-			  (progn (forward-line 1)
-				 (re-search-backward "\\s(" nil 'move)
-				 (skip-chars-forward " \t")))
-		    (goto-char here)
-		    (re-search-backward "/[/*]" nil 'move))
-		  (point))))
-      (or
-       ;; in a c++ style comment?  turn off C style comment syntax and
-       ;; turn on only C++ style comment syntax
-       (let ((stab (copy-syntax-table c++-mode-syntax-table))
-	     (in-comment-p
-	      (progn (modify-syntax-entry ?/  ". 12" c++-mode-syntax-table)
-		     (modify-syntax-entry ?\* "."    c++-mode-syntax-table)
-		     (goto-char here)
-		     (nth 4 (parse-partial-sexp bod here 0)))))
-	 (setq c++-mode-syntax-table (set-syntax-table stab))
-	 in-comment-p)
-       ;; special case for checking c style comment
-       (let ((stab (copy-syntax-table c++-mode-syntax-table))
-	     (in-comment-p
-	      (progn (modify-syntax-entry ?\n " "    c++-mode-syntax-table)
-		     (modify-syntax-entry ?/  ". 14" c++-mode-syntax-table)
-		     (goto-char here)
-		     (nth 4 (parse-partial-sexp bod here 0)))))
-	 (setq c++-mode-syntax-table (set-syntax-table stab))
-	 in-comment-p)))))
+	   (state nil)
+	   (match nil))
+      (beginning-of-defun)
+      (while (< (point) here)
+	(setq match
+	      (and (re-search-forward "\\(/[/*]\\)\\|[\"']" here 'move)
+		   (buffer-substring (match-beginning 0) (match-end 0))))
+	(setq state
+	      (cond
+	       ;; looking at the opening of a C++ style comment
+	       ((string= "//" match)
+		(if (<= here (progn (end-of-line) (point))) 'c++))
+	       ;; looking at the opening of a C block comment
+	       ((string= "/*" match)
+		(if (not (re-search-forward "*/" here 'move)) 'c))
+	       ;; looking at the opening of a double quote string
+	       ((string= "\"" match)
+		(if (not (re-search-forward "[^\\]\"" here 'move)) 'string))
+	       ;; looking at the opening of a single quote string
+	       ((string= "'" match)
+		(if (not (re-search-forward "[^\\]'" here 'move)) 'string))
+	       (t nil)))
+	) ; end-while
+      state)))
 
 (defun c++-in-open-string-p ()
   "Return non-nil if in an open string as defined by mode's syntax."
-  ;; temporarily change tick to string syntax, just for this check
-  (save-excursion
-    (let* ((here (point)))
-      (beginning-of-defun)
-      (nth 3 (parse-partial-sexp (point) here 0)))))
+  (eq (c++-in-literal) 'string))
+
+(defun c++-in-comment-p ()
+  "Return t if in a C or C++ style comment as defined by mode's syntax."
+  (and (memq (c++-in-literal) '(c c++)) t))
 
 (defun c++-in-parens-p ()
   ;; hack to work around emacs comment bug
