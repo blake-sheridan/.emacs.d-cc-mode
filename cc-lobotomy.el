@@ -48,7 +48,8 @@
 ;; This will redefine certain cc-mode functions and affect all cc-mode
 ;; buffers globally.
 ;;
-;; This file is completely unsupported!
+;; This file is completely unsupported!  I have no idea whether this
+;; will work with such things as cc-mode-18.el.
 
 
 ;;; Code:
