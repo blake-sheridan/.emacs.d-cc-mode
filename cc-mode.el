@@ -1861,9 +1861,10 @@ value of `c-cleanup-list'."
 ;; (a.k.a. delsel) mode.  All symbols get the t value except
 ;; c-electric-delete which gets 'supercede.
 (mapcar
- (lambda (sym)
-   (put sym 'delete-selection t)	; for delsel (FSF)
-   (put sym 'pending-delete t))		; for pending-del (XEmacs)
+ (function
+  (lambda (sym)
+    (put sym 'delete-selection t)	; for delsel (FSF)
+    (put sym 'pending-delete t)))	; for pending-del (XEmacs)
  '(c-electric-pound
    c-electric-brace
    c-electric-slash
