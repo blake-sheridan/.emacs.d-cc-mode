@@ -3096,7 +3096,7 @@ region."
        (mapcar
 	(function
 	 (lambda (elt)
-	   (make-variable-obsolete (car elt) (cdr elt))))
+	   (make-obsolete-variable (car elt) (cdr elt))))
 	vars)))
 
 (provide 'cc-mode)
