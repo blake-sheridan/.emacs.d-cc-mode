@@ -1162,8 +1162,10 @@ of the expression are preserved."
        ;; CASE 1: indent when at column zero or in lines indentation,
        ;; otherwise insert a tab
        ((not cc-tab-always-indent)
-	(if (or (< (point) (cc-point 'boi))
-		(= (cc-point 'boi) (cc-point 'eol)))
+	(if (and (<= (point) (cc-point 'boi))
+		 (or (looking-at "[ \t]*$")
+		     (/= (point) (cc-point 'boi))
+		     (bolp)))
 	    (cc-indent-via-language-element bod)
 	  (insert-tab)))
        ;; CASE 2: just indent the line
