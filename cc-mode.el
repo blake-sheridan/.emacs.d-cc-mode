@@ -506,6 +506,7 @@ useful for Emacs 19.")
      )
     ("python"
      (indent-tabs-mode . t)
+     (fill-column      . 72)
      (c-basic-offset   . 8)
      (c-offsets-alist  . ((substatement-open . 0)
 			  ))
