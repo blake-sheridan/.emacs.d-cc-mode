@@ -1322,14 +1322,14 @@ Returns nil if line starts inside a string, t if in a comment."
 		(setcar indent-stack
 			(setq this-indent val))))
 	    ;; Adjust line indentation according to its contents
-	    (if (looking-at "\\(public\\|private\\|protected\\):")
-		(setq this-indent (- this-indent c-indent-level)))
-	    (if (or (looking-at "case[ \t]")
-		    (and (looking-at "[A-Za-z]")
-			 (save-excursion
-			   (forward-sexp 1)
-			   (looking-at ":[^:]"))))
-		(setq this-indent (max 0 (+ this-indent c-label-offset))))
+ 	    (if (looking-at "\\(public\\|private\\|protected\\):")
+ 		(setq this-indent (- this-indent c-indent-level)))
+ 	    (if (or (looking-at "case[ \t]")
+ 		    (and (looking-at "[A-Za-z]")
+ 			 (save-excursion
+ 			   (forward-sexp 1)
+ 			   (looking-at ":[^:]"))))
+ 		(setq this-indent (max 0 (+ this-indent c-label-offset))))
 	    (if (looking-at "friend[ \t]\\(class\\|struct\\)[ \t]")
 		(setq this-indent (+ this-indent c++-friend-offset)))
 	    (if (= (following-char) ?})
