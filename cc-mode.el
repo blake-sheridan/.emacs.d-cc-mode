@@ -220,6 +220,7 @@ styles in a single mode.")
   (modify-syntax-entry ?>  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?&  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?|  "."     c++-mode-syntax-table)
+  (modify-syntax-entry ?_  "w"     c++-mode-syntax-table)
   (modify-syntax-entry ?\' "\""    c++-mode-syntax-table)
   ;; comment syntax
   (if c++-emacs-is-really-fixed-p
@@ -249,6 +250,7 @@ styles in a single mode.")
   (modify-syntax-entry ?>  "."     c++-c-mode-syntax-table)
   (modify-syntax-entry ?&  "."     c++-c-mode-syntax-table)
   (modify-syntax-entry ?|  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?_  "w"     c++-c-mode-syntax-table)
   (modify-syntax-entry ?\' "\""    c++-c-mode-syntax-table)
   ;; comment syntax
   (if c++-emacs-is-really-fixed-p
