@@ -2489,7 +2489,7 @@ of the expression are preserved."
 Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (interactive "P")
   (let ((here (point))
-	end)
+	end progress-p)
     (unwind-protect
 	(let ((c-echo-syntactic-information-p nil) ;keep quiet for speed
 	      (start (progn
@@ -2518,6 +2518,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	       (error "Cannot find end of balanced expression to
 	       indent."))
 	  (c-progress-init start end 'c-indent-exp)
+	  (setq progress-p t)
 	  (goto-char start)
 	  (beginning-of-line)
 	  (while (< (point) end)
@@ -2528,7 +2529,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       ;; make sure marker is deleted
       (and end
 	   (set-marker end nil))
-      (c-progress-fini 'c-indent-exp)
+      (and progress-p
+	   (c-progress-fini 'c-indent-exp))
       (goto-char here))))
 
 (defun c-indent-defun ()
