@@ -3106,10 +3106,14 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
      (let ((safepos (c-most-enclosing-brace brace-state))
 	   (here (point)))
        (goto-char containing-sexp)
-       (c-beginning-of-statement nil safepos)
+       (if safepos
+	   (c-beginning-of-statement nil safepos)
+	 ;; if safepos is nil, then we know that the beginning of
+	 ;; statement is beginning of buffer, so use a faster way to
+	 ;; get us where we're going
+	 (beginning-of-buffer))
        ;; c-b-o-s could have left us at point-min
-       (and (bobp)
-	    (c-forward-syntactic-ws here))
+       (and (bobp) (c-forward-syntactic-ws here))
        (if (and (< (point) containing-sexp)
 		(looking-at "\\(typedef[ \t]+\\)?enum[ \t\n]+")
 		(save-excursion
