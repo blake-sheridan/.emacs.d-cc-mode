@@ -2021,16 +2021,18 @@ the brace is inserted inside a literal."
 	  (if (and c-auto-newline
 		   (memq 'brace-elseif-brace c-cleanup-list)
 		   (= last-command-char ?\{)
-		   (re-search-backward "}[ \t\n]*else[ \t\n]+if[ \t\n]*{"
-				       nil t)
-		   (progn
+		   (re-search-backward "}[ \t\n]*else[ \t\n]+if[ \t\n]*" nil t)
+		   (save-excursion
+		     (goto-char (match-end 0))
+		     (c-safe (forward-sexp 1))
+		     (skip-chars-forward " \t\n")
 		     (setq mbeg (match-beginning 0)
 			   mend (match-end 0))
-		     (= mend here))
+		     (= here (1+ (point))))
 		   (not (c-in-literal)))
 	      (progn
 		(delete-region mbeg mend)
-		(insert "} else if {")))
+		(insert "} else if ")))
 	  (goto-char (- (point-max) pos))
 	  )
 	;; does a newline go after the brace?
