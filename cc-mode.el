@@ -425,6 +425,13 @@ as described in `c-offsets-alist'.  These are passed directly to
 `c-set-offset' so there is no need to set every syntactic symbol in
 your style, only those that are different from the default.")
 
+(defvar c-mode-hook nil
+  "*Hook called by `c-mode'.")
+(defvar c++-mode-hook nil
+  "*Hook called by `c++-mode'.")
+(defvar c-mode-common-hook nil
+  "*Hook called by both `c-mode' and `c++-mode' during their common init path.")
+
 (defvar c-mode-menu
   '(["Comment Out Region"     comment-region (mark)]
     ["Macro Expand Region"    c-macro-expand (mark)]
