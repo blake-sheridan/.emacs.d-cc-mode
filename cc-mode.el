@@ -3822,15 +3822,10 @@ it trailing backslashes are removed."
   "Submit via mail a bug report on cc-mode."
   (interactive)
   ;; load in reporter
-  (require 'reporter)
-  (let ((reporter-prompt-for-summary-p t)
-	;; we will ask for confirmation if the version of reporter
-	;; being used is pre-2.0, which doesn't support auto confirm
-	(reporter-confirm-p (boundp 'reporter-confirm-p))
-	(reporter-package-abbrev "cc-mode"))
+  (let ((reporter-prompt-for-summary-p t))
     (and
-     (or reporter-confirm-p
-	 (y-or-n-p "Do you want to submit a report on cc-mode? "))
+     (y-or-n-p "Do you want to submit a report on cc-mode? ")
+     (require 'reporter)
      (reporter-submit-bug-report
       c-mode-help-address
       (concat "cc-mode " c-version " ("
