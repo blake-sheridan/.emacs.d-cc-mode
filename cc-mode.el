@@ -2699,7 +2699,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       ;; no brace-state means we cannot be inside a class
       nil
     (let ((carcache (car brace-state))
-	  search-start search-end placeholder)
+	  search-start search-end)
       (if (consp carcache)
 	  ;; a cons cell in the first element means that there is some
 	  ;; balanced sexp before the current bufpos. this we can
@@ -2735,13 +2735,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(save-excursion
 	  (save-restriction
 	    (goto-char search-start)
-	    (let (foundp class match-end)
+	    (let (foundp class)
 	      (while (and (not foundp)
 			  (progn
 			    (c-forward-syntactic-ws)
 			    (re-search-forward c-class-key search-end t)))
-		(setq class (match-beginning 0)
-		      match-end (match-end 0))
+		(setq class (match-beginning 0))
 		(if (c-in-literal search-start)
 		    nil			; its in a comment or string, ignore
 		  (goto-char class)
