@@ -1708,6 +1708,7 @@ BOD is the beginning of the C++ definition."
 	  (case-fold-search nil)
 	  state do-indentation literal
 	  containing-sexp streamop-pos char-before-ip
+	  (MI-regexp (concat c++-class-key "[ \t]+\\(\\w+[ \t]*:[ \t]*\\)?"))
 	  (inclass-shift 0) inclass-depth
 	  (bod (or bod (c++-point 'bod))))
       (if parse-start
@@ -1800,7 +1801,13 @@ BOD is the beginning of the C++ definition."
 			      (progn
 				(forward-char -1)
 				(skip-chars-backward " \t")
-				(not (bolp))))))
+				(not (bolp)))
+			      ;; make sure its not a multiple inheritance
+			      ;; continuation line
+			      (progn
+				(beginning-of-line)
+				(not (looking-at MI-regexp)))
+			      )))
 		   ;; check to see if we're looking at a member
 		   ;; init, or access specifier
 		   (if (progn
@@ -1845,10 +1852,7 @@ BOD is the beginning of the C++ definition."
 				  inclass-shift)))
 			 ;; else first check to see if its a
 			 ;; multiple inheritance continuation line
-			 (if (looking-at
-			      (concat c++-class-key
-				      "[ \t]+"
-				      "\\(\\w+[ \t]*:[ \t]*\\)?"))
+			 (if (looking-at MI-regexp)
 			     (if (= char-before-ip ?,)
 				 (progn (goto-char (match-end 0))
 					(current-column))
