@@ -232,13 +232,9 @@ styles in a single mode.")
 	)
     ;; though its not optimal, these will work for older, broken
     ;; emacses. some strange behavior may be encountered. PATCH YOUR EMACS!
-    (message "using old syntax stuff...")
-    (sit-for 1)
     (modify-syntax-entry ?/  ". 124" c++-mode-syntax-table)
-    (modify-syntax-entry ?*  ". 23"  c++-mode-syntax-table)
+    (modify-syntax-entry ?*  ". 23b" c++-mode-syntax-table)
     (modify-syntax-entry ?\n ">"     c++-mode-syntax-table)
-    (message "using old syntax stuff... done")
-    (sit-for 1)
     ))
 
 (if c++-c-mode-syntax-table
@@ -2078,8 +2074,9 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	  (progn
 	    (skip-chars-backward "^/" lim)
 	    (skip-chars-backward "/" lim)
-	    (while (not (and (= (following-char) ?/)
-			     (= (char-after (1+ (point))) ?/)))
+	    (while (not (or (and (= (following-char) ?/)
+				 (= (char-after (1+ (point))) ?/))
+			    (<= (point) lim)))
 	      (skip-chars-backward "^/" lim)
 	      (skip-chars-backward "/" lim)))
 	;; c comment
@@ -2087,11 +2084,12 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	    (progn
 	      (skip-chars-backward "^*" lim)
 	      (skip-chars-backward "*" lim)
-	      (while (not (and (= (following-char) ?*)
-			       (= (preceding-char) ?/)))
+	      (while (not (or (and (= (following-char) ?*)
+				   (= (preceding-char) ?/))
+			      (<= (point) lim)))
 		(skip-chars-backward "^*" lim)
 		(skip-chars-backward "*" lim))
-	      (forward-char -1))
+	      (or (bobp) (forward-char -1)))
 	  ;; preprocessor directive
 	  (if (eq literal 'pound)
 	      (progn
@@ -2103,11 +2101,12 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 		(progn
 		  (skip-chars-backward "^*" lim)
 		  (skip-chars-backward "*" lim)
-		  (while (not (and (= (following-char) ?*)
-				   (= (preceding-char) ?/)))
+		  (while (not (or (and (= (following-char) ?*)
+				       (= (preceding-char) ?/))
+				  (<= (point) lim)))
 		    (skip-chars-backward "^*" lim)
 		    (skip-chars-backward "*" lim))
-		  (forward-char -1))
+		  (or (bobp) (forward-char -1)))
 	      ;; none of the above
 	      (setq stop t))))))))
 
