@@ -1194,7 +1194,14 @@ of the expression are preserved."
 	  ;;(progn (end-of-line) (point))
 	  ;;nil nil state))
 	  (let ((start (point))
-		(line-end (progn (end-of-line) (point)))
+		(line-end
+		 (progn (end-of-line)
+			(while (eq (c++-in-literal) 'c)
+			  (forward-line 1)
+			  (end-of-line))
+			(skip-chars-backward " \t\n")
+			(end-of-line)
+			(point)))
 		(end (progn (if (not (eobp)) (forward-char)) (point))))
 	    (setq state (parse-partial-sexp start end nil nil state))
 	    (goto-char line-end))
@@ -1336,8 +1343,9 @@ of the expression are preserved."
 	    (or (looking-at comment-start-skip)
 		(if (re-search-forward
 		     comment-start-skip
-		     (save-excursion (end-of-line) (point)) t)
-		    (progn (indent-for-comment) (beginning-of-line))))
+		     (c++-point 'eol) t)
+		    (progn (indent-for-comment)
+			   (beginning-of-line))))
 	    ))))))
 
 (defun c++-insert-header ()
@@ -2187,7 +2195,7 @@ comments, and preprocessor directives. Search no farther back than
 optional LIM.  If LIM is ommitted, beginning-of-defun is used."
   (save-restriction
     (let ((parse-sexp-ignore-comments t)
-	  donep boi
+	  donep boi char
 	  (lim (or lim (c++-point 'bod))))
       (narrow-to-region lim (point))
       (modify-syntax-entry ?# "< b" c++-mode-syntax-table)
@@ -2195,9 +2203,11 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	;; if you're not running a patched lemacs, the new byte
 	;; compiler will complain about this function. ignore that
 	(backward-syntactic-ws)
-	(if (not (bobp))
+	(if (not (looking-at "#\\|/\\*\\|//"))
 	    (forward-char 1))
-	(if (= (char-after (setq boi (c++-point 'boi))) ?#)
+	(setq boi (c++-point 'boi)
+	      char (char-after boi))
+	(if (and char (= char ?#))
 	    (progn (goto-char boi)
 		   (setq donep (<= (point) lim)))
 	  (setq donep t))
