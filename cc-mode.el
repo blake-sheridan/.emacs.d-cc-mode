@@ -10,7 +10,9 @@
 ;; Version:         $Revision$
 ;; Last Modified:   $Date$
 ;; Keywords: c languages oop
+
 ;; NOTE: Read the commentary below for the right way to submit bug reports!
+;; NOTE: See the accompanying texinfo manual for details on using this mode!
 
 ;; This file is part of GNU Emacs.
 
