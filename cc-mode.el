@@ -2692,8 +2692,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(and (bobp)
 		     (c-forward-syntactic-ws indent-point))
 		(setq placeholder (point))
-		(or (looking-at "\\<enum\\>")
-		    (= char-before-ip ?=)))
+		(and (or (looking-at "enum[ \t\n]+")
+			 (= char-before-ip ?=))
+		     (save-excursion
+		       (skip-chars-forward "^;" indent-point)
+		       (/= (following-char) ?\;))))
 	      (c-add-semantics 'brace-list-open placeholder))
 	     ;; CASE 4A.3: inline defun open
 	     (inclass-p
