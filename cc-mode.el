@@ -334,12 +334,6 @@ Valid symbols are:
  list-close-comma    -- cleans up commas following braces in array
                         and aggregate initializers.  Clean up occurs
 			when the comma is typed.
- snug-do-while       -- cleans up the `while' line of a do-while
-                        clause by placing it on the same line as the
-			closing brace.  This clean up only takes place
-			when there is nothing but whitespace between
-			the brace and the `while'. Clean up occurs
-			when the semi-colon is typed.
  scope-operator      -- cleans up double colons which may designate
 			a C++ scope operator split across multiple
 			lines. Note that certain C++ constructs can
@@ -349,7 +343,8 @@ Valid symbols are:
 			when the second colon is typed.")
 
 (defvar c-hanging-braces-alist '((brace-list-open)
-				 (substatement-open after))
+				 (substatement-open after)
+				 (block-close . c-snug-do-while))
   "*Controls the insertion of newlines before and after braces.
 This variable contains an association list with elements of the
 following form: (SYNTACTIC-SYMBOL . ACTION).
@@ -1693,24 +1688,6 @@ non-whitespace characters on the line following the semicolon."
 		   (not (c-in-literal lim)))
 	      (delete-region (point) here))
 	  (goto-char (- (point-max) pos)))
-	;; clean up do-whiles
-	(let (whilepos bracepos)
-	  (if (and (memq 'snug-do-while c-cleanup-list)
-		   (= last-command-char ?\;)
-		   (c-safe (save-excursion
-			     (forward-sexp -2)
-			     (setq whilepos (point))
-			     (and (looking-at "\\<while\\>[^_]")
-				  (c-backward-to-start-of-do lim))))
-		   (save-excursion
-		     (goto-char whilepos)
-		     (skip-chars-backward " \t\n")
-		     (setq bracepos (point))
-		     (= (preceding-char) ?})))
-	      (save-excursion
-		(delete-region bracepos whilepos)
-		(goto-char bracepos)
-		(insert-char 32 1))))
 	;; re-indent line
 	(c-indent-line)
 	;; newline only after semicolon, but only if that semicolon is
@@ -4234,6 +4211,22 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(if (= (following-char) ?:)
 	    (+ curcol (- prev-col-column (current-column)))
 	  c-basic-offset)))))
+
+(defun c-snug-do-while (syntax pos)
+  "Dynamically calculate brace hanginess for do-while statements.
+Using this function, `while' clauses that end a `do-while' block will
+remain on the same line as the brace that closes that block.
+
+See `c-hanging-braces-alist' for how to utilize this function as an
+ACTION associated with `block-close' syntax."
+  (save-excursion
+    (let (langelem)
+      (if (and (eq syntax 'block-close)
+	       (setq langelem (assq 'block-close c-syntactic-context))
+	       (progn (goto-char (cdr langelem))
+		      (looking-at "\\<do\\>[^_]")))
+	  '(before)
+	'(before after)))))
 
 
 ;; commands for "macroizations" -- making C++ parameterized types via
