@@ -1066,7 +1066,7 @@ of the expression are preserved."
   "Fill a C style comment."
   (interactive)
   (save-excursion
-    (let ((save fill-prefix))
+    (let ((fill-prefix fill-prefix))
       (beginning-of-line 1)
       (save-excursion
 	(re-search-forward comment-start-skip
@@ -1079,8 +1079,7 @@ of the expression are preserved."
       (forward-line 1)
       (insert-string "\n")
       (fill-paragraph nil)
-      (delete-char -1)
-      (setq fill-prefix save))))
+      (delete-char -1))))
 
 (defun c++-insert-header ()
   "Insert header denoting C++ code at top of buffer."
