@@ -2379,6 +2379,7 @@ VALUE.  This function also sets the current style to STYLE using
       (setq c-style-alist (cons (cons style descrip) c-style-alist))))
   (and set-p (c-set-style style)))
 
+
 (defun c-fill-paragraph (&optional arg)
   "Like \\[fill-paragraph] but handles C and C++ style comments.
 If any of the current line is a comment or within a comment,
@@ -5138,15 +5139,11 @@ definition and conveniently use this command."
 			     c-block-comments-indent-p
 			     c-cleanup-list
 			     c-comment-only-line-offset
-			     c-echo-syntactic-information-p
 			     c-electric-pound-behavior
 			     c-hanging-braces-alist
 			     c-hanging-colons-alist
 			     c-hanging-comment-ender-p
 			     c-offsets-alist
-			     c-strict-syntax-p
-			     c-tab-always-indent
-			     c-inhibit-startup-warnings-p
 			     )))
       ;; the default style is now GNU.  This can be overridden in
       ;; c-mode-common-hook or {c,c++,objc,java}-mode-hook.
