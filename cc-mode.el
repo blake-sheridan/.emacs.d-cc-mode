@@ -493,6 +493,7 @@ Emacs.")
   (define-key c-mode-map "*"         'c-electric-star)
   (define-key c-mode-map "\e\C-x"    'c-indent-defun)
   (define-key c-mode-map "\C-c\C-\\" 'c-macroize-region)
+  ;; TBD: where if anywhere, to put c-backward|forward-into-nomenclature
   (define-key c-mode-map "\C-c\C-a"  'c-toggle-auto-state)
   (define-key c-mode-map "\C-c\C-b"  'c-submit-bug-report)
   (define-key c-mode-map "\C-c\C-c"  'c-comment-region)
@@ -1350,6 +1351,31 @@ GNU, K&R, BSD and Whitesmith."
 	     val))
 	  )))
      vars)))
+
+;; better movement routines for ThisStyleOfVariablesCommonInCPlusPlus
+;; originally contributed by Terry_Glanfield.Southern@rxuk.xerox.com
+(defun c-forward-into-nomenclature (&optional arg)
+  "Move forward to end of a nomenclature section or word.
+With arg, to it arg times."
+  (interactive "p")
+  (let ((case-fold-search nil))
+    (if (> arg 0)
+	(re-search-forward "\\W*\\([A-Z]*[a-z0-9]*\\)" (point-max) t arg)
+      (while (and (< arg 0)
+		  (re-search-backward
+		   "\\(\\(\\W\\|[a-z0-9]\\)[A-Z]+\\|\\W\\w+\\)"
+		   (point-min) 0))
+	(forward-char 1)
+	(setq arg (1+ arg)))))
+  (c-keep-region-active))
+
+(defun c-backward-into-nomenclature (&optional arg)
+  "Move backward to beginning of a nomenclature section or word.
+With optional ARG, move that many times.  If ARG is negative, move
+forward."
+  (interactive "p")
+  (c-forward-into-nomenclature (- (or arg 1)))
+  (c-keep-region-active))
 
 
 ;; TBD: clean these up.  why do we need two beginning-of-statements???
