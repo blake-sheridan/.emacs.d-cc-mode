@@ -1855,7 +1855,7 @@ search."
 			 (not (c-in-literal)))
 		    (setq crossedp t
 			  donep t)
-		  )))
+		  (forward-char 1))))
 	    crossedp))
 	 ;; CASE 6: nothing special
 	 (t (setq last-begin (point)))
