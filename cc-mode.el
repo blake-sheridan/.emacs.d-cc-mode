@@ -83,6 +83,7 @@
   (define-key c++-mode-map "("         'c++-tame-insert)
   (define-key c++-mode-map ")"         'c++-tame-insert)
   (define-key c++-mode-map "\C-c\C-b"  'c++-submit-bug-report)
+  (define-key c++-mode-map "\C-c\C-v"  'c++-version)
   )
 
 (defvar c++-mode-syntax-table nil
@@ -1552,6 +1553,11 @@ function definition.")
 
 (defconst c++-version "$Revision$"
   "c++-mode version number.")
+
+(defun c++-version ()
+  "Echo the current version of c++-mode."
+  (interactive)
+  (message "Using c++-mode.el %s" c++-version))
 
 (defun c++-dump-state ()
   "Inserts into the c++-mode-state-buffer the current state of
