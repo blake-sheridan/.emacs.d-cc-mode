@@ -193,6 +193,12 @@ styles in a single mode.")
   (define-key c++-mode-map ")"         'c++-tame-insert)
   (define-key c++-mode-map "\C-c\C-b"  'c++-submit-bug-report)
   (define-key c++-mode-map "\C-c\C-v"  'c++-version)
+  ;; these are necessary because default forward-sexp and
+  ;; backward-sexp don't automatically let-bind
+  ;; parse-sexp-ignore-comments, which is needed for them to work
+  ;; properly in a C++ buffer.
+  (define-key c++-mode-map "\e\C-f"    'c++-forward-sexp)
+  (define-key c++-mode-map "\e\C-b"    'c++-backward-sexp)
   )
 
 (defvar c++-mode-syntax-table nil
@@ -1302,6 +1308,16 @@ characters to escape are defined in the variable c++-untame-characters."
 	   (forward-char)
 	   (backward-sexp 1))
 	  (t (message "Could not find matching paren.")))))
+
+(defun c++-forward-sexp (&optional arg)
+  (interactive "p")
+  (let ((parse-sexp-ignore-comments t))
+    (forward-sexp arg)))
+
+(defun c++-backward-sexp (&optional arg)
+  (interactive "p")
+  (let ((parse-sexp-ignore-comments t))
+    (backward-sexp arg)))
 
 
 ;; ======================================================================
