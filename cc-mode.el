@@ -98,6 +98,10 @@
 ;; requests to c++-mode-victims-request@anthem.nlm.nih.gov.
 ;; Discussions go to c++-mode-victims@anthem.nlm.nih.gov, but bug
 ;; reports and such should still be sent to c++-mode-help only.
+;;
+;; Many, many thanks go out to all the folks on the beta test list.
+;; Without their patience, testing, insight, and code contribution,
+;; c++-mode.el would be a far inferior package.
 
 ;; Getting c++-mode.el
 ;; ===================
