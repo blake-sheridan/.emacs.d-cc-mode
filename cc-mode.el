@@ -44,11 +44,11 @@
     ()
   (setq c++-mode-map (make-sparse-keymap))
   (define-key c++-mode-map "\C-j" 'reindent-then-newline-and-indent)
-  (define-key c++-mode-map "{" 'electric-c++-brace)
-  (define-key c++-mode-map "}" 'electric-c++-brace)
-  (define-key c++-mode-map ";" 'electric-c++-semi)
+  (define-key c++-mode-map "{" 'c++-electric-brace)
+  (define-key c++-mode-map "}" 'c++-electric-brace)
+  (define-key c++-mode-map ";" 'c++-electric-semi)
   (define-key c++-mode-map "\e\C-h" 'mark-c-function)
-  (define-key c++-mode-map "\e\C-q" 'indent-c++-exp)
+  (define-key c++-mode-map "\e\C-q" 'c++-indent-exp)
   (define-key c++-mode-map "\177" 'backward-delete-char-untabify)
   (define-key c++-mode-map "\t" 'c++-indent-command)
   (define-key c++-mode-map "\C-c\C-i" 'c++-insert-header)
@@ -58,10 +58,10 @@
   (define-key c++-mode-map "\e\C-a" 'c++-beginning-of-defun)
   (define-key c++-mode-map "\e\C-e" 'c++-end-of-defun)
   (define-key c++-mode-map "\e\C-x" 'c++-indent-defun)
-  (define-key c++-mode-map "/" 'electric-c++-slash)
-  (define-key c++-mode-map "*" 'electric-c++-star)
-  (define-key c++-mode-map ":" 'electric-c++-colon)
-  (define-key c++-mode-map "\177" 'electric-c++-delete)
+  (define-key c++-mode-map "/" 'c++-electric-slash)
+  (define-key c++-mode-map "*" 'c++-electric-star)
+  (define-key c++-mode-map ":" 'c++-electric-colon)
+  (define-key c++-mode-map "\177" 'c++-electric-delete)
   (define-key c++-mode-map "\C-c\C-t" 'c++-toggle-auto-hungry-state)
   (define-key c++-mode-map "\C-c\C-h" 'c++-toggle-hungry-state)
   (define-key c++-mode-map "\C-c\C-a" 'c++-toggle-auto-state)
@@ -398,7 +398,7 @@ Optional argument has the following meanings when supplied:
 		       (t t))))
     (c++-set-auto-hungry-state auto hungry)))
 
-(defun electric-c++-delete (arg)
+(defun c++-electric-delete (arg)
   "If c++-hungry-delete-key is non-nil, consumes all preceding
 whitespace unless ARG is supplied, or point is inside a C or C++ style
 comment or string.  If ARG is supplied, this just calls
@@ -419,7 +419,7 @@ backward-delete-char-untabify."
 	(backward-delete-char-untabify 1))))
    (t (backward-delete-char-untabify 1))))
 
-(defun electric-c++-brace (arg)
+(defun c++-electric-brace (arg)
   "Insert character and correct line's indentation."
   (interactive "P")
   (let (insertpos)
@@ -480,7 +480,7 @@ backward-delete-char-untabify."
 	  (self-insert-command (prefix-numeric-value arg)))
       (self-insert-command (prefix-numeric-value arg)))))
 
-(defun electric-c++-slash (arg)
+(defun c++-electric-slash (arg)
   "Slash as first non-whitespace character on line indents as comment
 unless we're inside a C style comment, or a string, does not do
 indentation. if first non-whitespace character on line is not a slash,
@@ -491,18 +491,18 @@ you want to add a comment to the end of a line."
     (if (= (preceding-char) ?/)
 	(setq c++-auto-newline nil))
     (if (memq (preceding-char) '(?/ ?*))
-	(electric-c++-terminator arg)
+	(c++-electric-terminator arg)
       (self-insert-command (prefix-numeric-value arg)))))
 
-(defun electric-c++-star (arg)
-  "Works with electric-c++-slash to auto indent C style comment lines."
+(defun c++-electric-star (arg)
+  "Works with c++-electric-slash to auto indent C style comment lines."
   (interactive "P")
   (if (= (preceding-char) ?/)
       (let ((c++-auto-newline nil))
-	(electric-c++-terminator arg))
+	(c++-electric-terminator arg))
     (self-insert-command (prefix-numeric-value arg))))
 
-(defun electric-c++-semi (arg)
+(defun c++-electric-semi (arg)
   "Insert character and correct line's indentation."
   (interactive "P")
   (let ((insertion-point (point)))
@@ -510,9 +510,9 @@ you want to add a comment to the end of a line."
       (skip-chars-backward " \t\n")
       (if (= (preceding-char) ?})
 	  (delete-region insertion-point (point)))))
-  (electric-c++-terminator arg))
+  (c++-electric-terminator arg))
 
-(defun electric-c++-colon (arg)
+(defun c++-electric-colon (arg)
   "Electrify colon.  De-auto-newline double colons. No auto-new-lines
 for member initialization list."
   (interactive "P")
@@ -528,9 +528,9 @@ for member initialization list."
 	       (progn (c++-backward-to-noncomment (point-min))
 		      (= (preceding-char) ?\))))
 	  (setq c++-auto-newline nil)))
-    (electric-c++-terminator arg)))
+    (c++-electric-terminator arg)))
 
-(defun electric-c++-terminator (arg)
+(defun c++-electric-terminator (arg)
   "Insert character and correct line's indentation."
   (interactive "P")
   (let (insertpos (end (point)))
@@ -634,7 +634,7 @@ of the expression are preserved."
 (defun c++-indent-line ()
   "Indent current line as C++ code.
 Return the amount the indentation changed by."
-  (let ((indent (calculate-c++-indent nil))
+  (let ((indent (c++-calculate-indent nil))
 	beg shift-amt
 	(case-fold-search nil)
 	(pos (- (point-max) (point))))
@@ -757,7 +757,7 @@ string according to mode's syntax."
        (not (c++-in-open-string-p))
        (not (newline))))
 
-(defun calculate-c++-indent (&optional parse-start)
+(defun c++-calculate-indent (&optional parse-start)
   "Return appropriate indentation for current line as C++ code.
 In usual case returns an integer: the column to indent to.
 Returns nil if line starts inside a string, t if in a comment."
@@ -994,10 +994,10 @@ Returns nil if line starts inside a string, t if in a comment."
 		    (looking-at "\\*/")))
 	     (search-backward "/*" lim 'move))
 	    ((and
-	      (let ((sblim (max (point-bol) lim)))
+	      (let ((sblim (max (c++-point-bol) lim)))
 		(if (< (point) sblim)
 		    nil
-		  (search-backward "//" (max (point-bol) lim) 'move)))
+		  (search-backward "//" (max (c++-point-bol) lim) 'move)))
 	      (not (c++-in-open-string-p))))
 	  (t (beginning-of-line)
 	     (skip-chars-forward " \t")
@@ -1028,7 +1028,7 @@ Returns nil if line starts inside a string, t if in a comment."
 	 (goto-char limit)
 	 (setq do-level 0))))))
 
-(defun indent-c++-exp ()
+(defun c++-indent-exp ()
   "Indent each line of the C++ grouping following point."
   (interactive)
   (let ((indent-stack (list nil))
@@ -1122,7 +1122,7 @@ Returns nil if line starts inside a string, t if in a comment."
 			(setq this-indent (car indent-stack))))))
 	      ;; Just started a new nesting level.
 	      ;; Compute the standard indent for this level.
-	      (let ((val (calculate-c++-indent
+	      (let ((val (c++-calculate-indent
 			  (if (car indent-stack)
 			      (- (car indent-stack))))))
 		(setcar indent-stack
@@ -1155,7 +1155,7 @@ Returns nil if line starts inside a string, t if in a comment."
 		     (save-excursion (end-of-line) (point)) t)
 		    (progn (indent-for-comment) (beginning-of-line))))))))))
 
-(defun fill-C-comment ()
+(defun c++-fill-C-comment ()
   "Fill a C style comment."
   (interactive)
   (save-excursion
@@ -1175,7 +1175,7 @@ Returns nil if line starts inside a string, t if in a comment."
       (delete-char -1)
       (setq fill-prefix save))))
 
-(defun point-bol ()
+(defun c++-point-bol ()
   "Returns the value of the point at the beginning of the current
 line."
   (save-excursion
@@ -1192,14 +1192,6 @@ line."
 	    "-*- C++ -*-"
 	    "\n\n")))
 
-(defun count-char-in-string (c s)
-  "Count the number of chars C in string S."
-  (let ((count 0)
-	(pos 0))
-    (while (< pos (length s))
-      (setq count (+ count (if (\= (aref s pos) c) 1 0)))
-      (setq pos (1+ pos)))
-    count))
 
 ;;; This page covers "macroization;" making C++ parameterized types
 ;;; via macros.
@@ -1219,10 +1211,10 @@ so that indentation will work right."
 	  (to-line (save-excursion (goto-char to)
 				   (count-lines (point-min) (point)))))
       (while (< line to-line)
-	(backslashify-current-line (> arg 0))
+	(c++-backslashify-current-line (> arg 0))
 	(forward-line 1) (setq line (1+ line))))))
 
-(defun backslashify-current-line (doit)
+(defun c++-backslashify-current-line (doit)
   "Backslashifies current line."
   (end-of-line 1)
   (cond
