@@ -3850,7 +3850,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-syntax 'brace-list-open placeholder))
 	     ;; CASE 5A.3: inline defun open
 	     (inclass-p
-	      (c-add-syntax 'inline-open (aref inclass-p 0)))
+	      (c-add-syntax 'inline-open)
+	      (c-add-syntax 'inclass (aref inclass-p 0)))
 	     ;; CASE 5A.4: ordinary defun open
 	     (t
 	      (goto-char placeholder)
