@@ -242,25 +242,33 @@ manually.
 ")
 (defvar c-cleanup-list '(scope-operator)
   "*List of various C/C++ constructs to \"clean up\".
-These cleanups only take place when the auto-newline feature is turned
+These clean ups only take place when the auto-newline feature is turned
 on, as evidenced by the `/a' or `/ah' appearing next to the mode name.
 Valid symbols are:
 
- brace-else-brace    -- clean up `} else {' constructs by placing entire
-                        construct on a single line.  This cleanup only
+ brace-else-brace    -- cleans up `} else {' constructs by placing entire
+                        construct on a single line.  This clean up only
                         takes place when there is nothing but white
-                        space between the braces and the else.  
+                        space between the braces and the `else'.  Clean
+			up occurs when the open-brace after the `else'
+			is typed.
  empty-defun-braces  -- cleans up empty defun braces by placing the
-                        braces on the same line.
+                        braces on the same line.  Clean up occurs when
+			the defun closing brace is typed.
  defun-close-semi    -- cleans up the terminating semi-colon on defuns
 			by placing the semi-colon on the same line as
-			the closing brace.
+			the closing brace.  Clean up occurs when the
+			semi-colon is typed.
  list-close-comma    -- cleans up commas following braces in array
-                        and aggregate initializers.
+                        and aggregate initializers.  Clean up occurs
+			when the comma is typed.
  scope-operator      -- cleans up double colons which may designate
-                        a C++ scope operator split across multiple
+			a C++ scope operator split across multiple
 			lines. Note that certain C++ constructs can
-			generate ambiguous situations.")
+			generate ambiguous situations.  This clean up
+			only takes place when there is nothing but
+			whitespace between colons. Clean up occurs
+			when the second colon is typed.")
 
 (defvar c-hanging-braces-alist '((brace-list-open))
   "*Controls the insertion of newlines before and after open braces.
