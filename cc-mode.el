@@ -292,9 +292,9 @@ forewarned!  Un-escaped characters in comment regions will break many
 things such as some indenting and blinking of parenthesis.
 
 Note further that only the default set of characters will be escaped
-automatically as they are typed. But entering \\[c++-tame-comments]
-(c++-tame-comments) will escape all characters which are members of
-this set, found in comments throughout the file.
+automatically as they are typed. But, entering c++-tame-comments
+(\\[c++-tame-comments]) will escape all characters which are members
+of this set, and which are found in comments throughout the file.
 
 This (mis-)feature will probably not be necessary in emacs 19.")
 
