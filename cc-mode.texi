@@ -91,7 +91,6 @@ Copyright @copyright{} 1995 Free Software Foundation, Inc.
 * Frequently Asked Questions::
 * Getting the latest cc-mode release::
 * Sample .emacs File::
-* Requirements::                
 * Limitations and Known Bugs::  
 * Mailing Lists and Submitting Bug Reports::  
 * Concept Index::               
