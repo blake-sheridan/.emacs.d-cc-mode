@@ -1630,7 +1630,7 @@ BOD is the beginning of the C++ definition."
 			      (looking-at c++-access-key))
 			    ;; access specifier. class defun opening brace
 			    ;; may not be in col zero
-			    (progn (goto-char containing-sexp)
+			    (progn (goto-char (or containing-sexp bod))
 				   (current-indentation))
 			  ;; member init, so add offset, but
 			  ;; subtract inclass-shift
@@ -1644,7 +1644,7 @@ BOD is the beginning of the C++ definition."
 				(looking-at "[ \t]*\\<friend\\>")))
 			  ;; indentation of class defun opening brace
 			  ;; may not be zero
-			  (progn (goto-char containing-sexp)
+			  (progn (goto-char (or containing-sexp bod))
 				 (current-indentation))
 			;; cont arg decls or member inits
 			(beginning-of-line)
