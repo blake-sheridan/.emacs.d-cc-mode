@@ -576,9 +576,8 @@ backward-delete-char-untabify."
   (if (or (c++-in-open-string-p)
 	  (c++-in-comment-p))
       (self-insert-command arg)
-    (let ((here (make-marker))
+    (let ((here (point-marker))
 	  (bolp (bolp)))
-      (set-marker here (point))
       (if (memq 'alignleft c++-electric-pound-behavior)
 	  (beginning-of-line))
       (insert-before-markers (make-string arg last-command-char))
@@ -616,8 +615,7 @@ backward-delete-char-untabify."
 		   (c++-in-comment-p bod))
 	      (insert "\\"))
 	  ;; try to clean up empty defun braces if conditions apply
-	  (let ((here (make-marker)))
-	    (set-marker here (point))
+	  (let ((here (point-marker)))
 	    (and c++-cleanup-empty-defun-braces-p
 		 c++-auto-newline
 		 (= last-command-char ?\})
@@ -629,8 +627,8 @@ backward-delete-char-untabify."
 	    (goto-char here)
 	    (set-marker here nil))
 	  (insert last-command-char)
-	  (let ((here (make-marker)) mbeg mend)
-	    (set-marker here (point))
+	  (let ((here (point-marker))
+		mbeg mend)
 	    (if (and c++-cleanup-brace-else-brace-p
 		     (= last-command-char ?\{)
 		     (let ((status (re-search-backward "}[ \t\n]*else[ \t\n]*{"
@@ -653,8 +651,7 @@ backward-delete-char-untabify."
 	      (progn
 		;; c++-auto-newline may have done an auto-fill
 		(save-excursion
-		  (let ((here (make-marker)))
-		    (set-marker here (point))
+		  (let ((here (point-marker)))
 		    (goto-char (- (point) 2))
 		    (c++-indent-line)
 		    (setq insertpos (- (goto-char here) 2))
@@ -1876,8 +1873,7 @@ function definition.")
   (let ((restore (point)))
     (c++-end-of-defun 1)
     (beginning-of-line 1)
-    (let ((end (make-marker)))
-      (set-marker end (point))
+    (let ((end (point-marker)))
       (c++-beginning-of-defun)
       (while (and (< (point) end))
 	(c++-indent-line)
