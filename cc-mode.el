@@ -904,7 +904,9 @@ the brace is inserted inside a literal."
 			 mend (match-end 0))
 		   (= mend here))
 		 (not (cc-in-literal)))
-	    (delete-region mbeg mend))
+	    (progn
+	      (delete-region mbeg mend)
+	      (insert "} else {")))
 	(goto-char (- (point-max) pos))
 	)
       ;; does a newline go after the brace?
