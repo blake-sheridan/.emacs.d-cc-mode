@@ -2801,7 +2801,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		     (beginning-of-line)
 		     (setq placeholder (point))
 		     (c-backward-syntactic-ws lim))
-		   (= (preceding-char) ?\))))
+		   (= (preceding-char) ?\)))
+		 (save-excursion
+		   (c-beginning-of-statement)
+		   (not (looking-at "typedef"))))
 	    (goto-char placeholder)
 	    (c-add-semantics 'knr-argdecl (c-point 'boi)))
 	   ;; CASE 4H: we are at the topmost level, make sure we skip
