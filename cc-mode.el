@@ -87,7 +87,7 @@
 ;; user definable variables
 ;; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-(defvar c-strict-semantics-p t
+(defvar c-strict-semantics-p nil
   "*If non-nil, all semantic symbols must be found in `c-offsets-alist'.
 If the semantic symbol for a particular line does not match a symbol
 in the offsets alist, an error is generated, otherwise no error is
@@ -114,7 +114,7 @@ reported and the semantic symbol is ignored.")
     (member-init-cont      . 0)
     (inher-intro           . +)
     (inher-cont            . c-lineup-multi-inher)
-    (block-open            . +)
+    (block-open            . 0)
     (block-close           . 0)
     (statement             . 0)
     (statement-cont        . +)
@@ -2388,7 +2388,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  ))
 	      (c-add-semantics 'class-open placeholder))
 	     ;; CASE 7A.2: just an ordinary block opening brace
-	     (t (c-add-semantics 'block-open placeholder))
+	     (t (c-add-semantics 'statement-cont placeholder))
 	     ))
 	   ;; CASE 7B: iostream insertion or extraction operator
 	   ((looking-at "<<\\|>>")
@@ -2470,13 +2470,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		     (setq placeholder (point))
 		     (looking-at c-case-statement-key)))
 	      (c-add-semantics 'statement-case-intro placeholder))
-	     ;; CASE 13.B: an embedded block open
-	     ((= char-after-ip ?{)
-	      (c-add-semantics 'block-open (c-point 'boi)))
-	     ;; CASE 13.C: continued statement
+	     ;; CASE 13.B: continued statement
 	     ((= char-before-ip ?,)
 	      (c-add-semantics 'statement-cont (c-point 'boi)))
-	     ;; CASE 13.D: a question/colon construct?  But make sure
+	     ;; CASE 13.C: a question/colon construct?  But make sure
 	     ;; what came before was not a label, and what comes after
 	     ;; is not a globally scoped function call!
 	     ((or (and (memq char-before-ip '(?: ??))
@@ -2488,10 +2485,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (and (memq char-after-ip '(?: ??))
 		       (not (looking-at "[ \t]*::"))))
 	      (c-add-semantics 'statement-cont (c-point 'boi)))
-	     ;; CASE 13.E: any old statement
+	     ;; CASE 13.D: any old statement
 	     ((< (point) indent-point)
 	      (c-add-semantics 'statement (c-point 'boi)))
-	     ;; CASE 13.F: first statement in a block
+	     ;; CASE 13.E: first statement in a block
 	     (t
 	      (goto-char containing-sexp)
 	      (if (/= (point) (c-point 'boi))
@@ -2499,11 +2496,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-semantics 'statement-block-intro (c-point 'boi)))
 	     )))
 	 ))				; end save-restriction
-      ;; now we need to look at any special additional indentations
+      ;; now we need to look at any langelem modifiers
       (goto-char indent-point)
-      ;; look for a comment only line
-      (if (looking-at "[ \t]*\\(//\\|/\\*\\)")
-	  (c-add-semantics 'comment-intro))
+      (skip-chars-forward " \t")
+      (cond
+       ;; CASE M1: look for a comment only line
+       ((looking-at "\\(//\\|/\\*\\)")
+	(c-add-semantics 'comment-intro))
+       ;; CASE M2: looking at a block-open brace
+       ((= (following-char) ?{)
+	(c-add-semantics 'block-open))
+       )
       ;; return the semantics
       semantics)))
 
