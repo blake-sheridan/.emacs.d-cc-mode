@@ -1095,7 +1095,8 @@ behavior that users are familiar with.")
    c-protection-key "[ \t]+\\)" c-symbol-key)
   "Regexp describing C++ base classes in a derived class definition.")
 
-(defvar c-recognize-knr-p t
+;; defconst'd instead of defvar'd to override any old pre-loaded versions
+(defconst c-recognize-knr-p t
   "Non-nil means K&R style argument declarations are valid.")
 
 ;; minor mode variables
