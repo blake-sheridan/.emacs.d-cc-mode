@@ -1422,7 +1422,7 @@ BOD is the beginning of the C++ definition."
 				    (forward-char 1)
 				    (skip-chars-forward " \t")
 				    (- (current-column)
-				       c++-class-member-indent)))
+				       inclass-shift)))
 			      ;; else first check to see if its a
 			      ;; multiple inheritance continuation line
 			      (if (looking-at
