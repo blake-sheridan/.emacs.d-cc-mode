@@ -1322,7 +1322,8 @@ BOD is the beginning of the C++ definition."
 			      ;; multiple inheritance continuation line
 			      (if (looking-at
 				   (concat "\\(class\\|struct\\)"
-					   "[ \t]+\\w+[ \t]*:[ \t]*"))
+					   "[ \t]+"
+					   "\\(\\w+[ \t]*:[ \t]*\\)*"))
 				  (if (progn (goto-char indent-point)
 					     (skip-chars-backward " \t\n")
 					     (= (preceding-char) ?,))
