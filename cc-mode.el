@@ -4146,7 +4146,9 @@ it trailing backslashes are removed."
 		   'c-electric-pound-behavior
 		   'c-hanging-braces-alist
 		   'c-hanging-colons-alist
+		   'c-hanging-comment-ender-p
 		   'c-tab-always-indent
+		   'c-recognize-knr-p
 		   'defun-prompt-regexp
 		   'tab-width
 		   )))
