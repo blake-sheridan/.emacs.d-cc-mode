@@ -2114,6 +2114,47 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  foundp))			;end s-e
     (error nil)))
 
+(defun c-inside-bracelist-p (containing-sexp)
+  ;; return the buffer position of the beginning of the brace list
+  ;; statement if we're inside a brace list, otherwise return nil.
+  ;; CONTAINING-SEXP is the buffer pos of the innermost containing
+  ;; paren
+  (let (donep bufpos)
+    (save-excursion
+      (or
+       ;; this will pick up enum lists
+       (progn (goto-char (1- containing-sexp))
+	      (c-beginning-of-statement)
+	      (setq bufpos (point))
+	      (and (< bufpos containing-sexp)
+		   (looking-at "\\<enum\\>")))
+       ;; this will pick up array/aggregate init lists, even if they
+       ;; are nested
+       (progn (goto-char (1- containing-sexp))
+	      (while (not donep)
+		(c-backward-syntactic-ws)
+		(cond
+		 ;; CASE 1: we've hit the beginning of the aggregate list
+		 ((= (preceding-char) ?=)
+		  (c-beginning-of-statement)
+		  (setq donep t
+			bufpos (point)))
+		 ;; CASE 2: maybe we're in a nested aggregate?
+		 ((= (preceding-char) ?{)
+		  (c-safe (forward-char -1)))
+		 ;; CASE 3: in a nested list, after the first one
+		 ;; perhaps?
+		 ((and (= (preceding-char) ?,)
+		       (= (char-after (- (point) 2)) ?}))
+		  (forward-char -1)
+		  (backward-sexp 1))
+		 ;; CASE 4: nope, we're done
+		 (t (setq donep t
+			  bufpos nil))
+		 )))
+       ))
+    bufpos))
+
 
 ;; defuns for calculating the semantic state and indenting a single
 ;; line of C/C++ code
@@ -2416,15 +2457,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (c-add-semantics 'inher-cont (point))
 	    )))
 	 ;; CASE 7: we are inside a brace-list
-	 ((save-excursion
-	    (or (progn (goto-char (1- containing-sexp))
-		       (c-beginning-of-statement)
-		       (setq placeholder (point))
-		       (looking-at "\\<enum\\>"))
-		(progn (goto-char (1- containing-sexp))
-		       (c-backward-syntactic-ws lim)
-		       (= (preceding-char) ?=))
-		))
+	 ((setq placeholder (c-inside-bracelist-p containing-sexp))
 	  (cond
 	   ;; CASE 7A: we're looking at the first line in a brace-list
 	   ((save-excursion
