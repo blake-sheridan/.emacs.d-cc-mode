@@ -1142,6 +1142,8 @@ Key bindings:
   (make-local-variable 'comment-end)
   (make-local-variable 'comment-column)
   (make-local-variable 'comment-start-skip)
+  (make-local-variable 'outline-regexp)
+  (make-local-variable 'outline-level)
   ;; now set their values
   (setq paragraph-start (concat "^$\\|" page-delimiter)
 	paragraph-separate paragraph-start
@@ -1150,6 +1152,8 @@ Key bindings:
 	parse-sexp-ignore-comments t
 	indent-line-function 'c-indent-line
 	indent-region-function 'c-indent-region
+	outline-regexp "[^#\n\^M]"
+	outline-level 'c-outline-level
 	comment-column 32
 	comment-start-skip "/\\*+ *\\|// *")
   ;; setup the comment indent variable in a Emacs version portable way
@@ -1383,6 +1387,11 @@ global and affect all future `c-mode' buffers."
 		 comment-column))
 	 )))))
 
+;; used by outline-minor-mode
+(defun c-outline-level ()
+  (save-excursion
+    (skip-chars-forward "\t ")
+    (current-column)))
 
 ;; active regions, and auto-newline/hungry delete key
 (defun c-keep-region-active ()
