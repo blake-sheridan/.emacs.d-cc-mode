@@ -776,7 +776,7 @@ Return the amount the indentation changed by."
 		  (setq indent (save-excursion
 				 (c-backward-to-start-of-if)
 				 (current-indentation))))
-		 ((looking-at "friend\[ \t]class[ \t]")
+		 ((looking-at "friend\[ \t]\\(class\\|struct\\)[ \t]")
 		  (setq indent (+ indent c++-friend-offset)))
 		 ((= (following-char) ?\))
 		  (setq indent (+ (- indent c-indent-level)
@@ -980,7 +980,8 @@ Returns nil if line starts inside a string, t if in a comment."
 				 (current-column)))
 			   ;; else first check to see if its a
 			   ;; multiple inheritance continuation line
-			   (if (looking-at "class[ \t]+\\w+[ \t]+:[ \t]+")
+			   (if (looking-at
+				"\\(class\\|struct\\)[ \t]+\\w+[ \t]+:[ \t]+")
 			       (progn (goto-char (match-end 0))
 				      (current-column))
 			     (current-indentation))))))
@@ -1101,13 +1102,15 @@ Returns nil if line starts inside a string, t if in a comment."
 				      "#\\|/\\*\\|//"
 				      "\\|\\(case\\|default\\)[ \t]"
 				      "\\|[a-zA-Z0-9_$]*:[^:]"
-				      "\\|friend[ \t]class[ \t]")))
+				      "\\|friend[ \t]"
+				      "\\(class\\|struct\\)[ \t]")))
 			;; Skip over comments and labels following openbrace.
 			(cond ((= (following-char) ?\#)
 			       (forward-line 1))
 			      ((looking-at "/\\*")
 			       (search-forward "*/" nil 'move))
-			      ((looking-at "//\\|friend[ \t]class[ \t]")
+			      ((looking-at
+				"//\\|friend[ \t]\\(class\\|struct\\)[ \t]")
 			       (forward-line 1))
 			      ((looking-at "\\(case\\|default\\)\\b")
 			       (forward-line 1))
@@ -1307,7 +1310,7 @@ Returns nil if line starts inside a string, t if in a comment."
 			   (forward-sexp 1)
 			   (looking-at ":[^:]"))))
 		(setq this-indent (max 0 (+ this-indent c-label-offset))))
-	    (if (looking-at "friend[ \t]class[ \t]")
+	    (if (looking-at "friend[ \t]\\(class\\|struct\\)[ \t]")
 		(setq this-indent (+ this-indent c++-friend-offset)))
 	    (if (= (following-char) ?})
 		(setq this-indent (- this-indent c-indent-level)))
