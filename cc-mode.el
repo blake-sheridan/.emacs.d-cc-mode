@@ -1633,6 +1633,7 @@ BOD is the beginning of the C++ definition."
 				   (let ((bol (c++-point 'bol)))
 				     (skip-chars-backward "^:" bol)
 				     (= (preceding-char) ?:))
+				   (not (c++-in-parens-p))
 				   (progn
 				     (forward-char -1)
 				     (skip-chars-backward " \t")
