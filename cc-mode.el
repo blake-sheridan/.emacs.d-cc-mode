@@ -3695,7 +3695,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-beginning-of-statement-1 lim)
 	      ;; skip over any access-specifiers
 	      (if inclass-p
-		  (while (looking-at c-access-key)
+		  (while (and c-access-key (looking-at c-access-key))
 		    (forward-line 1)))
 	      ;; skip over comments, whitespace
 	      (c-forward-syntactic-ws indent-point)
