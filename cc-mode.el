@@ -2203,22 +2203,23 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	  donep boi char
 	  (lim (or lim (c++-point 'bod))))
       (if (< lim (point))
-	  (progn
-	    (narrow-to-region lim (point))
-	    (modify-syntax-entry ?# "< b" c++-mode-syntax-table)
-	    (while (not donep)
-	      ;; if you're not running a patched lemacs, the new byte
-	      ;; compiler will complain about this function. ignore that
-	      (backward-syntactic-ws)
-	      (if (not (looking-at "#\\|/\\*\\|//"))
-		  (forward-char 1))
-	      (setq boi (c++-point 'boi)
-		    char (char-after boi))
-	      (if (and char (= char ?#))
-		  (progn (goto-char boi)
-			 (setq donep (<= (point) lim)))
-		(setq donep t))
-	      )
+	  (unwind-protect
+	      (progn
+		(narrow-to-region lim (point))
+		(modify-syntax-entry ?# "< b" c++-mode-syntax-table)
+		(while (not donep)
+		  ;; if you're not running a patched lemacs, the new byte
+		  ;; compiler will complain about this function. ignore that
+		  (backward-syntactic-ws)
+		  (if (not (looking-at "#\\|/\\*\\|//"))
+		      (forward-char 1))
+		  (setq boi (c++-point 'boi)
+			char (char-after boi))
+		  (if (and char (= char ?#))
+		      (progn (goto-char boi)
+			     (setq donep (<= (point) lim)))
+		    (setq donep t))
+		  ))
 	    (modify-syntax-entry ?# "." c++-mode-syntax-table)))
       )))
 
