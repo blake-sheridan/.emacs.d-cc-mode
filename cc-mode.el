@@ -114,6 +114,8 @@ reported and the semantic symbol is ignored.")
     (member-init-cont      . 0)
     (inher-intro           . +)
     (inher-cont            . c-lineup-multi-inher)
+    ;;some people might like this behavior instead
+    ;;(block-open            . c-adaptive-block-open)
     (block-open            . 0)
     (block-close           . 0)
     (statement             . 0)
@@ -2421,7 +2423,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (c-safe (progn (forward-sexp 2) t))
 		   (progn (c-forward-syntactic-ws)
 			  (>= (point) indent-point))))
-	    (c-add-semantics 'substatement placeholder))
+	    (c-add-semantics 'substatement placeholder)
+	    (if (= char-after-ip ?{)
+		(c-add-semantics 'block-open)))
 	   ;; CASE 7D: continued statement. find the accurate
 	   ;; beginning of statement or substatement
 	   (t
@@ -2522,13 +2526,16 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-semantics 'statement-cont (c-point 'boi)))
 	     ;; CASE 13.D: any old statement
 	     ((< (point) indent-point)
-	      (c-add-semantics 'statement (c-point 'boi)))
+	      (c-add-semantics 'statement (c-point 'boi))
+	      (if (= char-after-ip ?{)
+		  (c-add-semantics 'block-open)))
 	     ;; CASE 13.E: first statement in a block
-	     (t
-	      (goto-char containing-sexp)
-	      (if (/= (point) (c-point 'boi))
-		  (c-beginning-of-statement))
-	      (c-add-semantics 'statement-block-intro (c-point 'boi)))
+	     (t (goto-char containing-sexp)
+		(if (/= (point) (c-point 'boi))
+		    (c-beginning-of-statement))
+		(c-add-semantics 'statement-block-intro (c-point 'boi))
+		(if (= char-after-ip ?{)
+		    (c-add-semantics 'block-open)))
 	     )))
 	 ))				; end save-restriction
       ;; now we need to look at any langelem modifiers
@@ -2538,13 +2545,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
        ;; CASE M1: look for a comment only line
        ((looking-at "\\(//\\|/\\*\\)")
 	(c-add-semantics 'comment-intro))
-       ;; CASE M2: looking at a block-open brace, but make sure
-       ;; other brace open symbols aren't already on the list
-       ((and (= (following-char) ?{)
-	     (not (assq 'class-open semantics))
-	     (not (assq 'defun-open semantics))
-	     (not (assq 'inline-open semantics)))
-	(c-add-semantics 'block-open))
        )
       ;; return the semantics
       semantics)))
@@ -2682,6 +2682,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			 ((= stars 2) 0)
 			 (t (- (match-end 0) (match-beginning 0)))))))
       (current-column))))
+
+(defun c-adaptive-block-open (langelem)
+  ;; when substatement is on semantics list, return negative
+  ;; c-basic-offset, otherwise return zero
+  (if (assq 'substatement semantics)
+      (- c-basic-offset)
+    0))
 
 (defun c-indent-for-comment (langelem)
   ;; support old behavior for comment indentation. we look at
