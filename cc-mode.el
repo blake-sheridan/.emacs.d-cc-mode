@@ -3396,6 +3396,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     (goto-char containing-sexp)
 	     (and (c-safe (progn (forward-sexp -1) t))
 		  (looking-at "\\<for\\>")))
+	    (goto-char (1+ containing-sexp))
+	    (c-forward-syntactic-ws indent-point)
 	    (c-beginning-of-statement 1 containing-sexp)
 	    (if (= char-before-ip ?\;)
 		(c-add-syntax 'statement (point))
