@@ -2692,10 +2692,15 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   (or (not (eq major-mode 'objc-mode))
 	       (progn
 		 (forward-sexp -1)
-		 (backward-char)
+		 (forward-char -1)
 		 (c-backward-syntactic-ws)
 		 (not (or (= (preceding-char) ?-)
-			  (= (preceding-char) ?+))))))
+			  (= (preceding-char) ?+)
+			  ;; or a class category
+			  (progn
+			    (forward-sexp -2)
+			    (looking-at c-class-key))
+			  )))))
       )))
 
 ;; defuns to look backwards for things
@@ -3179,7 +3184,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			      (backward-char)
 			      (c-backward-syntactic-ws)
 			      (not (or (= (preceding-char) ?-)
-				       (= (preceding-char) ?+))))))
+				       (= (preceding-char) ?+)
+				       ;; or a class category
+				       (progn
+					 (forward-sexp -2)
+					 (looking-at c-class-key))
+				       )))))
 		   )
 		 (save-excursion
 		   (c-beginning-of-statement)
@@ -3845,7 +3855,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 				   (- (current-column) 1)))))
       (if (not prev-col-column)
 	  c-basic-offset
-	;; calculate offset of
 	(goto-char here)
 	(skip-chars-forward "^:" eol)
 	(if (= (following-char) ?:)
