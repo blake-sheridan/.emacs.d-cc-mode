@@ -4035,17 +4035,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	;; now we need to look at any modifiers
 	(goto-char indent-point)
 	(skip-chars-forward " \t")
+	;; are we looking at a comment only line?
 	(if (looking-at c-comment-start-regexp)
-	    ;; we are looking at a comment. if the comment is at or to
-	    ;; the right of comment-column, then all we want on the
-	    ;; syntax list is comment-intro, otherwise, the
-	    ;; indentation of the comment is relative to where a
-	    ;; normal statement would indent
-	    (if (< (current-column) comment-column)
-		(c-add-syntax 'comment-intro)
-	      ;; reset syntax kludge
-	      (setq syntax nil)
-	      (c-add-syntax 'comment-intro)))
+	    (c-add-syntax 'comment-intro))
 	;; we might want to give additional offset to friends (in C++)
 	(if (and (eq major-mode 'c++-mode)
 		 (looking-at "friend[ \t]+"))
@@ -4233,17 +4225,14 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; only-lines
   (save-excursion
     (back-to-indentation)
-    ;; at or to the right of comment-column
-    (if (>= (current-column) comment-column)
-	(c-comment-indent)
-      ;; otherwise, indent as specified by c-comment-only-line-offset
-      (if (not (bolp))
-	  (or (car-safe c-comment-only-line-offset)
-	      c-comment-only-line-offset)
-	(or (cdr-safe c-comment-only-line-offset)
-	    (car-safe c-comment-only-line-offset)
-	    -1000			;jam it against the left side
-	    )))))
+    ;; indent as specified by c-comment-only-line-offset
+    (if (not (bolp))
+	(or (car-safe c-comment-only-line-offset)
+	    c-comment-only-line-offset)
+      (or (cdr-safe c-comment-only-line-offset)
+	  (car-safe c-comment-only-line-offset)
+	  -1000				;jam it against the left side
+	  ))))
 
 (defun c-lineup-runin-statements (langelem)
   ;; line up statements in coding standards which place the first
