@@ -1178,7 +1178,7 @@ of the expression are preserved."
 	  ;;nil nil state))
 	  (let ((start (point))
 		(line-end (progn (end-of-line) (point)))
-		(end (progn (forward-char) (point))))
+		(end (progn (if (not (eobp)) (forward-char)) (point))))
 	    (setq state (parse-partial-sexp start end nil nil state))
 	    (goto-char line-end))
 	  (setq next-depth (car state))
@@ -1578,14 +1578,14 @@ point of the beginning of the C++ definition."
      ((save-excursion
 	(back-to-indentation)
 	(looking-at "//\\|/\\*"))
-      ;; we've found a comment-only line. we now must try to
-      ;; determine if the line is a continuation from a comment
-      ;; on the previous line.  we check to see if the comment
-      ;; starts in comment-column and if so, we don't change its
+      ;; we've found a comment-only line. we now must try to determine
+      ;; if the line is a continuation from a comment on the previous
+      ;; line.  we check to see if the comment starts in or to the
+      ;; right of comment-column and if so, we don't change its
       ;; indentation.
       (skip-chars-forward " \t")
-      (if (= (current-column) comment-column)
-	  (setq indent comment-column)
+      (if (>= (current-column) comment-column)
+	  (setq indent (current-column))
 	(setq indent (c++-comment-offset (bolp) indent))))
      (t
       (skip-chars-forward " \t")
