@@ -208,6 +208,14 @@ automatically escaped when typed in, but entering
 
 (defvar c++-default-macroize-column 78
   "*Column to insert backslashes.")
+
+(defvar c++-special-indent-hook nil
+  "*Hook for user defined special indentation adjustments.
+This hook gets called after each line to allow the user to do whatever
+special indentation adjustments are desired.  If you have non-standard
+indentation, you will likely need to have c++-relative-offset-p set to
+nil.")
+
 
 ;; ======================================================================
 ;; c++-mode main entry point
@@ -1208,6 +1216,10 @@ point of the beginning of the C++ definition."
       ;; position after the indentation.  Else stay at same point in text.
       (if (> (- (point-max) pos) (point))
 	  (goto-char (- (point-max) pos))))
+    ;; save-excursion is necessary because things break if the hook
+    ;; changes point or mark
+    (save-excursion
+      (run-hooks 'c++-special-indent-hook))
     shift-amt))
 
 (defun c++-calculate-indent (&optional parse-start bod)
@@ -1892,6 +1904,12 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 		       'tab-width
 		       )))
     (set-buffer buffer)
+    (if c++-special-indent-hook
+	(insert "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+		"c++-special-indent-hook is set to '"
+		(symbol-name c++-special-indent-hook)
+		".\nPerhaps this is your problem?\n"
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n"))
     (insert (emacs-version) "\n")
     (insert "c++-mode.el " c++-version
 	    "\n\ncurrent state:\n==============\n(setq\n")
@@ -1905,7 +1923,8 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 		  (prin1-to-string val)
 		  "\n"))))
      varlist)
-    (insert "     )\n")))
+    (insert "     )\n")
+    ))
 
 (defun c++-submit-bug-report ()
   "Submit via mail a bug report using the mailer in c++-mailer."
