@@ -2123,11 +2123,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; Forward skip of syntactic whitespace for Emacs 19.
   (save-restriction
     (let* ((lim (or lim (point-max)))
-	   (here lim))
+	   (here lim)
+	   (hugenum (point-max)))
       (narrow-to-region lim (point))
       (while (/= here (point))
 	(setq here (point))
-	(forward-comment 1)
+	(forward-comment hugenum)
 	;; skip preprocessor directives
 	(if (and (= (following-char) ?#)
 		 (= (c-point 'boi) (point)))
@@ -2138,13 +2139,14 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; Backward skip over syntactic whitespace for Emacs 19.
   (save-restriction
     (let* ((lim (or lim (c-point 'bod)))
-	   (here lim))
+	   (here lim)
+	   (hugenum (- (point-max))))
       (if (< lim (point))
 	  (progn
 	    (narrow-to-region lim (point))
 	    (while (/= here (point))
 	      (setq here (point))
-	      (forward-comment -1)
+	      (forward-comment hugenum)
 	      (if (eq (c-in-literal lim) 'pound)
 		  (beginning-of-line))
 	      )))
