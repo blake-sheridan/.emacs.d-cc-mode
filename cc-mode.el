@@ -1239,10 +1239,14 @@ The expansion is entirely correct because it uses the C preprocessor."
 (defconst c-C++-friend-key
   "friend[ \t]+\\|template[ \t]*<.+>[ \t]*friend[ \t]+"
   "Regexp describing friend declarations in C++ classes.")
-(defconst c-C++-comment-start-regexp "/[/*]"
-  "Dual comment value for `c-comment-start-regexp'.")
-(defconst c-C-comment-start-regexp "/\\*"
-  "Single comment style value for `c-comment-start-regexp'.")
+
+;; comment starter definitions for various languages.  the language
+;; modes will set c-comment-start-regexp to this value.
+(defconst c-C++-comment-start-regexp "/[/*]")
+(defconst c-C-comment-start-regexp "/[*]")
+;; We need to match all 3 Java style comments
+;; 1) Traditional C block; 2) javadoc /** ...; 3) C++ style
+(defconst c-Java-comment-start-regexp "/\\(/\\|[*][*]?\\)")
 
 (defconst c-ObjC-method-key
   (concat
@@ -1453,7 +1457,7 @@ Key bindings:
  	comment-end   ""
  	comment-multi-line nil
  	c-conditional-key c-Java-conditional-key
- 	c-comment-start-regexp c-C++-comment-start-regexp
+ 	c-comment-start-regexp c-Java-comment-start-regexp
   	c-class-key c-Java-class-key
 	c-method-key c-Java-method-key
 	c-double-slash-is-comments-p t
@@ -2616,7 +2620,9 @@ Optional prefix ARG means justify paragraph as well."
 				      (goto-char comment-start-place)
 				    (search-backward "/*"))
 				  (if (and (not c-hanging-comment-starter-p)
-					   (looking-at "/\\*[ \t]*$"))
+					   (looking-at
+					    (concat c-comment-start-regexp
+						    "[ \t]*$")))
 				      (forward-line 1))
 				  ;; Protect text before the comment
 				  ;; start by excluding it.  Add
