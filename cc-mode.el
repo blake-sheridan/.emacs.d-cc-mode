@@ -784,12 +784,16 @@ supported list, along with the values for this variable:
     ;; Lucid emacs has the best implementation
     (modify-syntax-entry ?/  ". 1456" c++-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
-    (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table))
+    (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
+    ;; Give CR the same syntax as newline, for selective-display
+    (modify-syntax-entry ?\^m "> b"    c++-mode-syntax-table))
    ((memq '1-bit c-emacs-features)
     ;; FSF Emacs 19 does things differently, but we can work with it
     (modify-syntax-entry ?/  ". 124b" c++-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
-    (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table))
+    (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
+    ;; Give CR the same syntax as newline, for selective-display
+    (modify-syntax-entry ?\^m "> b"    c++-mode-syntax-table))
    )
   ;; TBD: does it make sense for colon to be symbol class in C++?
   ;; I'm not so sure, since c-label-key is busted on lines like:
@@ -812,14 +816,18 @@ supported list, along with the values for this variable:
     ;; Lucid emacs has the best implementation
     (modify-syntax-entry ?/  ". 1456" objc-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23"   objc-mode-syntax-table)
-    (modify-syntax-entry ?\n "> b"    objc-mode-syntax-table))
+    (modify-syntax-entry ?\n "> b"    objc-mode-syntax-table)
+    ;; Give CR the same syntax as newline, for selective-display
+    (modify-syntax-entry ?\^m "> b"   objc-mode-syntax-table))
    ((memq '1-bit c-emacs-features)
     ;; FSF Emacs 19 does things differently, but we can work with it
     (modify-syntax-entry ?/  ". 124b" objc-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23"   objc-mode-syntax-table)
-    (modify-syntax-entry ?\n "> b"    objc-mode-syntax-table))
+    (modify-syntax-entry ?\n "> b"    objc-mode-syntax-table)
+    ;; Give CR the same syntax as newline, for selective-display
+    (modify-syntax-entry ?\^m "> b"   objc-mode-syntax-table))
    )
-)
+  )
 
 (defvar c-hungry-delete-key nil
   "Internal state of hungry delete key feature.")
