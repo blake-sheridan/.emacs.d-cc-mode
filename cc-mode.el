@@ -128,6 +128,13 @@
 
 ;;; Code:
 
+;; some people may not have c-mode loaded in by default. c++-mode.el
+;; unfortunately still depends on distrib c-mode. c-mode doesn't
+;; provide itself so this hack is best known way to ensure its loaded
+;; in
+(or (boundp 'c-indent-level)
+    (load "c-mode" nil t))
+
 
 ;; ======================================================================
 ;; user definable variables
