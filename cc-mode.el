@@ -552,13 +552,10 @@ supported list, along with the values for this variable:
   (define-key c-mode-map "\C-c\C-a"  'c-toggle-auto-state)
   (define-key c-mode-map "\C-c\C-b"  'c-submit-bug-report)
   (define-key c-mode-map "\C-c\C-c"  'c-comment-region)
-  (define-key c-mode-map "\C-c\C-d"  'c-down-block)
   (define-key c-mode-map "\C-c\C-h"  'c-toggle-hungry-state)
   (define-key c-mode-map "\C-c\C-o"  'c-set-offset)
   (define-key c-mode-map "\C-c\C-s"  'c-show-semantic-information)
   (define-key c-mode-map "\C-c\C-t"  'c-toggle-auto-hungry-state)
-  ;; TBD: this keybinding will conflict with c-up-conditional
-  ;(define-key c-mode-map "\C-c\C-u"  'c-up-block)
   (define-key c-mode-map "\C-c\C-v"  'c-version)
   ;; old Emacsen need to tame certain characters
   (if (memq 'v18 c-emacs-features)
@@ -1343,28 +1340,6 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
       (if add-p
 	  (setq c-offsets-alist (cons (cons symbol offset) c-offsets-alist))
 	(error "%s is not a valid syntactic symbol." symbol))))
-  (c-keep-region-active))
-
-(defun c-up-block (arg)
-  "Go up ARG enclosing block levels.
-With a negative ARG, go down ARG block levels."
-  (interactive "p")
-  (while (and (c-safe (progn (up-list (- arg)) t))
-	      (or (and (< 0 arg)
-		       (/= (following-char) ?{))
-		  (and (> 0 arg)
-		       (/= (preceding-char) ?}))
-		  )))
-  (c-keep-region-active))
-
-(defun c-down-block (arg)
-  "Go down ARG enclosing block levels.
-With a negative ARG, go up ARG block levels."
-  (interactive "p")
-  (c-up-block arg)
-  (if (< 0 arg)
-      (c-safe (forward-sexp 1))
-    (c-safe (backward-sexp 1)))
   (c-keep-region-active))
 
 (defun c-set-style (style &optional global)
