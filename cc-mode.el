@@ -1244,8 +1244,12 @@ the \"real\" top level.  Optional BOD is the beginning of defun."
 	(while (and (setq foundp (re-search-backward
 				  (concat "[;}]\\|" c++-class-key)
 				  (point-min) t))
-		    (or (c++-in-literal)
-			(c++-in-parens-p))))
+		    (let ((bod (c++-point 'bod)))
+		      (or (c++-in-literal bod)
+			  (c++-in-parens-p bod)
+			  ;; see if class key is inside a template spec
+			  (skip-chars-backward " \t")
+			  (memq (preceding-char) '(?, ?<))))))
 	(if (memq (following-char) '(?} ?\;))
 	    nil
 	  (setq state (c++-parse-state containing-sexp))
@@ -1315,15 +1319,15 @@ used."
 (defun c++-in-parens-p (&optional lim)
   "Return t if inside a paren expression.
 Optional LIM is used as the backward limit of the search."
-  ;; hack to work around emacs comment bug
-  (let ((backlim (or lim (c++-point 'bod))))
+  (let ((lim (or lim (c++-point 'bod))))
     (condition-case ()
 	(save-excursion
 	  (save-restriction
-	    (narrow-to-region (point) backlim)
+	    (narrow-to-region (point) lim)
 	    (goto-char (point-max))
 	    (= (char-after (or (scan-lists (point) -1 1) (point-min))) ?\()))
       (error nil))))
+
 
 ;; ======================================================================
 ;; defuns for calculating indentation
