@@ -1982,8 +1982,10 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
 STYLENAME is a string representing the desired style from the list of
 styles described in the variable `c-style-alist'.  See that variable
 for details of setting up styles."
-  (interactive (list (completing-read "Indentation style? "
-                                      c-style-alist nil t)))
+  (interactive (list (let ((completion-ignore-case t)
+			   (prompt (format "Which %s indentation style? "
+					   mode-name)))
+		       (completing-read prompt c-style-alist nil t))))
   (let ((vars (cdr (assoc stylename c-style-alist)))
 	(default (cdr (assoc "CC-MODE" c-style-alist))))
     (or vars (error "Invalid indentation style `%s'" stylename))
