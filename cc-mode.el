@@ -3149,8 +3149,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(c-add-syntax 'statement (point))
 	      (c-add-syntax 'statement-cont (point))
 	      ))
-	   ;; CASE 6D: maybe a continued method call
+	   ;; CASE 6D: maybe a continued method call. This is the case
+	   ;; when we are inside a [] bracketed exp, and what precede
+	   ;; the opening bracket is not an identifier.
 	   ((and (eq major-mode 'objc-mode)
+		 (= (char-after containing-sexp) ?\[)
 		 (save-excursion
 		   (goto-char (1- containing-sexp))
 		   (c-backward-syntactic-ws (c-point 'bod))
