@@ -2527,7 +2527,7 @@ BOD is the `beginning-of-defun' point."
       (c++-backward-syntactic-ws)
       (condition-case errcond
 	  (backward-sexp 1)
-	(error (error "Possible unbalanced if/else encountered.")))
+	(error (error "Orphaned `else' clause encountered.")))
       (cond ((looking-at "else\\b")
 	     (setq if-level (1+ if-level)))
 	    ((looking-at "if\\b")
