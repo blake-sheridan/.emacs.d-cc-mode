@@ -667,7 +667,7 @@ supported list, along with the values for this variable:
     ;; Do it the hard way for Emacs 18 -- given by JWZ
     (setq c++-mode-map (nconc (make-sparse-keymap) c-mode-map)))
   ;; add bindings which are only useful for C++
-  (define-key c++-mode-map "\C-c\C-;"  'c-scope-operator)
+  (define-key c++-mode-map "\C-c:"  'c-scope-operator)
   )
 
 (defun c-populate-syntax-table (table)
