@@ -1571,27 +1571,17 @@ Syntactic whitespace is defined as lexical whitespace, C and C++ style
 comments, and preprocessor directives.  Search no farther back than
 optional LIM.  If LIM is ommitted, `beginning-of-defun' is used."
   (save-restriction
-    (let ((lim (or lim (c++-point 'bod)))
-	  donep boi char
-	  (skipre (concat "#\\|/\\*\\|//\\|\n"
-			  (if (memq '1-bit c++-emacs-features)
-			      "\\|\\'" ""))))
+    (let* ((lim (or lim (c++-point 'bod)))
+	   (here lim))
       (if (< lim (point))
 	  (unwind-protect
 	      (progn
 		(narrow-to-region lim (point))
 		(modify-syntax-entry ?# "< b" c++-mode-syntax-table)
-		(while (not donep)
+		(while (/= here (point))
+		  (setq here (point))
 		  (forward-comment -1)
-		  (if (not (looking-at skipre))
-		      (forward-char 1))
-		  (setq boi (c++-point 'boi)
-			char (char-after boi))
-		  (if (and char (= char ?#))
-		      (progn (goto-char boi)
-			     (setq donep (<= (point) lim)))
-		    (setq donep t))
-		  ))
+		  (skip-chars-backward " \t\n")))
 	    (modify-syntax-entry ?# "." c++-mode-syntax-table)))
       )))
 
