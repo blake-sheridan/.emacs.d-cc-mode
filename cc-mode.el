@@ -163,11 +163,11 @@ There are many flavors of emacs out on the net, each with different
 features supporting those needed by c++-mode.  Here's the current
 known list, along with the values for this variable:
 
-Vanilla GNU 18/Epoch 4: '(no-dual-comments v18)
-Patched GNU 18/Epoch 4: '(8-bit old-v19)
-Lemacs 19.4 - 19.6:     '(8-bit old-v19)
-Lemacs 19.7 and over:   '(8-bit v19)
-GNU 19:                 '(1-bit v19)")
+Vanilla GNU 18/Epoch 4: (no-dual-comments v18)
+Patched GNU 18/Epoch 4: (8-bit old-v19)
+Lemacs 19.4 - 19.6:     (8-bit old-v19)
+Lemacs 19.7 and over:   (8-bit v19)
+GNU 19:                 (1-bit v19)")
 
 (defvar c++-mode-abbrev-table nil
   "Abbrev table in use in C++-mode buffers.")
