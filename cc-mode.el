@@ -1396,7 +1396,7 @@ forward."
   (c-keep-region-active))
 
 
-(defun c-beginning-of-statement (count)
+(defun c-beginning-of-statement (&optional count)
   "Go to the beginning of the innermost C statement.
 With prefix arg, go back N - 1 statements.  If already at the beginning of a
 statement then go to the beginning of the preceding one.
@@ -1420,7 +1420,7 @@ move by sentences instead of statements."
 	(c-end-of-statement-1)
 	(setq count (1+ count))))))
 
-(defun c-end-of-statement (count)
+(defun c-end-of-statement (&optional count)
   "Go to the end of the innermost C statement.
 With prefix arg, go forward N - 1 statements.
 Move forward to end of the next statement if already at end.
