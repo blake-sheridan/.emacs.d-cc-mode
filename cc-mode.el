@@ -1129,12 +1129,19 @@ containing class definition (useful for inline functions)."
 	       (= (car state) 1)
 	       (progn (goto-char containing-sexp)
 		      (= (following-char) ?\{))
-	       (progn
-		 (goto-char (condition-case scanlist-err
-				(scan-lists (point) -1 -1)
-			      (error (point-min))))
-		 (re-search-forward "\\<\\(class\\|struct\\)\\>" here 'move)
-		 ))))))
+	       (let* ((scanback (condition-case scanlist-err
+				    (scan-lists (point) -1 -1)
+				  (error (point-min))))
+		      (regexp "\\<\\(class\\|struct\\)\\>")
+		      (lim (progn (goto-char scanback)
+				  (re-search-forward regexp here 'move)))
+		      (pos (point))
+		      state)
+		 (and lim
+		      (progn (goto-char scanback)
+			     (setq state (c++-parse-state pos)))
+		      (> 0 (nth 0 state)))))
+	  ))))
 
 (defun c++-in-literal (&optional lim)
   "Determine if point is in a C++ `literal'.
