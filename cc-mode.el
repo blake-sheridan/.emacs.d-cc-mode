@@ -395,7 +395,8 @@ is necessary under GNU Emacs 18, please refer to the texinfo manual.")
 
 (defconst c-emacs-features
   (let ((mse-spec 'no-dual-comments)
-	(scanner 'v18))
+	(scanner 'v18)
+	flavor)
     ;; vanilla GNU18/Epoch 4 uses default values
     (if (= 8 (length (parse-partial-sexp (point) (point))))
 	;; we know we're using v19 style dual-comment specifications.
@@ -414,19 +415,23 @@ is necessary under GNU Emacs 18, please refer to the texinfo manual.")
 	  (if (fboundp 'forward-comment)
 	      (setq scanner 'v19)
 	    ;; we no longer support older Lemacsen
-	    (error "cc-mode no longer supports pre 19.8 Lemacsen. Upgrade!")
-	    )))
+	    (error "cc-mode no longer supports pre 19.8 Lemacsen. Upgrade!"))
+	  ;; find out what flavor of Emacs 19 we're using
+	  (if (string-match "Lucid" emacs-version)
+	      (setq flavor 'Lucid)
+	    (setq flavor 'FSF))
+	  ))
     ;; now cobble up the necessary list
-    (list mse-spec scanner))
+    (list mse-spec scanner flavor))
   "A list of features extant in the Emacs you are using.
 There are many flavors of Emacs out on the net, each with different
 features supporting those needed by cc-mode.  Here's the current
 supported list, along with the values for this variable:
 
  Vanilla GNU 18/Epoch 4:   (no-dual-comments v18)
- GNU 18/Epoch 4 (patch2):  (8-bit v19)
- Lemacs 19.8 and beyond:   (8-bit v19)
- FSFmacs 19:               (1-bit v19)
+ GNU 18/Epoch 4 (patch2):  (8-bit v19 FSF)
+ Lemacs 19.8 and beyond:   (8-bit v19 Lucid)
+ FSFmacs 19:               (1-bit v19 FSF)
 
 Note that older, pre-19.8 Lemacsen, version 1 patches for
 GNU18/Epoch4, and FSFmacs19 8-bit patches are no longer supported.  If
@@ -478,9 +483,6 @@ Emacs.")
   (define-key map "\C-c\C-u"  'c-up-block)
   (define-key map "\C-c\C-v"  'c-version)
   (define-key map "\C-c\C-x"  'c-match-paren)
-  ;; only useful for C++
-  (if (eq major-mode 'c++-mode)
-      (define-key map "\C-c\C-;"  'c-scope-operator))
   ;; old Emacsen need to tame certain characters
   (if (memq 'v18 c-emacs-features)
       (progn
@@ -503,8 +505,18 @@ Emacs.")
   "Keymap used in c++-mode buffers.")
 (if c++-mode-map
     ()
-  (setq c++-mode-map (make-sparse-keymap))
-  (c-populate-map c++-mode-map))
+  ;; In Emacs 19, it makes more sense to inherit c-mode-map
+  (if (memq 'v19 c-emacs-features)
+      ;; Lucid and FSF 19 do this differently
+      (if (memq 'Lucid c-emacs-features)
+	  (set-keymap-parent c++-mode-map c-mode-map)
+	(setq c++-mode-map (cons 'keymap c-mode-map)))
+    ;; Do it the hard way for GNU18
+    (setq c++-mode-map (make-sparse-keymap))
+    (c-populate-map c++-mode-map))
+  ;; add bindings which are only useful for C++
+  (define-key c++-mode-map "\C-c\C-;"  'c-scope-operator)
+  )
 
 (defun c-populate-syntax-table (table)
   ;; Populate the syntax TABLE
