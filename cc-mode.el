@@ -2252,10 +2252,11 @@ search."
 			 (goto-char here))
 		     foundp)))
 	  ;; are we in the middle of an else-if clause?
-	  (if (and (not substmt-p)
-		   (save-excursion
-		     (c-safe (forward-sexp -1))
-		     (looking-at "\\<else\\>[ \t\n]+\\<if\\>")))
+	  (if (save-excursion
+		(and (not substmt-p)
+		     (c-safe (progn (forward-sexp -1) t))
+		     (looking-at "\\<else\\>[ \t\n]+\\<if\\>")
+		     (not (c-in-literal lim))))
 	      (progn
 		(forward-sexp -1)
 		(c-backward-to-start-of-if lim)))
