@@ -1777,6 +1777,7 @@ BOD is the beginning of the C++ definition."
 			    ;; a simple for/else/while/if/do loop
 			    (beginning-of-line 1)
 			    (forward-char -1)
+			    (c++-backward-over-syntactic-ws containing-sexp)
 			    (c-backward-to-start-of-continued-exp
 			     containing-sexp)
 			    (if (looking-at
