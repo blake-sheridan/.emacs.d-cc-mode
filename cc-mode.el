@@ -2074,7 +2074,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; Determinate the syntactic state of the code at point.
   ;; Iteratively uses `parse-partial-sexp' from point to LIM and
   ;; returns the result of `parse-partial-sexp' at point.  LIM is
-  ;; optional and defaults to `point-max'."
+  ;; optional and defaults to `point-max'.
   (let ((lim (or lim (point-max)))
 	state)
     (while (< (point) lim)
