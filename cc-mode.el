@@ -1231,9 +1231,10 @@ of the expression are preserved."
 
 (defun cc-indent-exp (&optional shutup-p)
   "Indent each line in block following pont.
-Optional SHUTUP-P if non-nil, inhibits message printing."
+Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (interactive "P")
   (or (memq (following-char) '(?\( ?\[ ?\{))
+      shutup-p
       (error "Character under point does not start an expression."))
   (let ((start (point))
 	(bod (cc-point 'bod))
