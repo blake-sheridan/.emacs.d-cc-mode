@@ -1208,7 +1208,7 @@ it finds in `c-file-offsets'."
 	     )))
 	c-file-offsets)))
 
-;; now add the hook to file-file-hook, if both it and add-hook are
+;; now add the hook to find-file-hooks, if both it and add-hook are
 ;; defined.  This won't work for Emacs 18, but then you shouldn't be
 ;; using Emacs 18 anymore anyway.
 (and (fboundp 'add-hook)
