@@ -579,7 +579,7 @@ as designated in the variable `c-file-style'.")
 ;; Shut the byte-compiler up. Requires Emacs 19 or JWZ's improved
 ;; byte-compiler. Otherwise, comment this line out and ignore
 ;; any warnings.
-(byte-compiler-options (warnings nil))
+;;(byte-compiler-options (warnings nil))
 
 ;; figure out what features this Emacs has
 (defconst c-emacs-features
