@@ -653,17 +653,12 @@ Return the amount the indentation changed by."
 		  (/= (setq comcol (current-column)) 0)))
 	   ;; we've found a comment-only line. we now must try to
 	   ;; determine if the line is a continuation from a comment
-	   ;; on the previous line.  if so, we don't change its
+	   ;; on the previous line.  we check to see if the comment
+	   ;; starts in comment-column and if so, we don't change its
 	   ;; indentation.
-	   (save-excursion
-	     (forward-line -1)
-	     (let* ((eol (save-excursion (end-of-line) (point)))
-		    (com-p (re-search-forward "/[/*]" eol 'move)))
-	       (if (and com-p (= (progn
-				   (goto-char (match-beginning 0))
-				   (current-column)) comcol))
-		   (setq indent comcol)
-		 (setq indent (+ indent c++-comment-only-line-offset))))))
+	   (if (= comcol comment-column)
+	       (setq indent comment-column)
+	     (setq indent (+ indent c++-comment-only-line-offset))))
 	  (t
 	   (skip-chars-forward " \t")
 	   (if (listp indent) (setq indent (car indent)))
