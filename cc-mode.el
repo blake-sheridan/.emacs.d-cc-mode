@@ -1491,13 +1491,8 @@ used."
 	   (parse-sexp-ignore-comments t) ; may not be necessary
 	   (state (parse-partial-sexp backlim (point))))
       (cond
-       ;; we are in a comment region. in c++-c-mode, elt 7 will tell
-       ;; us if we're in a block comment (nil) or cpp directive (t).
-       ;; in c++-mode, elt 7 of t means we're in a c++ comment
-       ;; directive, nil means we're in a block comment, otherwise we
-       ;; need to test to see if we're in a cpp directive
-       ((nth 4 state)
-	(if (nth 7 state) 'c++ 'c))
+       ((nth 3 state) 'string)
+       ((nth 4 state) (if (nth 7 state) 'c++ 'c))
        ((progn
 	  (goto-char here)
 	  (beginning-of-line)
