@@ -776,7 +776,7 @@ behavior that users are familiar with.")
   (concat c-symbol-key ":\\([^:]\\|$\\)")
   "Regexp describing any label.")
 (defconst c-conditional-key
-  "\\<\\(for\\|if\\|do\\|else\\|while\\|switch\\)\\>"
+  "\\b\\(for\\|if\\|do\\|else\\|while\\|switch\\)\\b[^_]"
   "Regexp describing a conditional control.")
 
 ;; main entry points for the modes
