@@ -1186,6 +1186,10 @@ The expansion is entirely correct because it uses the C preprocessor."
    ;;"\\(\\s *implements *[^{]+{\\)?"	;and maybe the adopted protocols list
    )
   "Regexp describing a class or protocol declaration for Java.")
+(defconst c-Java-conditional-key
+  "\\b\\(for\\|if\\|do\\|else\\|while\\|switch\\|try\\|catch\\|finally\\)\\b[^_]"
+  "Regexp describing a conditional control for C++.")
+
 
 ;; KLUDGE ALERT.  We default these variables to their `C' values so
 ;; that non-cc-mode-ized modes that depend on c-mode will still work
@@ -1340,7 +1344,7 @@ Key bindings:
   (setq comment-start "// "
  	comment-end   ""
  	comment-multi-line nil
- 	c-conditional-key c-C-conditional-key
+ 	c-conditional-key c-Java-conditional-key
  	c-comment-start-regexp c-C++-comment-start-regexp
   	c-class-key c-Java-class-key
 	c-method-key c-Java-method-key
