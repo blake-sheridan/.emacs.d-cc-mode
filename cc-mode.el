@@ -1122,6 +1122,7 @@ the brace is inserted inside a literal."
 	 blink-paren-function		; emacs19
 	 blink-paren-hook		; emacs18
 	 semantics newlines
+	 delete-temp-newline
 	 ;; shut this up
 	 (c-echo-semantic-information-p nil))
     (if (or literal
@@ -1129,11 +1130,13 @@ the brace is inserted inside a literal."
 	    (not (looking-at "[ \t]*$")))
 	(c-insert-special-chars arg)
       (setq semantics (progn
-			;; only insert a newline if there is non-whitespace behind us
+			;; only insert a newline if there is
+			;; non-whitespace behind us
 			(if (save-excursion
 			      (skip-chars-backward " \t")
 			      (not (bolp)))
-			    (newline))
+			    (progn (newline)
+				   (setq delete-temp-newline t)))
 			(self-insert-command (prefix-numeric-value arg))
 			(c-guess-basic-semantics bod))
 	    newlines (and
@@ -1155,8 +1158,9 @@ the brace is inserted inside a literal."
 	    (forward-line -1)
 	    (c-indent-via-language-element bod)
 	    (goto-char (- (point-max) pos)))
-	;; must remove the newline we just stuck in
-	(delete-region (- (point) 2) (1- (point)))
+	;; must remove the newline we just stuck in (if we really did it)
+	(and delete-temp-newline
+	     (delete-region (- (point) 2) (1- (point))))
 	;; since we're hanging the brace, we need to recalculate
 	;; semantics
 	(setq semantics (c-guess-basic-semantics bod)))
