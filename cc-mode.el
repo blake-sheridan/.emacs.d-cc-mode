@@ -1378,7 +1378,7 @@ of the expression are preserved."
 	      (setq this-indent (- this-indent c-indent-level)))
 	     ;; looking at an open brace
 	     ((= (following-char) ?{)
-	      (setq this-indent (+ this-indent c-brace-offset)))
+	      (setq this-indent (+ this-indent c-brace-offset c-indent-level)))
 	     ;; check for continued statements
 	     ((save-excursion
 		(c++-backward-syntactic-ws (car contain-stack))
