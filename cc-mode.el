@@ -2643,11 +2643,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		;; go back 2 bods, but ignore any bogus positions
 		;; returned by beginning-of-defun (i.e. open paren in
 		;; column zero)
-		(let ((cnt 0))
-		  (while (and (not at-bob) (< cnt 2))
+		(let ((cnt 2))
+		  (while (not (or at-bob (zerop cnt)))
 		    (beginning-of-defun)
 		    (if (= (following-char) ?\{)
-			(setq cnt (1+ cnt)))
+			(setq cnt (1- cnt)))
 		    (if (bobp)
 			(setq at-bob t))))
 		(point)))
@@ -3109,7 +3109,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (setq containing-sexp nil)))))
 
 	;; set the limit on the farthest back we need to search
-	(setq lim (or containing-sexp (point-min)))
+	(setq lim (or containing-sexp
+		      (if (consp (car fullstate))
+			  (cdr (car fullstate))
+			nil)
+		      (point-min)))
 
 	;; cache char before and after indent point, and move point to
 	;; the most likely position to perform the majority of tests
