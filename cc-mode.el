@@ -915,7 +915,8 @@ Key bindings:
 	(add-menu nil mode-name c-mode-menu)))
   (if (and (memq 'Lucid c-emacs-features)
 	   (boundp 'mode-popup-menu))
-      (setq mode-popup-menu c-mode-menu))
+      (setq mode-popup-menu
+	    (cons (concat mode-name " Mode Commands") c-mode-menu)))
   ;; put auto-hungry designators onto minor-mode-alist, but only once
   (or (assq 'c-auto-hungry-string minor-mode-alist)
       (setq minor-mode-alist
