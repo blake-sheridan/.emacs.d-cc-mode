@@ -1438,8 +1438,10 @@ search."
 	(setq count (1- count)))
       (while (< count 0)
 	(c-end-of-statement-1)
-	(setq count (1+ count)))
-      )))
+	(setq count (1+ count))))
+    ;; its possible we've been left up-buf of lim
+    (goto-char (max (point) lim))
+    ))
 
 (defun c-end-of-statement (&optional count lim)
   "Go to the end of the innermost C statement.
