@@ -1392,13 +1392,33 @@ of the expression are preserved."
 	     ((save-excursion
 		(c++-backward-syntactic-ws (car contain-stack))
 		(and (not (c++-in-parens-p))
-		     (not (memq (preceding-char)
-				'(nil ?\000 ?\, ?\; ?\} ?\: ?\{)))
+		     (not (memq (preceding-char) '(nil ?\000 ?\; ?\} ?\: ?\{)))
 		     (progn
 		       (beginning-of-line)
 		       (skip-chars-forward " \t")
 		       (not (looking-at c++-class-key)))))
-	      (setq this-indent (+ this-indent c-continued-statement-offset)))
+	      (setq this-indent
+		    (+ this-indent
+		       c-continued-statement-offset
+		       ;; are we in a member init list?
+		       (if (not (looking-at "[ \t]*:"))
+			   (save-excursion
+			     (let ((lim (car contain-stack)))
+			       (c++-backward-syntactic-ws lim)
+			       (while (and (< lim (point))
+					   (= (preceding-char) ?,))
+				 (beginning-of-line)
+				 (c++-backward-syntactic-ws))
+			       (forward-line 1)
+			       (beginning-of-line)
+			       (if (looking-at "[ \t]*:")
+				   (- (save-excursion
+					(skip-chars-forward " \t")
+					(point))
+				      (point))
+				 0)))
+			 0)
+		       )))
 	     ;; check for stream operator
 	     ((looking-at "\\(<<\\|>>\\)")
 	      (setq this-indent (c++-calculate-indent)))
