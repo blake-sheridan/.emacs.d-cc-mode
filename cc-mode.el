@@ -2527,8 +2527,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
        ;; CASE M1: look for a comment only line
        ((looking-at "\\(//\\|/\\*\\)")
 	(c-add-semantics 'comment-intro))
-       ;; CASE M2: looking at a block-open brace
-       ((= (following-char) ?{)
+       ;; CASE M2: looking at a block-open brace, but make sure
+       ;; other brace open symbols aren't already on the list
+       ((and (= (following-char) ?{)
+	     (not (assq 'class-open semantics))
+	     (not (assq 'defun-open semantics))
+	     (not (assq 'inline-open semantics)))
 	(c-add-semantics 'block-open))
        )
       ;; return the semantics
