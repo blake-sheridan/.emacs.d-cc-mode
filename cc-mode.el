@@ -371,8 +371,6 @@ Legal values are:
      'auto-hungry  -- both auto-newline and hungry-delete-key can be toggled.
 Nil is synonymous for 'none and t is synonymous for 'auto-hungry.")
 
-(defvar c++-mailer 'mail
-  "*Mail package to use to generate bug report mail buffer.")
 (defconst c++-mode-help-address "c++-mode-help@anthem.nlm.nih.gov"
   "Address accepting submission of bug reports.")
 
@@ -558,8 +556,6 @@ from their c-mode cousins.
     the colon. nil means newlines are inserted both before and after
     the colon.  'before inserts newlines only before the colon, and
     'after inserts newlines only after colon.
- c++-mailer
-    Mailer to use when sending bug reports.
  c++-member-init-indent
     Indentation level of member initializations in function declarations,
     if they are on a separate line beginning with a colon.
