@@ -1330,11 +1330,7 @@ BOD is the beginning of the C++ definition."
 		    (if (not (bobp))
 			(progn (forward-char -1)
 			       (skip-chars-backward " \t")
-			       (while (save-excursion
-					(beginning-of-line)
-					(looking-at "[ \t]*#"))
-				 (forward-line -1)
-				 (end-of-line))
+			       (c++-skip-backwards-over-cpp-directives)
 			       ;; skip any comments that may be at
 			       ;; the end of the line
 			       (c++-backward-to-noncomment bod)))
@@ -1448,6 +1444,7 @@ BOD is the beginning of the C++ definition."
 	     ;; Statement.  Find previous non-comment character.
 	     (goto-char indent-point)
 	     (c++-backward-to-noncomment containing-sexp)
+	     (c++-skip-backwards-over-cpp-directives)
 	     (if (not (memq (preceding-char) '(nil ?\, ?\; ?} ?: ?\{)))
 		 ;; This line is continuation of preceding line's statement;
 		 ;; indent  c-continued-statement-offset  more than the
@@ -1637,6 +1634,13 @@ Search no farther back than LIM."
 	 (goto-char limit)
 	 (setq do-level 0))))))
 
+(defun c++-skip-backwards-over-cpp-directives ()
+  "Position point to the end of the first line after a # directive."
+  (while (and (save-excursion
+		(beginning-of-line)
+		(looking-at "[ \t]*#"))
+	      (<= 0 (forward-line -1)))
+    (end-of-line)))
 
 (defun c++-auto-newline ()
   "Insert a newline iff we're not in a literal.
