@@ -150,7 +150,7 @@
 (defconst c++-emacs-features
   (list
    (if (= 8 (length (parse-partial-sexp (point) (point))))
-       (if (or (string-match emacs-version "Lucid")
+       (if (or (string-match "Lucid" emacs-version)
 	       (fboundp 'forward-syntactic-ws))
 	   '8-bit '1-bit)
      'no-dual-comments)
