@@ -1199,7 +1199,7 @@ of the expression are preserved."
 			(while (eq (c++-in-literal) 'c)
 			  (forward-line 1)
 			  (end-of-line))
-			(skip-chars-backward " \t\n")
+			(skip-chars-backward " \t")
 			(end-of-line)
 			(point)))
 		(end (progn (if (not (eobp)) (forward-char)) (point))))
