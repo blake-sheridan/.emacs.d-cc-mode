@@ -1625,7 +1625,16 @@ BOD is the beginning of the C++ definition."
 			    (save-excursion
 			      (forward-line 1)
 			      (skip-chars-forward " \t")
-			      (= (following-char) ?:)))
+			      (= (following-char) ?:))
+			    (save-excursion
+			      (and (= (preceding-char) ?,)
+				   (let ((bol (c++-point 'bol)))
+				     (skip-chars-backward "^:" bol)
+				     (= (preceding-char) ?:))
+				   (progn
+				     (forward-char -1)
+				     (skip-chars-backward " \t")
+				     (not (bolp))))))
 			;; check to see if we're looking at a member
 			;; init, or access specifier
 			(if (progn
