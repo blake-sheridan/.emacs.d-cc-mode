@@ -457,12 +457,10 @@ backward-delete-char-untabify."
 		     (not (c++-in-comment-p)))
 		(progn
 		  ;; we should clean up brace-else-brace syntax
-		  (message "cleaning up } else {...")
 		  (delete-region mbeg mend)
 		  (insert-before-markers "} else {")
 		  (goto-char here)
-		  (set-marker here nil)
-		  (message "cleaning up } else {... done."))
+		  (set-marker here nil))
 	      (goto-char here)
 	      (set-marker here nil)))
 	  (c++-indent-line)
@@ -789,11 +787,17 @@ Returns nil if line starts inside a string, t if in a comment."
 	    ((c++-in-comment-p)
 	     ;; in a C comment.
 	     t)
-	    ;; is this a comment-only line in the first column?
+	    ;; is this a comment-only line in the first column or
+	    ;; comment-column?  if so we don't change the indentation,
+	    ;; otherwise, we indent relative to surrounding code
+	    ;; (later on).
 	    ((progn (goto-char indent-point)
 		    (beginning-of-line)
-		    (looking-at "^/[/*]"))
-	     0)
+		    (skip-chars-forward " \t")
+		    (and (looking-at comment-start-skip)
+			 (or (zerop (current-column))
+			     (= (current-column) comment-column))))
+	     (current-column))
 	    ((null containing-sexp)
 	     ;; Line is at top level.  May be comment-only line, data
 	     ;; or function definition, or may be function argument
