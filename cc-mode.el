@@ -2326,11 +2326,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (let ((end (or search-end (point)))
 	    (here (point))
 	    (bod2 (progn (beginning-of-defun 2) (point)))
-	    (start (progn (end-of-defun) (point)))
+	    (start (c-safe (progn (end-of-defun) (point))))
 	    class brace state foundp)
-	;; if the end-of-defun leaves us after `here' then the
-	;; farthest back we look is bod2
-	(if (>= start here)
+	;; if the end-of-defun leaves us after `here', or there was no
+	;; matching end-of-defun then the farthest back we look is
+	;; bod2
+	(if (or (not start)
+		(>= start here))
 	    (setq start bod2))
 	(narrow-to-region start end)
 	(setq state (parse-partial-sexp start end))
