@@ -345,6 +345,8 @@ Valid symbols are:
                         space between the braces and the `else'.  Clean
 			up occurs when the open-brace after the `else'
 			is typed.
+ brace-elseif-brace  -- similar to brace-else-brace, but cleans up
+                        `} else if {' constructs.
  empty-defun-braces  -- cleans up empty defun braces by placing the
                         braces on the same line.  Clean up occurs when
 			the defun closing brace is typed.
@@ -2015,6 +2017,20 @@ the brace is inserted inside a literal."
 	      (progn
 		(delete-region mbeg mend)
 		(insert "} else {")))
+	  ;; clean up brace-elseif-brace
+	  (if (and c-auto-newline
+		   (memq 'brace-elseif-brace c-cleanup-list)
+		   (= last-command-char ?\{)
+		   (re-search-backward "}[ \t\n]*else[ \t\n]+if[ \t\n]*{"
+				       nil t)
+		   (progn
+		     (setq mbeg (match-beginning 0)
+			   mend (match-end 0))
+		     (= mend here))
+		   (not (c-in-literal)))
+	      (progn
+		(delete-region mbeg mend)
+		(insert "} else if {")))
 	  (goto-char (- (point-max) pos))
 	  )
 	;; does a newline go after the brace?
