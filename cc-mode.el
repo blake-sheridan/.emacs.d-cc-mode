@@ -1078,7 +1078,7 @@ Returns nil if line starts inside a string, t if in a comment."
 			 (save-excursion
 			   (forward-sexp 1)
 			   (looking-at ":[^:]"))))
-		(setq this-indent (max 1 (+ this-indent c-label-offset))))
+		(setq this-indent (max 0 (+ this-indent c-label-offset))))
 	    (if (looking-at "friend[ \t]class[ \t]")
 		(setq this-indent (+ this-indent c++-friend-offset)))
 	    (if (= (following-char) ?})
