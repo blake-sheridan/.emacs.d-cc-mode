@@ -116,11 +116,12 @@ Nil is synonymous for 'none and t is synonymous for 'auto-hungry.")
 5. Paragraphs are separated by blank lines only.
 6. Delete converts tabs to spaces as it moves back.
 
+Key bindings:
 \\{c++-mode-map}
 
-Variables controlling indentation style. Those with names like
-c-<thing> are inherited from c-mode which c++-mode is derived from.
-Those with names like c++-<thing> are unique for this mode.
+These variables control indentation style. Those with names like
+c-<thing> are inherited from c-mode.  Those with names like
+c++-<thing> are unique for this mode.
 
  c-tab-always-indent
     Non-nil means TAB in C mode should always reindent the current line,
@@ -173,11 +174,10 @@ Those with names like c++-<thing> are unique for this mode.
     hungry-delete-key indicators.
  c++-auto-hungry-initial-state
     Initial state of auto/hungry mode when a C++ buffer is first
-    visited.  Do a \\[describe-variable] c++-auto-hungry-initial-state
-    for legal values.
+    visited. Do a \"\\[describe-variable] c++-auto-hungry-initial-state\" for legal values.
  c++-auto-hungry-toggle
     Enable/disable toggling of auto/hungry states. Do a
-    \\[describe-variable] c++-auto-hungry-toggle for legal values.
+    \"\\[describe-variable] c++-auto-hungry-toggle\" for legal values.
 
 Settings for K&R, BSD, and Stroustrup indentation styles are
   c-indent-level                5    8    4
