@@ -80,8 +80,20 @@
 ;;; Code:
 
 
-(eval-and-compile
-  (require 'cc-defs))
+(eval-when-compile
+  (require 'cc-make))
+
+(require 'cc-defs)
+
+;; sigh.  give in to the pressure, but make really sure all the
+;; definitions we need are here
+(if (or (not (fboundp 'functionp))
+	(not (fboundp 'char-before))
+	(not (c-safe (char-after) t))
+	(not (fboundp 'when))
+	(not (fboundp 'unless)))
+    (require 'cc-mode-19))
+
 (require 'cc-menus)
 (require 'cc-vars)
 (require 'cc-engine)
