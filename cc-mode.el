@@ -869,7 +869,7 @@ behavior that users are familiar with.")
    c-protection-key "[ \t]+\\)" c-symbol-key)
   "Regexp describing base classes in a derived class definition.")
 (defconst c-switch-label-key
-  "\\(\\(case[ \t]+\\S .*\\)\\|default[ \t]*\\):"
+  "\\(\\(case[( \t]+\\S .*\\)\\|default[ \t]*\\):"
   "Regexp describing a switch's case or default label")
 (defconst c-access-key
   (concat c-protection-key ":")
