@@ -1833,7 +1833,7 @@ the brace is inserted inside a literal."
 	;; If syntax is a function symbol, then call it using the
 	;; defined semantics.
 	(if (and (not (consp (cdr newlines)))
-		 (functionp (cdr newlines)))
+		 (c-functionp (cdr newlines)))
 	    (let ((c-syntactic-context syntax))
 	      (setq newlines
 		    (funcall (cdr newlines) (car newlines) insertion-point))))
@@ -2214,7 +2214,7 @@ supplied, or point is inside a literal."
 			  interned)
 			 ;; a lambda function
 			 ((condition-case nil
-			      (functionp (setq raw (read input)))
+			      (c-functionp (setq raw (read input)))
 			    (error nil))
 			  raw)
 			 ;; a symbol with variable binding
@@ -2264,7 +2264,7 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
       (eq offset '*)
       (eq offset '/)
       (integerp offset)
-      (functionp offset)
+      (c-functionp offset)
       (boundp offset)
       (error "Offset must be int, func, var, or in [+,-,++,--,*,/]: %s"
 	     offset))
@@ -4543,7 +4543,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
      ((eq offset '--)        (setq offset (* 2 (- c-basic-offset))))
      ((eq offset '*)         (setq offset (/ c-basic-offset 2)))
      ((eq offset '/)         (setq offset (/ (- c-basic-offset) 2)))
-     ((functionp offset)     (setq offset (funcall offset langelem)))
+     ((c-functionp offset)   (setq offset (funcall offset langelem)))
      ((not (numberp offset)) (setq offset (symbol-value offset)))
      )
     (+ (if (and relpos
@@ -5024,6 +5024,20 @@ definition and conveniently use this command."
   (c-keep-region-active))
     
 
+;; Emacs/XEmacs Compatibility
+;; XEmacs has these, Emacs (even 19.31) does not
+
+;; Lift XEmacs 19.13's functionp from subr.el
+(defun c-functionp (obj)
+  "Returns t if OBJ is a function, nil otherwise."
+  (cond
+   ((symbolp obj) (fboundp obj))
+   ((subrp obj))
+   ((compiled-function-p obj))
+   ((consp obj)
+    (if (eq (car obj) 'lambda) (listp (car (cdr obj)))))
+   (t nil)))
+
 (defun c-copy-tree (tree)
   ;; Lift XEmacs 19.12's copy-tree
   (if (consp tree)
@@ -5049,6 +5063,8 @@ definition and conveniently use this command."
 		  )))
     ))
 
+
+
 ;; Dynamically append the default value of most variables. This is
 ;; crucial because future c-set-style calls will always reset the
 ;; variables first to the `cc-mode' style before instituting the new
