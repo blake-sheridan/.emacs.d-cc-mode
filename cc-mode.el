@@ -636,6 +636,7 @@ of the expression are preserved."
 Return the amount the indentation changed by."
   (let ((indent (c++-calculate-indent nil))
 	beg shift-amt
+	(comcol nil)
 	(case-fold-search nil)
 	(pos (- (point-max) (point))))
     (beginning-of-line)
@@ -649,8 +650,20 @@ Return the amount the indentation changed by."
 	  ((save-excursion
 	     (and (not (back-to-indentation))
 		  (looking-at "//\\|/\\*")
-		  (/= (current-column) 0)))
-	   (setq indent (+ indent c++-comment-only-line-offset)))
+		  (/= (setq comcol (current-column)) 0)))
+	   ;; we've found a comment-only line. we now must try to
+	   ;; determine if the line is a continuation from a comment
+	   ;; on the previous line.  if so, we don't change its
+	   ;; indentation.
+	   (save-excursion
+	     (forward-line -1)
+	     (let* ((eol (save-excursion (end-of-line) (point)))
+		    (com-p (re-search-forward "/[/*]" eol 'move)))
+	       (if (and com-p (= (progn
+				   (goto-char (match-beginning 0))
+				   (current-column)) comcol))
+		   (setq indent comcol)
+		 (setq indent (+ indent c++-comment-only-line-offset))))))
 	  (t
 	   (skip-chars-forward " \t")
 	   (if (listp indent) (setq indent (car indent)))
