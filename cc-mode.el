@@ -735,10 +735,13 @@ supported list, along with the values for this variable:
   "Internal auto-newline/hungry-delete designation string for mode line.")
 (defvar c-semantics nil
   "Variable containing semantics list during indentation.")
+(defvar c-comment-start-regexp nil
+  "Buffer local variable describing how comment are introduced.")
 
 (make-variable-buffer-local 'c-auto-newline)
 (make-variable-buffer-local 'c-hungry-delete-key)
 (make-variable-buffer-local 'c-auto-hungry-string)
+(make-variable-buffer-local 'c-comment-start-regexp)
 
 ;; cmacexp is lame because it uses no preprocessor symbols.
 ;; It isn't very extensible either -- hardcodes /lib/cpp.
@@ -818,7 +821,8 @@ Key bindings:
   (use-local-map c++-mode-map)
   (c-common-init)
   (setq comment-start "// "
-	comment-end "")
+	comment-end ""
+	c-comment-start-regexp "//\\|/\\*")
   (run-hooks 'c++-mode-hook))
 
 ;;;###autoload
@@ -849,7 +853,8 @@ Key bindings:
   (use-local-map c-mode-map)
   (c-common-init)
   (setq comment-start "/* "
-	comment-end   " */")
+	comment-end   " */"
+	c-comment-start-regexp "/\\*")
   (run-hooks 'c-mode-hook))
 
 (defun c-common-init ()
@@ -975,7 +980,7 @@ Key bindings:
 ;; This is used by indent-for-comment to decide how much to indent a
 ;; comment in C code based on its context.
 (defun c-comment-indent ()
-  (if (looking-at "^\\(/\\*\\|//\\)")
+  (if (looking-at (concat "^\\(" c-comment-start-regexp "\\)"))
       0				;Existing comment at bol stays there.
     (let ((opoint (point))
 	  placeholder)
@@ -984,7 +989,9 @@ Key bindings:
 	(cond
 	 ;; CASE 1: A comment following a solitary close-brace should
 	 ;; have only one space.
-	 ((looking-at "[ \t]*}[ \t]*\\($\\|/\\*\\|//\\)")
+	 ((looking-at (concat "[ \t]*}[ \t]*\\($\\|"
+			      c-comment-start-regexp
+			      "\\)"))
 	  (search-forward "}")
 	  (1+ (current-column)))
 	 ;; CASE 2: 2 spaces after #endif
@@ -999,7 +1006,7 @@ Key bindings:
 		 (forward-line -1))
 	    (skip-chars-forward " \t")
 	    (prog1
-		(looking-at "/\\*\\|//")
+		(looking-at c-comment-start-regexp)
 	      (setq placeholder (point))))
 	  (goto-char placeholder)
 	  (if (< (current-column) comment-column)
@@ -3101,7 +3108,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	;; now we need to look at any modifiers
 	(goto-char indent-point)
 	(skip-chars-forward " \t")
-	(if (looking-at "\\(//\\|/\\*\\)")
+	(if (looking-at c-comment-start-regexp)
 	    ;; we are looking at a comment. if the comment is at or to
 	    ;; the right of comment-column, then all we want on the
 	    ;; semantics list is comment-intro, otherwise, the
@@ -3247,7 +3254,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (skip-chars-forward "^:" eol)
       (skip-chars-forward " \t:" eol)
       (if (or (eolp)
-	      (looking-at "/\\*\\|//"))
+	      (looking-at c-comment-start-regexp))
 	  (c-forward-syntactic-ws here))
       (- (current-column) cs-curcol)
       )))
