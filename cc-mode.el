@@ -3485,9 +3485,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (forward-sexp (cond
 		 ;; else if()
 		 ((looking-at "\\<else\\>[ \t]+\\<if\\>") 3)
-		 ;; do, else, try
-		 ((looking-at "\\<\\(do\\|else\\|try\\)\\>") 1)
-		 ;; for, if, while, switch, catch
+		 ;; do, else, try, finally
+		 ((looking-at "\\<\\(do\\|else\\|try\\|finally\\)\\>") 1)
+		 ;; for, if, while, switch, catch, synchronized
 		 (t 2))))
 
 (defun c-skip-case-statement-forward (state &optional lim)
