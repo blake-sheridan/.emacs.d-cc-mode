@@ -1165,19 +1165,12 @@ enclosing class, or the depth of class nesting at point."
 	    nil
 	  ;; calculate depth wrt containing (possibly nested) classes
 	  (goto-char containing-sexp)
-	  (let* ((here (point))
-		 (backlim (save-excursion
-			    (c++-beginning-of-defun)
-			    (condition-case eoderr
-				(c++-end-of-defun 1)
-			      (error (goto-char here)))
-			    (if (< indent-point (point))
-				(point-min)
-			      (point)))))
-	    (while (and (setq foundp (re-search-backward
-				      "\\<\\(class\\|struct\\)\\>"
-				      backlim t))
-			(c++-in-literal)))
+	  (while (and (setq foundp (re-search-backward
+				    "}\\|\\<\\(class\\|struct\\)\\>"
+				    (point-min) t))
+		      (c++-in-literal)))
+	  (if (= (following-char) ?})
+	      nil
 	    (setq state (c++-parse-state containing-sexp))
 	    (and foundp
 		 (not (nth 1 state))
