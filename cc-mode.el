@@ -296,7 +296,7 @@ automatically as they are typed. But entering \\[c++-tame-comments]
 (c++-tame-comments) will escape all characters which are members of
 this set, found in comments throughout the file.
 
-This (mis-)feature will not be necessary in emacs 19.")
+This (mis-)feature will probably not be necessary in emacs 19.")
 
 (defvar c++-default-macroize-column 78
   "*Column to insert backslashes.")
