@@ -1562,9 +1562,19 @@ the brace is inserted inside a literal."
 	       (save-excursion (delete-indentation)))
 	  ;; since we're hanging the brace, we need to recalculate
 	  ;; syntax.  Update the state to accurately reflect the
-	  ;; beginning of the line.
-	  (setq c-state-cache (c-whack-state (c-point 'bol) c-state-cache)
-		syntax (c-guess-basic-syntax)))
+	  ;; beginning of the line.  We punt if we cross any open or
+	  ;; closed parens because its just too hard to modify the
+	  ;; known state.  This limitation will be fixed in v5.
+	  (save-excursion
+	    (let ((bol (c-point 'bol)))
+	      (if (zerop (car (parse-partial-sexp bol (1- (point)))))
+		  (setq c-state-cache (c-whack-state bol c-state-cache)
+			syntax (c-guess-basic-syntax))
+		;; gotta punt. this includes some horrible kludgery
+		(beginning-of-line)
+		(makunbound 'c-state-cache)
+		(setq c-state-cache (c-parse-state)))))
+	  )
 	;; now adjust the line's indentation. don't update the state
 	;; cache since c-guess-basic-syntax isn't called when the
 	;; syntax is passed to c-indent-line
