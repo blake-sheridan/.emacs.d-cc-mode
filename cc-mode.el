@@ -547,6 +547,17 @@ Key bindings:
    (memq cc-auto-hungry-initial-state '(auto-only   auto-hungry t))
    (memq cc-auto-hungry-initial-state '(hungry-only auto-hungry t))))
 
+(defmacro cc-setup-comment-indent-variable ()
+  ;; shut the byte compiler up
+  (if (boundp 'comment-indent-function)
+      (` (progn
+	   (make-local-variable 'comment-indent-function)
+	   (setq comment-indent-function 'cc-comment-indent)))
+    (` (progn
+	 (make-local-variable 'comment-indent-hook)
+	 (setq comment-indent-hook 'cc-comment-indent)))
+    ))
+
 (defun cc-common-init ()
   ;; Common initializations for cc-c++-mode and cc-c-mode.
   (use-local-map cc-mode-map)
@@ -562,11 +573,6 @@ Key bindings:
   (make-local-variable 'comment-end)
   (make-local-variable 'comment-column)
   (make-local-variable 'comment-start-skip)
-  ;; don't worry about byte-compiler complaints on the following
-  (make-local-variable
-   (if (boundp 'comment-indent-function)
-       'comment-indent-function
-     'comment-indent-hook))
   ;; now set their values
   (setq paragraph-start (concat "^$\\|" page-delimiter)
 	paragraph-separate paragraph-start
@@ -577,10 +583,8 @@ Key bindings:
 	indent-region-function 'cc-indent-region
 	comment-column 32
 	comment-start-skip "/\\*+ *\\|// *")
-  ;; don't worry about byte-compiler complaints on the following
-  (if (boundp 'comment-indent-function)
-      (setq comment-indent-function 'cc-comment-indent)
-    (setq comment-indent-hook 'cc-comment-indent))
+  ;; setup the comment indent variable in a Emacs version portable way
+  (cc-setup-comment-indent-variable)
   ;; hack auto-hungry designators into mode-line-format, but do it
   ;; only once
   (and (listp mode-line-format)
