@@ -389,15 +389,16 @@ currently not supported for this variable.")
 
 (defvar c-hanging-semi&comma-criteria '(c-semi&comma-inside-parenlist)
   "*List of functions that decide whether to insert a newline or not.
+
 The functions in this list are called, in order, whenever the
 auto-newline minor mode is activated (as evidenced by a `/a' or `/ah'
-string in the mode line), and a semicolon or comma is typed.  Each
-function in this list is called with no arguments, and should return
-one of the following values:
+string in the mode line), and a semicolon or comma is typed (see
+`c-electric-semi&comma').  Each function in this list is called with
+no arguments, and should return one of the following values:
 
-  nil       -- no determination made, continue checking
-  non-nil   -- insert a newline, and stop checking
-  'stop     -- do not insert a newline, but stop checking
+  nil             -- no determination made, continue checking
+  'stop           -- do not insert a newline, and stop checking
+  (anything else) -- insert a newline, and stop checking
 
 If every function in the list is called with no determination made,
 then no newline is inserted.")
@@ -1715,8 +1716,9 @@ is inhibited."
 (defun c-electric-semi&comma (arg)
   "Insert a comma or semicolon.
 When the auto-newline feature is turned on, as evidenced by the \"/a\"
-or \"/ah\" string on the mode line, a newline is inserted after
-semicolons, but not commas.
+or \"/ah\" string on the mode line, a newline might be inserted.  See
+the variable `c-hanging-semi&comma-criteria' for how newline insertion
+is determined.
 
 When semicolon is inserted, the line is re-indented unless a numeric
 arg is supplied, point is inside a literal, or there are
