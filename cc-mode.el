@@ -1546,7 +1546,7 @@ the brace is inserted inside a literal."
 		  (setq syntax (c-guess-basic-syntax))))
 	  ;; must remove the newline we just stuck in (if we really did it)
 	  (and delete-temp-newline
-	       (delete-region (- (point) 2) (1- (point))))
+	       (save-excursion (delete-indentation)))
 	  ;; since we're hanging the brace, we need to recalculate
 	  ;; syntax, but we don't need to update the state cache.
 	  (setq syntax (c-guess-basic-syntax)))
