@@ -136,7 +136,7 @@ reported and the syntactic symbol is ignored.")
     (class-close           . 0)
     (inline-open           . +)
     (inline-close          . 0)
-    (ansi-funcdecl-cont    . -)
+    (ansi-funcdecl-cont    . +)
     (knr-argdecl-intro     . +)
     (knr-argdecl           . 0)
     (topmost-intro         . 0)
@@ -3605,11 +3605,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     (c-recognize-knr-p
 	      (c-add-syntax 'knr-argdecl-intro (c-point 'boi))
 	      (and inclass-p (c-add-syntax 'inclass (aref inclass-p 0))))
-	     ;; CASE 5B.3: nether region after a C++ func decl
+	     ;; CASE 5B.3: nether region after a C++ func decl.  could
+	     ;; include a `throw' declaration.
 	     (t
+	      (c-beginning-of-statement-1 lim)
 	      (c-add-syntax 'ansi-funcdecl-cont (c-point 'boi))
-	      (and inclass-p (c-add-syntax 'inclass (aref inclass-p 0))))
-	     ))
+	      )))
 	   ;; CASE 5C: inheritance line. could be first inheritance
 	   ;; line, or continuation of a multiple inheritance
 	   ((or (and c-baseclass-key (looking-at c-baseclass-key))
