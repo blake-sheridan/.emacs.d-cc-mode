@@ -2363,16 +2363,16 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		       (setq placeholder (cdr decl)))
 		  ))
 	      (c-add-semantics 'class-open placeholder))
-	     ;; CASE 4A.2: inline defun open
-	     (inclass-p
-	      (c-add-semantics 'inline-open (cdr inclass-p)))
-	     ;; CASE 4A.3: brace list open
+	     ;; CASE 4A.2: brace list open
 	     ((save-excursion
 		(c-beginning-of-statement nil lim)
 		(setq placeholder (point))
 		(or (looking-at "\\<enum\\>")
 		    (= char-before-ip ?=)))
 	      (c-add-semantics 'brace-list-open placeholder))
+	     ;; CASE 4A.3: inline defun open
+	     (inclass-p
+	      (c-add-semantics 'inline-open (cdr inclass-p)))
 	     ;; CASE 4A.4: ordinary defun open
 	     (t
 	      (c-add-semantics 'defun-open (c-point 'bol))
