@@ -2076,7 +2076,10 @@ for details of setting up styles."
 			   (prompt (format "Which %s indentation style? "
 					   mode-name)))
 		       (completing-read prompt c-style-alist nil t))))
-  (let ((vars (cdr (assoc (downcase stylename) c-style-alist)))
+  (let ((vars (cdr (or (assoc (downcase stylename) c-style-alist)
+		       ;; backwards compatibility
+		       (assoc (upcase stylename) c-style-alist)
+		       )))
 	(default (cdr (assoc "cc-mode" c-style-alist))))
     (or vars (error "Invalid indentation style `%s'" stylename))
     (or default (error "No `cc-mode' style found!"))
