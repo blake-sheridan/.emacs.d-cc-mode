@@ -1229,6 +1229,12 @@ There is still some weird behavior when filling C block comments.
 My suggestion is to check out add-on fill packages such as
 @code{filladapt}, available at the elisp archive.
 
+@cindex inline-close
+@kindex TAB
+@item
+Lines following @code{inline-close} braces which hang ``after'' do not
+line up correctly.  Hit @kbd{TAB} to reindent the line.
+
 @end itemize
 
 @node  Mailing Lists and Submitting Bug Reports, Dumping cc-mode 4, Limitations and Known Bugs, Top
