@@ -122,6 +122,7 @@
 ;; reply <a valid net address back to you>
 ;; connect archive.cis.ohio-state.edu
 ;; binary
+;; uuencode
 ;; chdir pub/gnu/emacs/elisp-archive/modes
 ;; get c++-mode.el.Z
 ;;
