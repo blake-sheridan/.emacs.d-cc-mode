@@ -226,12 +226,6 @@ FSF 19 (patched):        (8-bit v19)")
 	(define-key c++-mode-map ")"         'c++-tame-insert)))
   (define-key c++-mode-map "\C-c\C-b"  'c++-submit-bug-report)
   (define-key c++-mode-map "\C-c\C-v"  'c++-version)
-  ;; these are necessary because default forward-sexp and
-  ;; backward-sexp don't automatically let-bind
-  ;; parse-sexp-ignore-comments, which is needed for them to work
-  ;; properly in a C++ buffer.
-  (define-key c++-mode-map "\e\C-f"    'c++-forward-sexp)
-  (define-key c++-mode-map "\e\C-b"    'c++-backward-sexp)
   )
 
 (defvar c++-mode-syntax-table nil
@@ -670,18 +664,32 @@ no args, if that value is non-nil."
   (setq major-mode 'c++-mode
 	mode-name "C++"
 	local-abbrev-table c++-mode-abbrev-table)
-  (set (make-local-variable 'paragraph-start) (concat "^$\\|" page-delimiter))
-  (set (make-local-variable 'paragraph-separate) paragraph-start)
-  (set (make-local-variable 'paragraph-ignore-fill-prefix) t)
-  (set (make-local-variable 'require-final-newline) t)
-  (set (make-local-variable 'parse-sexp-ignore-comments) nil)
-  ;; 
-  (set (make-local-variable 'indent-line-function) 'c++-indent-line)
-  (set (make-local-variable 'comment-start) "// ")
-  (set (make-local-variable 'comment-end) "")
-  (set (make-local-variable 'comment-column) 32)
-  (set (make-local-variable 'comment-start-skip) "/\\*+ *\\|// *")
-  (set (make-local-variable 'comment-indent-hook) 'c++-comment-indent)
+  ;; make local variables
+  (make-local-variable 'paragraph-start)
+  (make-local-variable 'paragraph-separate)
+  (make-local-variable 'paragraph-ignore-fill-prefix)
+  (make-local-variable 'require-final-newline)
+  (make-local-variable 'parse-sexp-ignore-comments)
+  (make-local-variable 'indent-line-function)
+  (make-local-variable 'indent-region-function)
+  (make-local-variable 'comment-start)
+  (make-local-variable 'comment-end)
+  (make-local-variable 'comment-column)
+  (make-local-variable 'comment-start-skip)
+  (make-local-variable 'comment-indent-hook)
+  ;; now set their values
+  (setq paragraph-start (concat "^$\\|" page-delimiter)
+	paragraph-separate paragraph-start
+	paragraph-ignore-fill-prefix t
+	require-final-newline t
+	parse-sexp-ignore-comments (not (memq 'v18 c++-emacs-features))
+	indent-line-function 'c++-indent-line
+	indent-region-function 'c-indent-region
+	comment-start "// "
+	comment-end ""
+	comment-column 32
+	comment-start-skip "/\\*+ *\\|// *"
+	comment-indent-hook 'c++-comment-indent)
   ;; hack auto-hungry designators into mode-line-format
   (if (listp mode-line-format)
       (setq mode-line-format
@@ -1490,18 +1498,6 @@ Emacs.  Untamed characters to escape are defined in the variable
       (forward-char)
       (backward-sexp 1))
      (t (message "Could not find matching paren.")))))
-
-(defun c++-forward-sexp (&optional arg)
-  "Safe forward-sexp call."
-  (interactive "p")
-  (let ((parse-sexp-ignore-comments (memq 'v19 c++-emacs-features)))
-    (forward-sexp arg)))
-
-(defun c++-backward-sexp (&optional arg)
-  "Safe backward-sexp call."
-  (interactive "p")
-  (let ((parse-sexp-ignore-comments (memq 'v19 c++-emacs-features)))
-    (backward-sexp arg)))
 
 
 ;; ======================================================================
