@@ -5082,7 +5082,7 @@ ACTION associated with `block-close' syntax."
 	'(before after)))))
 
 (defun c-gnu-impose-minimum ()
-  "Imposes a minimum indentation for labels and case tags.
+  "Imposes a minimum indentation for lines inside a top-level construct.
 The variable `c-label-minimum-indentation' specifies the minimum
 indentation amount."
   (let ((non-top-levels '(defun-block-intro statement statement-cont
