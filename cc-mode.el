@@ -12,6 +12,11 @@
 ;; If you have problems or questions, you can contact me at the
 ;; following address: c++-mode-help@anthem.nlm.nih.gov
 ;;
+;; Want to be a c++-mode victim, er, beta-tester?  Send add/drop
+;; requests to c++-mode-victims-request@anthem.nlm.nih.gov.
+;; Discussions go to c++-mode-victims, but bug reports and such should
+;; still be sent to c++-mode-help only.
+;;
 ;; The latest version of this file should always be available for
 ;; anonymous ftp on the elisp archive machine:
 ;; archive.cis.ohio-state.edu.  For those of you without aftp access,
