@@ -1845,8 +1845,13 @@ value of `c-cleanup-list'."
 				     c-hanging-colons-alist))))
       ;; indent the current line
       (c-indent-line syntax)
-      ;; does a newline go before the colon?
-      (if (memq 'before newlines)
+      ;; does a newline go before the colon?  Watch out for already
+      ;; non-hung colons.  However, we don't unhang them because that
+      ;; would be a cleanup (and anti-social).
+      (if (and (memq 'before newlines)
+	       (save-excursion
+		 (skip-chars-backward ": \t")
+		 (not (bolp))))
 	  (let ((pos (- (point-max) (point))))
 	    (forward-char -1)
 	    (newline)
