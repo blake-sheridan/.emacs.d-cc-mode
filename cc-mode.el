@@ -834,7 +834,10 @@ Returns nil if line starts inside a string, t if in a comment."
 		    (looking-at "\\*/")))
 	     (search-backward "/*" lim 'move))
 	    ((and
-	      (search-backward "//" (max (point-bol) lim) 'move)
+	      (let ((sblim (max (point-bol) lim)))
+		(if (< (point) sblim)
+		    nil
+		  (search-backward "//" (max (point-bol) lim) 'move)))
 	      (not (c++-in-open-string-p))))
 	  (t (beginning-of-line)
 	     (skip-chars-forward " \t")
