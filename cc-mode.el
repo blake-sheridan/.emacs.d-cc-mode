@@ -1867,7 +1867,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (set-marker end nil)))
 
 (defun c-indent-defun ()
-  "Indents the current function def, struct or class declaration."
+  "Re-indents the current top-level function def, struct or class declaration."
   (interactive)
   (let ((here (point-marker))
 	(c-echo-semantic-information-p nil))
