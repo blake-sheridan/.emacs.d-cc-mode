@@ -1396,18 +1396,23 @@ forward."
   (c-keep-region-active))
 
 
-(defun c-beginning-of-statement (&optional count)
+(defun c-beginning-of-statement (&optional count lim)
   "Go to the beginning of the innermost C statement.
-With prefix arg, go back N - 1 statements.  If already at the beginning of a
-statement then go to the beginning of the preceding one.
-If within a string or comment, or next to a comment (only whitespace between),
-move by sentences instead of statements."
+With prefix arg, go back N - 1 statements.  If already at the
+beginning of a statement then go to the beginning of the preceding
+one.  If within a string or comment, or next to a comment (only
+whitespace between), move by sentences instead of statements.
+
+When called from a program, this function takes 2 optional args: the
+prefix arg, and a buffer position limit which is the farthest back to
+search."
   (interactive "p")
   (let ((here (point))
 	(count (or count 1))
+	(lim (or lim (c-point 'bod)))
 	state)
     (save-excursion
-      (beginning-of-defun)
+      (goto-char lim)
       (setq state (parse-partial-sexp (point) here nil nil)))
     (if (or (nth 3 state) (nth 4 state)
 	    (looking-at (concat "[ \t]*" comment-start-skip))
@@ -1422,13 +1427,18 @@ move by sentences instead of statements."
 	(c-end-of-statement-1)
 	(setq count (1+ count))))))
 
-(defun c-end-of-statement (&optional count)
+(defun c-end-of-statement (&optional count lim)
   "Go to the end of the innermost C statement.
-With prefix arg, go forward N - 1 statements.
-Move forward to end of the next statement if already at end.
-If within a string or comment, move by sentences instead of statements."
+
+With prefix arg, go forward N - 1 statements.  Move forward to end of
+the next statement if already at end.  If within a string or comment,
+move by sentences instead of statements.
+
+When called from a program, this function takes 2 optional args: the
+prefix arg, and a buffer position limit which is the farthest back to
+search."
   (interactive "p")
-  (c-beginning-of-statement (- (or count 1))))
+  (c-beginning-of-statement (- (or count 1) lim)))
 
 (defun c-beginning-of-statement-1 ()
   (let ((last-begin (point))
@@ -2282,7 +2292,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-semantics 'inline-open (cdr inclass-p)))
 	     ;; CASE 4A.3: brace list open
 	     ((save-excursion
-		(c-beginning-of-statement lim)
+		(c-beginning-of-statement nil lim)
 		(setq placeholder (point))
 		(or (looking-at "\\<enum\\>")
 		    (= char-before-ip ?=)))
@@ -2382,7 +2392,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-semantics 'arglist-cont (point)))
 	     ;; CASE 4D.5: perhaps a top-level statement-cont
 	     (t
-	      (c-beginning-of-statement lim)
+	      (c-beginning-of-statement nil lim)
 	      (c-add-semantics 'statement-cont (c-point 'boi)))
 	     ))
 	   ;; CASE 4E: we are looking at a access specifier
@@ -2473,7 +2483,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; across multiple lines.  ==> statement-cont
 	   ((and (not (memq char-before-ip '(?\; ?,)))
 		 (save-excursion
-		   (c-beginning-of-statement containing-sexp)
+		   (c-beginning-of-statement nil containing-sexp)
 		   (setq placeholder (point))
 		   (/= (point) containing-sexp)))
 	    (c-add-semantics 'statement-cont placeholder))
@@ -2531,7 +2541,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 ((and (not (memq char-before-ip '(?\; ?})))
 	       (> (point)
 		  (save-excursion
-		    (c-beginning-of-statement containing-sexp)
+		    (c-beginning-of-statement nil containing-sexp)
 		    (setq placeholder (point)))))
 	  (goto-char indent-point)
 	  (skip-chars-forward " \t")
@@ -2577,7 +2587,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; CASE 8D: continued statement. find the accurate
 	   ;; beginning of statement or substatement
 	   (t
-	    (c-beginning-of-statement
+	    (c-beginning-of-statement nil
 	     (progn
 	       (goto-char placeholder)
 	       (and (looking-at c-conditional-key)
@@ -2619,7 +2629,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (let ((relpos (save-excursion
 			  (goto-char containing-sexp)
 			  (if (/= (point) (c-point 'boi))
-			      (c-beginning-of-statement lim))
+			      (c-beginning-of-statement nil lim))
 			  (point))))
 	    ;; lets see if we close a top-level construct.
 	    (goto-char indent-point)
