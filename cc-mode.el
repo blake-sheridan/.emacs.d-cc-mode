@@ -970,10 +970,15 @@ we're on a comment-only line, otherwise use indent-for-comment (\\[indent-for-co
   (let ((here (point)) char)
     (self-insert-command (prefix-numeric-value arg))
     (if (and (setq char (char-after (1- here)))
-	     (or (= char ?/)
-		 (and (memq (c++-in-literal) '(c))
-		      (or (= (point) (c++-point 'boi))
-			  (= (preceding-char) ?*)))))
+	     (memq (c++-in-literal) '(c))
+	     (memq char '(?/ ?* ?\t 32 ?\n))
+	     (save-excursion
+	       (skip-chars-backward "* \t")
+	       (if (= (preceding-char) ?/)
+		   (progn
+		     (forward-char -1)
+		     (skip-chars-backward " \t")))
+	       (bolp)))
 	(save-excursion
 	  (goto-char here)
 	  (c++-indent-line)))))
