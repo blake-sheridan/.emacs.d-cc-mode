@@ -1329,6 +1329,11 @@ BOD is the beginning of the C++ definition."
 		    (if (not (bobp))
 			(progn (forward-char -1)
 			       (skip-chars-backward " \t")
+			       (while (save-excursion
+					(beginning-of-line)
+					(looking-at "[ \t]*#"))
+				 (forward-line -1)
+				 (end-of-line))
 			       ;; skip any comments that may be at
 			       ;; the end of the line
 			       (c++-backward-to-noncomment bod)))
