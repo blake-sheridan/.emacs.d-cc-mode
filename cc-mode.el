@@ -2028,6 +2028,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (unwind-protect
 	(condition-case ()
 	    (c-indent-exp)
+	  (buffer-read-only (error))
 	  (error
 	   (error "Cannot find closed top-level defun containing point.")))
       (goto-char here)
