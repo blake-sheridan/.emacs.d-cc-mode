@@ -182,6 +182,8 @@ reported and the syntactic symbol is ignored.")
     (objc-method-intro     . -1000)
     (objc-method-args-cont . c-lineup-ObjC-method-args)
     (objc-method-call-cont . c-lineup-ObjC-method-call)
+    (extern-lang-open      . 0)
+    (extern-lang-close     . 0)
     )
   "*Association list of syntactic element symbols and indentation offsets.
 As described below, each cons cell in this list has the form:
@@ -273,6 +275,8 @@ Here is the current list of valid syntactic element symbols:
  objc-method-intro      -- the first line of an Objective-C method definition
  objc-method-args-cont  -- lines continuing an Objective-C method definition
  objc-method-call-cont  -- lines continuing an Objective-C method call
+ extern-lang-open       -- brace that opens an external language block
+ extern-lang-close      -- brace that closes an external language block
 ")
 
 (defvar c-tab-always-indent t
@@ -358,7 +362,9 @@ Valid symbols are:
 
 (defvar c-hanging-braces-alist '((brace-list-open)
 				 (substatement-open after)
-				 (block-close . c-snug-do-while))
+				 (block-close . c-snug-do-while)
+				 (extern-lang-open after)
+				 )
   "*Controls the insertion of newlines before and after braces.
 This variable contains an association list with elements of the
 following form: (SYNTACTIC-SYMBOL . ACTION).
@@ -371,9 +377,10 @@ before and after the brace.
 
 SYNTACTIC-SYMBOL can be any of: defun-open, defun-close, class-open,
 class-close, inline-open, inline-close, block-open, block-close,
-substatement-open, statement-case-open, brace-list-open,
-brace-list-close, brace-list-intro, or brace-list-entry. See
-`c-offsets-alist' for details.
+substatement-open, statement-case-open, extern-lang-open,
+extern-lang-close, brace-list-open, brace-list-close,
+brace-list-intro, or brace-list-entry. See `c-offsets-alist' for
+details.
 
 ACTION can be either a function symbol or a list containing any
 combination of the symbols `before' or `after'.  If the list is empty,
@@ -1779,7 +1786,8 @@ the brace is inserted inside a literal."
       (let* ((syms '(class-open class-close defun-open defun-close 
 		     inline-open inline-close brace-list-open brace-list-close
 		     brace-list-intro brace-list-entry block-open block-close
-		     substatement-open statement-case-open))
+		     substatement-open statement-case-open
+		     extern-lang-open extern-lang-close))
 	    ;; we want to inhibit blinking the paren since this will
 	    ;; be most disruptive. we'll blink it ourselves later on
 	    (old-blink-paren (if (boundp 'blink-paren-function)
@@ -2582,6 +2590,9 @@ comment."
   (c-beginning-of-statement (- (or count 1)) lim sentence-flag)
   (c-keep-region-active))
 
+;; WARNING: Be *exceptionally* careful about modifications to this
+;; function!  Much of cc-mode depends on this Doing The Right Thing.
+;; If you break it you will be sorry.
 (defun c-beginning-of-statement-1 (&optional lim)
   ;; move to the start of the current statement, or the previous
   ;; statement if already at the beginning of one.
@@ -3858,7 +3869,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     (inclass-p
 	      (c-add-syntax 'inline-open)
 	      (c-add-syntax 'inclass (aref inclass-p 0)))
-	     ;; CASE 5A.4: ordinary defun open
+	     ;; CASE 5A.4: extern declaration
+	     ((save-excursion
+		(goto-char placeholder)
+		(and (looking-at "extern[^_]")
+		     (progn
+		       (forward-sexp 1)
+		       (c-forward-syntactic-ws)
+		       (= (following-char) ?\"))))
+	      (goto-char placeholder)
+	      (c-add-syntax 'extern-lang-open (c-point 'boi)))
+	     ;; CASE 5A.5: ordinary defun open
 	     (t
 	      (goto-char placeholder)
 	      (c-add-syntax 'defun-open (c-point 'bol))
@@ -4336,7 +4357,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ;; block-close
 	     ((c-most-enclosing-brace state)
 	      (c-add-syntax 'block-close relpos))
-	     ;; CASE 14C: find out whether we're closing a top-level
+	     ;; CASE 14C: extern-lang-close?
+	     ((save-excursion
+		(goto-char containing-sexp)
+		(and (c-safe (progn (backward-sexp 2) t))
+		     (looking-at "extern[^_]")
+		     (progn
+		       (forward-sexp 1)
+		       (c-forward-syntactic-ws)
+		       (= (following-char) ?\"))))
+	      (c-add-syntax 'extern-lang-close containing-sexp))
+	     ;; CASE 14D: find out whether we're closing a top-level
 	     ;; class or a defun
 	     (t
 	      (save-restriction
