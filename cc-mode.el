@@ -3665,9 +3665,14 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		 (- (current-column) cs-curcol))
 	(goto-char containing-sexp)
 	(or (eolp)
-	    (progn (forward-char 1)
-		   (c-forward-syntactic-ws)
-		   ))
+	    (let ((eol (c-point 'eol))
+		  (here (progn
+			  (forward-char 1)
+			  (skip-chars-forward " \t")
+			  (point))))
+	      (c-forward-syntactic-ws)
+	      (if (< (point) eol)
+		  (goto-char here))))
 	(- (current-column) cs-curcol)
 	))))
 
