@@ -960,22 +960,25 @@ Returns nil if line starts inside a string, t if in a comment."
 		       (progn
 			 (backward-char 1)
 			 (skip-chars-backward " \t")))
-		   (if (or (= (preceding-char) ?})
-			   (= (preceding-char) ?\)))
-		       0
-		     (beginning-of-line) ; continued arg decls or member inits
-		     (skip-chars-forward " \t")
-		     (if (looking-at "/[/*]")
+		   ;; may be first line after a hanging member init colon
+		   (if (= (preceding-char) ?:)
+		       c++-member-init-indent
+		     (if (or (= (preceding-char) ?})
+			     (= (preceding-char) ?\)))
 			 0
-		       (if (= (following-char) ?:)
-			   (if c++-continued-member-init-offset
-			       (+ (current-indentation)
-				  c++-continued-member-init-offset)
-			     (progn
-			       (forward-char 1)
-			       (skip-chars-forward " \t")
-			       (current-column)))
-			 (current-indentation))))
+		       (beginning-of-line) ; cont arg decls or member inits
+		       (skip-chars-forward " \t")
+		       (if (looking-at "/[/*]")
+			   0
+			 (if (= (following-char) ?:)
+			     (if c++-continued-member-init-offset
+				 (+ (current-indentation)
+				    c++-continued-member-init-offset)
+			       (progn
+				 (forward-char 1)
+				 (skip-chars-forward " \t")
+				 (current-column)))
+			   (current-indentation)))))
 		   ))))
 	    ((/= (char-after containing-sexp) ?{)
 	     ;; line is expression, not statement:
