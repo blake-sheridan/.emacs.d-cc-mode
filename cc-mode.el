@@ -80,9 +80,6 @@
 ;;; Code:
 
 
-(eval-when-compile
-  (require 'cc-make))
-
 (require 'cc-defs)
 
 ;; sigh.  give in to the pressure, but make really sure all the
