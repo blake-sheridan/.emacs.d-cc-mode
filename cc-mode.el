@@ -1639,7 +1639,7 @@ point of the beginning of the C++ definition."
 	(setq indent (+ indent c++-access-specifier-offset)))
        ((looking-at "default[ \t]*:")
 	(setq indent (+ indent c-label-offset)))
-       ((or (looking-at "case[ \t]*:")
+       ((or (looking-at "case[ \t]+.*:")
 	    (and (looking-at "[A-Za-z]")
 		 (save-excursion
 		   (forward-sexp 1)
@@ -2017,7 +2017,7 @@ BOD is the beginning of the C++ definition."
 	    (if (save-excursion
 		  (goto-char indent-point)
 		  (skip-chars-forward " \t\n")
-		  (looking-at "case[ \t]*:"))
+		  (looking-at "case[ \t]+.*:"))
 		(progn
 		  (goto-char containing-sexp)
 		  (back-to-indentation)
@@ -2032,15 +2032,17 @@ BOD is the beginning of the C++ definition."
 		    ;; indent like it.
 		    (save-excursion
 		      (forward-char 1)
-		      (while (progn (skip-chars-forward " \t\n")
-				    (looking-at
-				     (concat
-				      "#\\|/\\*\\|//"
-				      "\\|\\(case\\|default\\)[ \t]"
-				      "\\|[a-zA-Z0-9_$]*:[^:]"
-				      "\\|friend[ \t]"
-				      c++-class-key
-				      "[ \t]")))
+		      (while
+			  (progn
+			    (skip-chars-forward " \t\n")
+			    (looking-at
+			     (concat
+			      "#\\|/\\*\\|//"
+			      "\\|\\(case[ \t]+.*\\|default[ \t]*\\)"
+			      "\\|[a-zA-Z0-9_$]*:[^:]"
+			      "\\|friend[ \t]"
+			      c++-class-key
+			      "[ \t]")))
 			;; Skip over comments and labels
 			;; following openbrace.
 			(cond
@@ -2052,7 +2054,7 @@ BOD is the beginning of the C++ definition."
 			   (concat "//\\|friend[ \t]" c++-class-key
 				   "[ \t]"))
 			  (forward-line 1))
-			 ((looking-at "\\(case\\|default\\)[ \t]*:")
+			 ((looking-at "\\(case[ \t]+.*\\|default[ \t]*\\):")
 			  (forward-line 1))
 			 (t
 			  (re-search-forward ":[^:]" nil 'move))))
