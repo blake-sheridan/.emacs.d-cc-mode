@@ -535,7 +535,7 @@ supported list, along with the values for this variable:
   (define-key c-mode-map ","         'c-electric-semi&comma)
   (define-key c-mode-map "/"         'c-electric-slash)
   (define-key c-mode-map "*"         'c-electric-star)
-  (define-key c-mode-map "\e\C-x"    'c-indent-defun)
+  (define-key c-mode-map "\C-c\C-i"  'c-indent-defun)
   (define-key c-mode-map "\C-c\C-\\" 'c-backslash-region)
   ;; TBD: where if anywhere, to put c-backward|forward-into-nomenclature
   (define-key c-mode-map "\C-c\C-a"  'c-toggle-auto-state)
