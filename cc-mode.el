@@ -3543,7 +3543,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(goto-char containing-sexp)
 	(or (eolp)
 	    (progn (forward-char 1)
-		   (c-forward-syntactic-ws (c-point 'eol))
+		   (c-forward-syntactic-ws)
 		   ))
 	(- (current-column) cs-curcol)
 	))))
