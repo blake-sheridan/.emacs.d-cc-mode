@@ -692,7 +692,7 @@ supported list, along with the values for this variable:
   (define-key c-mode-map "\C-c\C-t"  'c-toggle-auto-hungry-state)
   (define-key c-mode-map "\C-c\C-v"  'c-version)
   ;; FSF Emacs 19 defines menus in the mode map
-  (if (memq 'FSF c-emacs-features)
+  (if (not (fboundp 'set-keymap-parent))
       (progn
 	(define-key c-mode-map [menu-bar] (make-sparse-keymap))
 
@@ -744,7 +744,7 @@ supported list, along with the values for this variable:
   ;; In Emacs 19, it makes more sense to inherit c-mode-map
   (if (memq 'v19 c-emacs-features)
       ;; XEmacs (formerly Lucid) and FSF Emacs 19 do this differently
-      (if (memq 'FSF c-emacs-features)
+      (if (not (fboundp 'set-keymap-parent))
 	  (setq c++-mode-map (cons 'keymap c-mode-map))
 	(setq c++-mode-map (make-sparse-keymap))
 	(set-keymap-parent c++-mode-map c-mode-map))
@@ -761,7 +761,7 @@ supported list, along with the values for this variable:
   ;; In Emacs 19, it makes more sense to inherit c-mode-map
   (if (memq 'v19 c-emacs-features)
       ;; XEmacs (formerly Lucid) and FSF Emacs 19 do this differently
-      (if (memq 'FSF c-emacs-features)
+      (if (not (fboundp 'set-keymap-parent))
 	  (setq objc-mode-map (cons 'keymap c-mode-map))
 	(setq objc-mode-map (make-sparse-keymap))
 	(set-keymap-parent objc-mode-map c-mode-map))
