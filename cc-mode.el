@@ -2015,7 +2015,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (beginning-of-line)
     (let ((endmark (copy-marker end))
 	  (c-tab-always-indent t)
-	  (c-echo-semantic-information-p nil)) ;shut up msgs on individual lines
+	  (c-echo-semantic-information-p nil)) ;shut up msgs on indiv lines
       (while (and (bolp)
 		  (not (eobp))
 		  (< (point) endmark))
@@ -2040,7 +2040,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(condition-case nil
 		    (progn
 		      (forward-sexp 1)
-		      (setq sexpend (point-marker)))
+		      (setq sexpend (point)))
 		  (error (setq sexpend nil)
 			 (goto-char nextline)))
 		(c-forward-syntactic-ws))
@@ -2049,19 +2049,25 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		    ;; make sure the sexp we found really starts on the
 		    ;; current line and extends past it
 		    (goto-char sexpend)
+		    (setq sexpend (point-marker))
 		    (backward-sexp 1)
 		    (setq sexpbeg (point)))))
 	    ;; If that sexp ends within the region, indent it all at
 	    ;; once, fast.
-	    (if (and sexpend
-		     (> sexpend nextline)
-		     (<= sexpend endmark))
-		(progn
-		  (goto-char sexpbeg)
-		  (c-indent-exp 'shutup)
-		  (goto-char sexpend)))
+	    (condition-case nil
+		(if (and sexpend
+			 (> sexpend nextline)
+			 (<= sexpend endmark))
+		    (progn
+		      (goto-char sexpbeg)
+		      (c-indent-exp 'shutup)
+		      (goto-char sexpend)))
+	      (error
+	       (goto-char sexpbeg)
+	       (c-indent-via-language-element lim)))
 	    ;; Move to following line and try again.
 	    (and sexpend
+		 (markerp sexpend)
 		 (set-marker sexpend nil))
 	    (forward-line 1))))
       (set-marker endmark nil)))
