@@ -3517,8 +3517,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-syntax 'statement-cont (c-point 'boi)))
 	     ;; CASE 15D: any old statement
 	     ((< (point) indent-point)
-	      (goto-char indent-point)
-	      (c-beginning-of-statement 1)
+	      ;; calculate relpos relative to beginning of previous
+	      ;; statement, unless we're looking at a conditional key,
+	      ;; possible nested
+	      (if (looking-at c-conditional-key)
+		  nil
+		(goto-char indent-point)
+		(c-beginning-of-statement 1))
 	      (c-add-syntax 'statement (c-point 'boi))
 	      (if (= char-after-ip ?{)
 		  (c-add-syntax 'block-open)))
