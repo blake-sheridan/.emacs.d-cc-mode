@@ -106,7 +106,7 @@
 ;;
 ;; archive.cis.ohio-state.edu:pub/gnu/emacs/elisp-archive/modes/c++-mode.el.Z 
 ;; 
-;; For those of you without anon-ftp access, you can use the DEC's
+;; For those of you without anon-ftp access, you can use the DEC
 ;; ftpmail'er at the address ftpmail@decwrl.dec.com.  Send the
 ;; following message in the body of your mail to that address to get
 ;; c++-mode:
