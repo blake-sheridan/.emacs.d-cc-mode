@@ -1433,9 +1433,11 @@ is inhibited."
   (if (and (not arg)
 	   (memq (c-in-literal) '(c))
 	   (= (preceding-char) ?*)
-	   (= (char-after (- (point) 2)) ?/)
 	   (save-excursion
-	     (forward-char -2)
+	     (forward-char -1)
+	     (skip-chars-backward "*")
+	     (if (= (preceding-char) ?/)
+		 (forward-char -1))
 	     (skip-chars-backward " \t")
 	     (bolp)))
       ;; shut this up
