@@ -1503,34 +1503,51 @@ the brace is inserted inside a literal."
 	    delete-temp-newline
 	    ;; shut this up too
 	    (c-echo-syntactic-information-p nil)
-	    syntax (progn
-		     ;; only insert a newline if there is
-		     ;; non-whitespace behind us
-		     (if (save-excursion
-			   (skip-chars-backward " \t")
-			   (not (bolp)))
-			 (progn (newline)
-				(setq delete-temp-newline t)))
-		     (self-insert-command (prefix-numeric-value arg))
-		     ;; state cache doesn't change
-		     (c-guess-basic-syntax))
-	    newlines (and
-		      c-auto-newline
-		      (or (c-lookup-lists syms syntax c-hanging-braces-alist)
-			  '(ignore before after))))
+	    (syntax (progn
+		      ;; only insert a newline if there is
+		      ;; non-whitespace behind us
+		      (if (save-excursion
+			    (skip-chars-backward " \t")
+			    (not (bolp)))
+			  (progn (newline)
+				 (setq delete-temp-newline t)))
+		      (self-insert-command (prefix-numeric-value arg))
+		      ;; state cache doesn't change
+		      (c-guess-basic-syntax)))
+	    (newlines (and
+		       c-auto-newline
+		       (or (c-lookup-lists syms syntax c-hanging-braces-alist)
+			   '(ignore before after)))))
 	;; If syntax is a function symbol, then call it using the
 	;; defined semantics.
-;	(if (and (not (consp (cdr newlines)))
-;		 (fboundp (cdr newlines)))
-;	    (let ((c-syntactic-context syntax)
+	(if (and (not (consp (cdr newlines)))
+		 (fboundp (cdr newlines)))
+	    (let ((c-syntactic-context syntax))
+	      (setq newlines
+		    (funcall (cdr newlines) (car newlines) (1- (point))))))
 	;; does a newline go before the open brace?
 	(if (memq 'before newlines)
 	    ;; we leave the newline we've put in there before,
 	    ;; but we need to re-indent the line above
 	    (let ((pos (- (point-max) (point)))
-		  (here (point)))
+		  (here (point))
+		  (c-state-cache c-state-cache))
 	      (forward-line -1)
-	      ;; we don't need to update the state cache.
+	      ;; we may need to update the cache. this should still be
+	      ;; faster than recalculating the state in many cases
+	      (save-excursion
+		(save-restriction
+		  (narrow-to-region here (point))
+		  (if (and (c-safe (progn (backward-up-list -1) t))
+			   (memq (preceding-char) '(?\) ?}))
+			   (progn (widen)
+				  (c-safe (progn (forward-sexp -1) t))))
+		      (setq c-state-cache
+			    (c-hack-state (point) 'open c-state-cache))
+		    (if (and (not (consp (car c-state-cache)))
+			     (< (point) (car c-state-cache)))
+			(setq c-state-cache (cdr c-state-cache))))
+		  ))
 	      (c-indent-line)
 	      (goto-char (- (point-max) pos))
 	      ;; if the buffer has changed due to the indentation, we
@@ -1581,7 +1598,7 @@ the brace is inserted inside a literal."
 	  (goto-char (- (point-max) pos))
 	  )
 	;; does a newline go after the brace?
-	(if (memq 'after (cdr-safe newlines))
+	(if (memq 'after newlines)
 	    (progn
 	      (newline)
 	      ;; update on c-state-cache
