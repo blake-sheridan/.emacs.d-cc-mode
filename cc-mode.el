@@ -2433,9 +2433,14 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      ;; this line should be indented relative to the beginning
 	      ;; of indentation for the topmost-intro line that contains
 	      ;; the prototype's open paren
+	      ;; TBD: is the following redundant?
 	      (if (= char-before-ip ?:)
 		  (forward-char -1))
 	      (c-backward-syntactic-ws lim)
+	      ;; TBD: is the preceding redundant?
+	      (if (= (preceding-char) ?:)
+		  (progn (forward-char -1)
+			 (c-backward-syntactic-ws lim)))
 	      (if (= (preceding-char) ?\))
 		  (backward-sexp 1))
 	      (c-add-semantics 'member-init-intro (c-point 'boi))
@@ -2494,6 +2499,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ((= (preceding-char) ?:)
 	      (goto-char indent-point)
 	      (c-backward-syntactic-ws lim)
+	      (c-safe (backward-sexp 1))
 	      (c-add-semantics 'member-init-cont (c-point 'boi))
 	      ;; we do not need to add class offset since relative
 	      ;; point is the member init above us
