@@ -1439,12 +1439,6 @@ nil, or point is inside a literal then the function in the variable
 	(funcall c-delete-function 1)
 	))))
 
-;; for delsel
-(put 'c-electric-delete 'delete-selection 'supersede)
-;; for pending-del, even though XEmacs' version ships with this already
-(put 'c-electric-delete 'pending-delete 'supersede)
-
-
 (defun c-electric-pound (arg)
   "Electric pound (`#') insertion.
 Inserts a `#' character specially depending on the variable
@@ -1802,6 +1796,24 @@ value of `c-cleanup-list'."
 	    (c-indent-line)))
       )))
 
+;; set up electric character functions to work with pending-del,
+;; (a.k.a. delsel) mode.  All symbols get the t value except
+;; c-electric-delete which gets 'supercede.
+(mapcar
+ (lambda (sym)
+   (put sym 'delete-selection t)	; for delsel (FSF)
+   (put sym 'pending-delete t))		; for pending-del (XEmacs)
+ '(c-electric-pound
+   c-electric-brace
+   c-electric-slash
+   c-electric-star
+   c-electric-semi&comma
+   c-electric-colon))
+(put 'c-electric-delete 'delete-selection 'supersede) ; delsel
+(put 'c-electric-delete 'pending-delete   'supersede) ; pending-del
+
+
+
 (defun c-read-offset (langelem)
   ;; read new offset value for LANGELEM from minibuffer. return a
   ;; legal value only
