@@ -873,22 +873,24 @@ backward-delete-char-untabify."
 introducing construct, indent line as comment.  This only indents if
 we're on a comment-only line, otherwise use indent-for-comment (\\[indent-for-comment])."
   (interactive "P")
-  (let ((here (point)))
+  (let ((here (point)) char)
     (self-insert-command (prefix-numeric-value arg))
-    (if (= (char-after (1- here)) ?/)
-	(save-excursion
-	  (goto-char here)
-	  (c++-indent-line)))))
+    (and (setq char (char-after (1- here)))
+	 (= char ?/)
+	 (save-excursion
+	   (goto-char here)
+	   (c++-indent-line)))))
 
 (defun c++-electric-star (arg)
   "Works with c++-electric-slash to auto indent C style comment lines."
   (interactive "P")
-  (let ((here (point)))
+  (let ((here (point)) char)
     (self-insert-command (prefix-numeric-value arg))
-    (if (or (= (char-after (1- here)) ?/)
-	    (and (memq (c++-in-literal) '(c))
-		 (or (= (point) (c++-point 'boi))
-		     (= (preceding-char) ?*))))
+    (if (and (setq char (char-after (1- here)))
+	     (or (= char ?/)
+		 (and (memq (c++-in-literal) '(c))
+		      (or (= (point) (c++-point 'boi))
+			  (= (preceding-char) ?*)))))
 	(save-excursion
 	  (goto-char here)
 	  (c++-indent-line)))))
