@@ -1065,6 +1065,7 @@ Key bindings:
   (c-common-init)
   (setq comment-start "/* "
 	comment-end   " */"
+	comment-multi-line t
 	c-conditional-key c-C-conditional-key
 	c-class-key c-C-class-key
 	c-comment-start-regexp "/\\*")
