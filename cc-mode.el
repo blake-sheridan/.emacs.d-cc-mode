@@ -2547,7 +2547,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ((save-excursion
 	      (goto-char placeholder)
 	      (and (looking-at c-conditional-key)
-		   (c-safe (progn (forward-sexp 2) t))
+		   (c-safe (progn (forward-sexp
+				   ;; do and else aren't followed by parens
+				   (if (looking-at "\\<\\(do\\|else\\)\\>")
+				       1 2))
+				  t))
 		   (progn (c-forward-syntactic-ws)
 			  (>= (point) indent-point))))
 	    (c-add-semantics 'substatement placeholder)
