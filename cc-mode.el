@@ -1005,6 +1005,7 @@ Key bindings:
 	c-comment-start-regexp "//\\|/\\*"
 	c-class-key c-C++-class-key
 	c-access-key c-C++-access-key)
+  (run-hooks 'c-mode-common-hook)
   (run-hooks 'c++-mode-hook))
 
 ;;;###autoload
@@ -1042,6 +1043,7 @@ Key bindings:
 	c-conditional-key c-C-conditional-key
 	c-class-key c-C++-class-key
 	c-comment-start-regexp "/\\*")
+  (run-hooks 'c-mode-common-hook)
   (run-hooks 'c-mode-hook))
 
 ;;;###autoload
@@ -1081,6 +1083,7 @@ Key bindings:
 	c-comment-start-regexp "//\\|/\\*"
  	c-class-key c-ObjC-class-key
 	c-access-key c-ObjC-access-key)
+  (run-hooks 'c-mode-common-hook)
   (run-hooks 'objc-mode-hook))
 
 (defun c-common-init ()
@@ -1130,8 +1133,7 @@ Key bindings:
   (or (assq 'c-auto-hungry-string minor-mode-alist)
       (setq minor-mode-alist
 	    (cons '(c-auto-hungry-string c-auto-hungry-string)
-		  minor-mode-alist)))
-  (run-hooks 'c-mode-common-hook))
+		  minor-mode-alist))))
 
 
 ;; macros must be defined before first use
