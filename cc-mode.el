@@ -1160,7 +1160,7 @@ point of the beginning of the C++ definition."
 		  (setq indent (save-excursion
 				 (c-backward-to-start-of-if)
 				 (current-indentation))))
-		 ((looking-at "friend\[ \t]\\(class\\|struct\\)[ \t]")
+		 ((looking-at "friend\[ \t]")
 		  (setq indent (+ indent c++-friend-offset)))
 		 ((= (following-char) ?\))
 		  (setq indent (+ (- indent c-indent-level)
