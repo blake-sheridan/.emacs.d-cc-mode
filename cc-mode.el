@@ -677,7 +677,10 @@ no args, if that value is non-nil."
   (make-local-variable 'comment-end)
   (make-local-variable 'comment-column)
   (make-local-variable 'comment-start-skip)
-  (make-local-variable 'comment-indent-hook)
+  (make-local-variable
+   (if (memq 'v19 c++-emacs-features)
+       'comment-indent-function
+     'comment-indent-hook))
   ;; now set their values
   (setq paragraph-start (concat "^$\\|" page-delimiter)
 	paragraph-separate paragraph-start
@@ -689,8 +692,10 @@ no args, if that value is non-nil."
 	comment-start "// "
 	comment-end ""
 	comment-column 32
-	comment-start-skip "/\\*+ *\\|// *"
-	comment-indent-hook 'c++-comment-indent)
+	comment-start-skip "/\\*+ *\\|// *")
+  (if (memq 'v19 c++-emacs-features)
+      (setq comment-indent-function 'c++-comment-indent)
+    (setq comment-indent-hook 'c++-comment-indent))
   ;; hack auto-hungry designators into mode-line-format
   (if (listp mode-line-format)
       (setq mode-line-format
