@@ -835,8 +835,8 @@ All other Emacsen use the `old-re' suite.")
 (define-abbrev-table 'java-mode-abbrev-table ())
 
 (defun c-mode-fsf-menu (name map)
-  ;; Add menu to a keymap.  FSF menus suck.  Don't add them for
-  ;; XEmacs. This feature test will fail on other than Emacs 19.
+  ;; Add menu to a keymap, but don't add them for XEmacs.  This
+  ;; feature test will fail on other than Emacs 19.
   (condition-case nil
       (progn
 	(define-key map [menu-bar] (make-sparse-keymap))
