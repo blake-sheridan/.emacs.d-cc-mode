@@ -154,10 +154,10 @@
 	       (fboundp 'forward-syntactic-ws))
 	   '8-bit '1-bit)
      'no-dual-comments)
-   (if (fboundp 'forward-syntactic-ws)
-       'old-v19
-     (if (fboundp 'forward-comment)
-	 'v19 'v18)))
+   (if (fboundp 'forward-comment)
+       'v19
+     (if (fboundp 'forward-syntactic-ws)
+	 'old-v19 'v18)))
   "A list of needed features extant in the emacs you are using.
 There are many flavors of emacs out on the net, each with different
 features supporting those needed by c++-mode.  Here's the current
