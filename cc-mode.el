@@ -737,6 +737,8 @@ supported list, along with the values for this variable:
   (define-key c-mode-map ";"         'c-electric-semi&comma)
   (define-key c-mode-map "#"         'c-electric-pound)
   (define-key c-mode-map ":"         'c-electric-colon)
+  (define-key c-mode-map "<"         'c-electric-lt-gt)
+  (define-key c-mode-map ">"         'c-electric-lt-gt)
   ;; Lemacs 19.9 defines these two, the second of which is commented out
   ;; (define-key c-mode-map "\e{" 'c-insert-braces)
   ;; Commented out electric square brackets because nobody likes them.
@@ -1681,24 +1683,6 @@ the brace is inserted inside a literal."
 		 (run-hooks old-blink-paren))))
 	))))
       
-(defun c-electric-slash (arg)
-  "Insert a slash character.
-If slash is second of a double-slash C++ style comment introducing
-construct, and we are on a comment-only-line, indent line as comment.
-If numeric ARG is supplied or point is inside a literal, indentation
-is inhibited."
-  (interactive "P")
-  (let ((indentp (and (memq major-mode '(c++-mode objc-mode))
-		      (not arg)
-		      (= (preceding-char) ?/)
-		      (= last-command-char ?/)
-		      (not (c-in-literal))))
-	;; shut this up
-	(c-echo-syntactic-information-p nil))
-    (self-insert-command (prefix-numeric-value arg))
-    (if indentp
-	(c-indent-line))))
-
 (defun c-electric-star (arg)
   "Insert a star character.
 If the star is the second character of a C style comment introducing
@@ -1877,6 +1861,44 @@ value of `c-cleanup-list'."
 	    (c-indent-line)))
       )))
 
+(defun c-electric-slash (arg)
+  "Insert a slash character.
+If slash is second of a double-slash C++ style comment introducing
+construct, and we are on a comment-only-line, indent line as comment.
+If numeric ARG is supplied or point is inside a literal, indentation
+is inhibited."
+  (interactive "P")
+  (let ((indentp (and (memq major-mode '(c++-mode objc-mode))
+		      (not arg)
+		      (= (preceding-char) ?/)
+		      (= last-command-char ?/)
+		      (not (c-in-literal))))
+	;; shut this up
+	(c-echo-syntactic-information-p nil))
+    (self-insert-command (prefix-numeric-value arg))
+    (if indentp
+	(c-indent-line))))
+
+(defun c-electric-lt-gt (arg)
+  "Insert a less-than, or greater-than character.
+When the auto-newline feature is turned on, as evidenced by the \"/a\"
+or \"/ah\" string on the mode line, the line will be re-indented if
+the character inserted is the second of a C++ style stream operator
+and the buffer is in C++ mode.
+
+The line will also not be re-indented if a numeric argument is
+supplied, or point is inside a literal."
+  (interactive "P")
+  (let ((indentp (and (eq major-mode 'c++-mode)
+		      (not arg)
+		      (= (preceding-char) last-command-char)
+		      (not (c-in-literal))))
+	;; shut this up
+	(c-echo-syntactic-information-p nil))
+    (self-insert-command (prefix-numeric-value arg))
+    (if indentp
+	(c-indent-line))))
+
 ;; set up electric character functions to work with pending-del,
 ;; (a.k.a. delsel) mode.  All symbols get the t value except
 ;; c-electric-delete which gets 'supersede.
@@ -1890,6 +1912,7 @@ value of `c-cleanup-list'."
    c-electric-slash
    c-electric-star
    c-electric-semi&comma
+   c-electric-lt-gt
    c-electric-colon))
 (put 'c-electric-delete 'delete-selection 'supersede) ; delsel
 (put 'c-electric-delete 'pending-delete   'supersede) ; pending-del
