@@ -4600,19 +4600,22 @@ it trailing backslashes are removed."
 		  (function
 		   (lambda (var)
 		     (cons var (symbol-value var))))
-		  '(c-inhibit-startup-warnings-p
-		    c-strict-syntax-p
-		    c-echo-syntactic-information-p
+		  '(c-backslash-column
 		    c-basic-offset
-		    c-offsets-alist
-		    c-tab-always-indent
-		    c-comment-only-line-offset
 		    c-block-comments-indent-p
 		    c-cleanup-list
+		    c-comment-only-line-offset
+		    c-echo-syntactic-information-p
+		    c-electric-pound-behavior
 		    c-hanging-braces-alist
 		    c-hanging-colons-alist
-		    c-backslash-column
-		    c-electric-pound-behavior))))
+		    c-hanging-comment-ender-p
+		    c-offsets-alist
+		    c-recognize-knr-p
+		    c-strict-syntax-p
+		    c-tab-always-indent
+		    c-inhibit-startup-warnings-p
+		    ))))
 
 (or (featurep 'cc-mode)
     ;; the default style is now GNU.  This can be overridden in
