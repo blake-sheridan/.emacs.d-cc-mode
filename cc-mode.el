@@ -261,7 +261,10 @@ hitting TAB indents the current line if point is at the left margin or
 in the line's indentation, otherwise it insert a real tab character.
 If other than nil or t, then tab is inserted only within literals
 -- defined as comments and strings -- and inside preprocessor
-directives, but line is always reindented.")
+directives, but line is always reindented.
+
+Note that indentation of lines containing only comments is also
+controlled by the `c-comment-only-line-offset' variable.")
 
 (defvar c-comment-only-line-offset 0
   "*Extra offset for line which contains only the start of a comment.
