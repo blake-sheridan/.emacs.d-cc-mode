@@ -1508,6 +1508,7 @@ the brace is inserted inside a literal."
 	    blink-paren-hook		; emacs18
 	    (insertion-point (point))
 	    delete-temp-newline
+	    (preserve-p (= 32 (char-syntax (preceding-char))))
 	    ;; shut this up too
 	    (c-echo-syntactic-information-p nil)
 	    (syntax (progn
@@ -1568,7 +1569,11 @@ the brace is inserted inside a literal."
 		  (setq syntax (c-guess-basic-syntax))))
 	  ;; must remove the newline we just stuck in (if we really did it)
 	  (and delete-temp-newline
-	       (save-excursion (delete-indentation)))
+	       (save-excursion
+		 ;; if there is whitespace before point, then preserve
+		 ;; at least one space.
+		 (delete-indentation)
+		 (and preserve-p (just-one-space))))
 	  ;; since we're hanging the brace, we need to recalculate
 	  ;; syntax.  Update the state to accurately reflect the
 	  ;; beginning of the line.  We punt if we cross any open or
