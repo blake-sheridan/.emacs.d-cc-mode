@@ -4764,18 +4764,14 @@ With universal argument, inserts the analysis as a comment on that line."
 (defun c-lineup-C-comments (langelem)
   ;; line up C block comment continuation lines
   (save-excursion
-    (let ((stars-on-line (progn (back-to-indentation)
-				(skip-chars-forward "*")))
-	  (line-col (current-column))
-	  (relpos-col (progn (goto-char (cdr langelem))
-			     (current-column)))
-	  (relpos-indent (back-to-indentation)))
-      (if (re-search-forward "/\\([*]+\\)" (c-point 'eol) t)
-	  (+ relpos-indent (if (= stars-on-line
-				  (- (match-end 1) (match-beginning 1)))
-			       1 0)
-	     (- (current-column) line-col relpos-col))
-	(- (current-column) relpos-col))
+    (let ((stars (progn (back-to-indentation)
+			(skip-chars-forward "*")))
+	  (cs-curcol (progn (goto-char (cdr langelem))
+			    (current-column))))
+      (back-to-indentation)
+      (if (re-search-forward "/[*]+" (c-point 'eol) t)
+	  (- (current-column) stars cs-curcol)
+	(- (current-column) cs-curcol))
       )))
 
 (defun c-lineup-comment (langelem)
