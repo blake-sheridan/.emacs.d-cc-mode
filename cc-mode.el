@@ -2576,7 +2576,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 				  t))
 		   (progn (c-forward-syntactic-ws)
 			  (>= (point) indent-point))))
-	    (c-add-semantics 'substatement placeholder)
+	    (goto-char placeholder)
+	    (c-add-semantics 'substatement (c-point 'boi))
 	    (if (= char-after-ip ?{)
 		(c-add-semantics 'block-open)))
 	   ;; CASE 8B: open braces for class or brace-lists
