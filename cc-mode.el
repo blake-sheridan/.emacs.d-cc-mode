@@ -63,6 +63,7 @@
 ;; (makunbound 'c-mode-map)
 ;; (fmakunbound 'c++-mode)
 ;; (makunbound 'c++-mode-map)
+;; (makunbound 'c-style-alist)
 
 ;; There are two major mode entry points provided by this package, one
 ;; for editing C++ code and the other for editing C code (both K&R and
