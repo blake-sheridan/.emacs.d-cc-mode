@@ -3529,7 +3529,19 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ((save-excursion
 		(goto-char indent-point)
 		(skip-chars-forward " \t{")
-		(let ((decl (c-search-uplist-for-classkey (c-parse-state))))
+		;; TBD: watch out! there could be a bogus
+		;; c-state-cache in place when we get here.  we have
+		;; to go through much chicanery to ignore the cache.
+		;; But of course, there may not be!  BLECH!  BOGUS!
+		(let ((decl
+		       (if (boundp 'c-state-cache)
+			   (let ((old-cache c-state-cache))
+			     (prog2
+				 (makunbound 'c-state-cache)
+				 (c-search-uplist-for-classkey (c-parse-state))
+			       (setq c-state-cache old-cache)))
+			 (c-search-uplist-for-classkey (c-parse-state))
+			 )))
 		  (and decl
 		       (setq placeholder (aref decl 0)))
 		  ))
