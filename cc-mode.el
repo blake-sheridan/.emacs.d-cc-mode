@@ -120,6 +120,7 @@ reported and the semantic symbol is ignored.")
     (statement-cont        . +)
     (statement-block-intro . +)
     (statement-case-intro  . +)
+    (substatement          . +)
     (case-label            . 0)
     (label                 . 2)
     (access-label          . -)
@@ -166,6 +167,7 @@ list of valid semantic symbols:
  statement-cont         -- a continuation of a C/C++ statement
  statement-block-intro  -- the first line in a new statement block
  statement-case-intro   -- the first line in a case `block'
+ substatement           -- the first line after an if/while/for/do intro
  case-label             -- a case or default label
  label                  -- any non-special C/C++ label
  access-label           -- C++ private/protected/public access label
@@ -618,7 +620,9 @@ that users are familiar with.")
 (defconst c-label-key
   (concat c-symbol-key ":\\([^:]\\|$\\)")
   "Regexp describing any label.")
-
+(defconst c-conditional-key
+  "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>"
+  "Regexp describing a conditional control.")
 
 ;; main entry points for the modes
 (defun c++-mode ()
@@ -1227,20 +1231,25 @@ the value of `c-cleanup-list'."
 	(goto-char (- (point-max) pos)))
       )))
 
-(defun c-set-offset (symbol offset)
+(defun c-set-offset (symbol offset &optional add-p)
   "Change the value of a langelem symbol in `c-offsets-alist'.
-SYMBOL is the langelem symbol to change or add and OFFSET is the
-offset for that langelem."
+SYMBOL is the langelem symbol to change and OFFSET is the offset for
+that langelem.  Optional ADD says to add SYMBOL to alist if it doesn't
+exist."
   (interactive
    (let* ((langelem
 	   (intern (completing-read
-		    "Langelem symbol: "
+		    (concat "Langelem symbol to change"
+			    (if current-prefix-arg " or add" "")
+			    ": ")
 		    (mapcar
 		     (function
 		      (lambda (langelem)
 			(cons (format "%s" (car langelem)) nil)
 			))
-		     c-offsets-alist))))
+		     c-offsets-alist)
+		    nil (not current-prefix-arg))
+		   ))
 	  (oldoff (cdr-safe (assq langelem c-offsets-alist)))
 	  (offset (read-string "Offset: " (format "%s" oldoff))))
      (list langelem (cond
@@ -1250,11 +1259,14 @@ offset for that langelem."
 		      (string-to-int offset))
 		     ;; must be a function symbol
 		     (t (intern offset))
-		     ))))
+		     )
+	   current-prefix-arg)))
   (let ((entry (assq symbol c-offsets-alist)))
-    (or entry
-	(error "%s is not a valid langelem." symbol))
-    (setcdr entry offset))
+    (if entry
+	(setcdr entry offset)
+      (if add-p
+	  (setq c-offsets-alist (cons (cons symbol offset) c-offsets-alist))
+	(error "%s is not a valid langelem." symbol))))
   (c-keep-region-active))
 
 (defun c-up-block (arg)
@@ -1935,7 +1947,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(or (c-safe (progn (forward-sexp -1) t))
 	    (forward-char -1))
 	(setq here (point))
-	(if (looking-at "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>")
+	(if (looking-at c-conditional-key)
 	    (setq stop t)
 	  (c-backward-syntactic-ws lim)
 	  )))
@@ -2375,29 +2387,41 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (goto-char indent-point)
 	  (skip-chars-forward " \t")
 	  (cond
-	   ;; CASE 7A: a continued statement introducing a new block
-	   ((= char-after-ip ?{)
-	    (cond
-	     ;; CASE 7A.1: could be a func-local class opening brace
-	     ((save-excursion
-		(goto-char indent-point)
-		(skip-chars-forward " \t{")
-		(let ((decl (c-search-uplist-for-classkey (point))))
-		  (and decl
-		       (setq placeholder (cdr decl)))
-		  ))
-	      (c-add-semantics 'class-open placeholder))
-	     ;; CASE 7A.2: just an ordinary block opening brace
-	     (t (c-add-semantics 'statement-cont placeholder))
-	     ))
+	   ;; CASE 7A: func local class opening brace
+	   ((and (= char-after-ip ?{)
+		 (save-excursion
+		   (goto-char indent-point)
+		   (skip-chars-forward " \t{")
+		   (let ((decl (c-search-uplist-for-classkey (point))))
+		     (and decl
+			  (setq placeholder (cdr decl)))
+		     )))
+	    (c-add-semantics 'class-open placeholder))
 	   ;; CASE 7B: iostream insertion or extraction operator
 	   ((looking-at "<<\\|>>")
 	    (goto-char placeholder)
 	    (while (and (re-search-forward "<<\\|>>" indent-point 'move)
 			(c-in-literal)))
 	    (c-add-semantics 'stream-op (c-point 'boi)))
-	   ;; CASE 7C: hanging continued statement
-	   (t (c-add-semantics 'statement-cont placeholder))
+	   ;; CASE 7C: substatement
+	   ((save-excursion
+	      (goto-char placeholder)
+	      (and (looking-at c-conditional-key)
+		   (c-safe (progn (forward-sexp 2) t))
+		   (progn (c-forward-syntactic-ws)
+			  (>= (point) indent-point))))
+	    (c-add-semantics 'substatement placeholder))
+	   ;; CASE 7D: continued statement. find the accurate
+	   ;; beginning of statement or substatement
+	   (t
+	    (c-beginning-of-statement
+	     (progn
+	       (goto-char placeholder)
+	       (and (looking-at c-conditional-key)
+		    (c-safe (progn (forward-sexp 2) t))
+		    (c-forward-syntactic-ws))
+	       (point)))
+	    (c-add-semantics 'statement-cont (point)))
 	   ))
 	 ;; CASE 8: an else clause?
 	 ((looking-at "\\<else\\>")
