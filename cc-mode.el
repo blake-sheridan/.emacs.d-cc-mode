@@ -1681,7 +1681,7 @@ minimum point to search backwards to"
 		   c-continued-brace-offset)
 		  ((and (= (following-char) ?\})
 			(progn (forward-char 1)
-			       (c++-at-top-level-p nil bod)))
+			       (c++-at-top-level-p nil lim)))
 		   (- c-continued-statement-offset))
 		  (t 0))))))
       nil)))
