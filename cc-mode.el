@@ -2508,11 +2508,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (message "indenting region... (this may take a while)")
     ;; if progress has already been initialized, do nothing. otherwise
     ;; initialize the counter with a vector of:
-    ;; [charcnt pntstart lastsec context]
+    ;; [start end lastsec context]
     (if c-progress-info
 	()
-      (setq c-progress-info (vector (- end start)
-				    start
+      (setq c-progress-info (vector start
+				    (save-excursion
+				      (goto-char end)
+				      (point-marker))
 				    (nth 1 (current-time))
 				    context))
       (message "indenting region..."))))
@@ -2522,15 +2524,15 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (if (not (and c-progress-info c-progress-interval))
       nil
     (let ((now (nth 1 (current-time)))
-	  (charcnt (aref c-progress-info 0))
-	  (pntstart (aref c-progress-info 1))
+	  (start (aref c-progress-info 0))
+	  (end (aref c-progress-info 1))
 	  (lastsecs (aref c-progress-info 2)))
       ;; should we update?  currently, update happens every 2 seconds,
       ;; what's the right value?
       (if (< c-progress-interval (- now lastsecs))
 	  (progn
 	    (message "indenting region... (%d%% complete)"
-		     (/ (* 100 (- (point) pntstart)) charcnt))
+		     (/ (* 100 (- (point) start)) (- end start)))
 	    (aset c-progress-info 2 now)))
       )))
 
@@ -2539,6 +2541,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (if (or (eq context (aref c-progress-info 3))
 	  (eq context t))
       (progn
+	(set-marker (aref c-progress-info 1) nil)
 	(setq c-progress-info nil)
 	(message "indenting region... done."))))
 
