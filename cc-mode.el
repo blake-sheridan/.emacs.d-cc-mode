@@ -177,12 +177,11 @@
 (defvar c++-tab-always-indent
   (if (boundp 'c-tab-always-indent) c-tab-always-indent t)
   "*Controls the operation of the TAB key.
-t means always just reindent the current line.  nil means indent the
-current line only if point is at the left margin or in the line's
-indentation; otherwise insert a tab.  If not-nil-or-t, then the line
-is first reindented, then if the indentation hasn't changed, a tab is
-inserted. This last mode is useful if you like to add tabs after the #
-of preprocessor commands.")
+If t (the default), always just indent the current line.  If nil,
+indent the current line only if point is at the left margin or in the
+line's indentation; otherwise insert a tab.  If not-nil-or-t, then tab
+is inserted only within literals (comments and strings) and inside
+preprocessor directives, but line is always reindented.")
 (defvar c++-always-arglist-indent-p nil
   "*Control indentation of continued arglists.
 When non-nil, arglists continued on subsequent lines will always
