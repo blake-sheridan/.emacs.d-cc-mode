@@ -45,6 +45,12 @@
 ;; but there really is no top-level cc-mode.  Usage and programming
 ;; details are contained in an accompanying texinfo manual.
 
+;; NOTE: This mode does not perform font-locking (a.k.a syntactic
+;; coloring, keyword highlighting, etc.).  Typically this is done by a
+;; package called font-lock.el which I do *not* maintain.  You should
+;; contact the Emacs maintainer for questions about coloring or
+;; highlighting in any language mode.
+
 ;; To submit bug reports, type "C-c C-b".  These will be sent to
 ;; bug-gnu-emacs@prep.ai.mit.edu and I'll read about them there (this
 ;; is mirrored as the Usenet newsgroup gnu.emacs.bug).  Questions can
@@ -107,9 +113,15 @@
 ;; Without their patience, testing, insight, code contributions, and
 ;; encouragement cc-mode.el would be a far inferior package.
 
-;; Anonymous ftp URL:
+;; You can get the latest version of cc-mode, including PostScript
+;; documentation and separate individual files from:
 ;;
-;;    ftp://ftp.python.org/pub/emacs/cc-mode.tar.gz
+;;     http://www.python.org/ftp/emacs/
+
+;; Or if you don't have access to the World Wide Web, through
+;; anonymous ftp from:
+;;
+;;    ftp://ftp.python.org/pub/emacs
 
 ;;; Code:
 
