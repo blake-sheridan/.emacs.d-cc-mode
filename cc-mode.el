@@ -1025,7 +1025,9 @@ the brace is inserted inside a literal."
 			    blink-paren-hook))
 	 blink-paren-function		; emacs19
 	 blink-paren-hook		; emacs18
-	 semantics newlines)
+	 semantics newlines
+	 ;; shut this up
+	 (c-echo-semantic-information-p nil))
     (if (or literal
 	    arg
 	    (not (looking-at "[ \t]*$")))
@@ -1119,7 +1121,9 @@ is inhibited."
 		      (not arg)
 		      (= (preceding-char) ?/)
 		      (= last-command-char ?/)
-		      (not (c-in-literal)))))
+		      (not (c-in-literal))))
+	;; shut this up
+	(c-echo-semantic-information-p nil))
     (self-insert-command (prefix-numeric-value arg))
     (if indentp
 	(c-indent-via-language-element))))
@@ -1136,7 +1140,9 @@ is inhibited."
 			       (save-excursion
 				 (skip-chars-backward "* \t")
 				 (bolp)))
-			  (= (preceding-char) ?/)))))
+			  (= (preceding-char) ?/))))
+	;; shut this up
+	(c-echo-semantic-information-p nil))
     (self-insert-command (prefix-numeric-value arg))
     (if indentp
 	(c-indent-via-language-element))))
@@ -1153,7 +1159,9 @@ non-whitespace characters on the line following the semicolon."
   (interactive "P")
   (let* ((bod (c-point 'bod))
 	 (literal (c-in-literal bod))
-	 (here (point)))
+	 (here (point))
+	 ;; shut this up
+	 (c-echo-semantic-information-p nil))
     (if (or literal
 	    arg
 	    (not (looking-at "[ \t]*$")))
@@ -1214,7 +1222,9 @@ the value of `c-cleanup-list'."
   (interactive "P")
   (let* ((bod (c-point 'bod))
 	 (literal (c-in-literal bod))
-	 semantics newlines)
+	 semantics newlines
+	 ;; shut this up
+	 (c-echo-semantic-information-p nil))
     (if (or literal
 	    arg
 	    (not (looking-at "[ \t]*$")))
@@ -1223,9 +1233,10 @@ the value of `c-cleanup-list'."
       (setq semantics (progn
 			(self-insert-command (prefix-numeric-value arg))
 			(c-guess-basic-semantics bod))
-      ;; some language elements can only be determined by checking the
-      ;; following line.  Lets first look for ones that can be found
-      ;; when looking on the line with the colon
+	    ;; some language elements can only be determined by
+	    ;; checking the following line.  Lets first look for ones
+	    ;; that can be found when looking on the line with the
+	    ;; colon
 	    newlines
 	    (and c-auto-newline
 		 (or
