@@ -2544,7 +2544,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(save-excursion
 	  (save-restriction
 	    (goto-char search-start)
-	    (let (foundp class)
+	    (let (foundp class match-end)
 	      (while (and (not foundp)
 			  (save-restriction
 			    (c-forward-syntactic-ws)
@@ -2553,7 +2553,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			    (widen)
 			    (narrow-to-region (point) search-end)
 			    (re-search-forward c-class-key search-end t)))
-		(setq class (match-beginning 0))
+		(setq class (match-beginning 0)
+		      match-end (match-end 0))
 		(if (not (c-in-literal search-start))
 		    (progn
 		      (goto-char class)
@@ -2564,7 +2565,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		      ;; a forward declaration or a struct init.
 		      (skip-chars-forward "^;=,)" search-end)
 		      (if (/= (point) search-end)
-			  (setq foundp nil)
+			  (progn
+			    (setq foundp nil)
+			    (goto-char match-end))
 			;; make sure we aren't looking at the `class'
 			;; keyword inside a template arg list
 			(goto-char class)
