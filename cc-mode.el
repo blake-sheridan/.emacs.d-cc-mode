@@ -534,9 +534,7 @@ this variable to nil defeats backscan limits.")
 				  (list element))))))
 	       mode-line-format)
 	      modeline)))
-  (c++-set-auto-hungry-state
-   (memq c++-auto-hungry-initial-state '(auto-only   auto-hungry t))
-   (memq c++-auto-hungry-initial-state '(hungry-only auto-hungry t))))
+  )
 
 (defun c++-mode ()
   "Major mode for editing C++ code.  $Revision$
@@ -728,7 +726,10 @@ no args, if that value is non-nil."
   ;; now set their values
   (setq comment-start "// "
 	comment-end "")
-  (run-hooks 'c++-mode-hook))
+  (run-hooks 'c++-mode-hook)
+  (c++-set-auto-hungry-state
+   (memq c++-auto-hungry-initial-state '(auto-only   auto-hungry t))
+   (memq c++-auto-hungry-initial-state '(hungry-only auto-hungry t))))
 
 (defun c++-c-mode ()
   "Major mode for editing K&R and ANSI C code.  $Revision$
@@ -744,7 +745,10 @@ runs the hook `c++-c-mode-hook' instead of `c++-mode-hook'."
 	local-abbrev-table c-mode-abbrev-table)
   (setq comment-start "/* "
 	comment-end   " */")
-  (run-hooks 'c++-c-mode-hook))
+  (run-hooks 'c++-c-mode-hook)
+  (c++-set-auto-hungry-state
+   (memq c++-auto-hungry-initial-state '(auto-only   auto-hungry t))
+   (memq c++-auto-hungry-initial-state '(hungry-only auto-hungry t))))
 
 (defun c++-comment-indent ()
   "Used by `indent-for-comment' to decide how much to indent a comment
