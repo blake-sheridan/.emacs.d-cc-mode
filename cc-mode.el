@@ -2028,8 +2028,6 @@ BOD is the beginning of the C++ definition."
 	  (bod (or bod (c++-point 'bod)))
 	  (open-paren (or (car-safe c-brace-offset)
 			  c-brace-offset))
-	  (top-open-paren (or (cdr-safe c-brace-offset)
-			      c-brace-offset))
 	  )				;end-let
       (if parse-start
 	  (goto-char parse-start)
@@ -2078,12 +2076,12 @@ BOD is the beginning of the C++ definition."
 	   (goto-char indent-point)
 	   (skip-chars-forward " \t")
 	   (cond
-	    ;; CASE 3A.a: are we looking at the top-level opening brace?
-	    ((= (following-char) ?{) top-open-paren)
-	    ;; CASE 3A.b: if we are at the first non-comment in the
-	    ;; (possibly narrowed) buffer, we apply an indent of zero
-	    ((progn (c++-backward-syntactic-ws parse-start)
-		    (bobp))
+	    ;; CASE 3A: are we looking at the top-level opening
+	    ;; brace, or are we at the beginning of the buffer?
+	    ((or (= (following-char) ?{)
+		 (progn (c++-backward-syntactic-ws parse-start)
+			(bobp)))
+	     ;; top-level open paren offset gets applied elsewhere
 	     0)
 	    ;; CASE 3B: first arg decl or member init
 	    ((c++-in-function-p)
