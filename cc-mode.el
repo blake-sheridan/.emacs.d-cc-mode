@@ -2196,7 +2196,8 @@ BOD is the beginning of the C++ definition."
 		 (- (current-column)
 		    inclass-shift))))
 	    ;; CASE 3H: else first check to see if its a multiple
-	    ;; inheritance continuation line, but not a K&R C arg decl
+	    ;; inheritance continuation line, or continued member init
+	    ;; list, but not a K&R C arg decl
 	    ((and (not (eq major-mode 'c++-c-mode))
 		  (or (looking-at c++-inher-key)
 		      (looking-at c++-baseclass-key)))
@@ -2211,7 +2212,7 @@ BOD is the beginning of the C++ definition."
 		     (goto-char boi)
 		     (forward-char 1)
 		     (skip-chars-forward " \t"))
-		   (current-column))
+		   (- (current-column) inclass-shift))
 	       ;; nope, its probably a nested class
 	       0))
 	    ;; CASE 3I: we might be looking at the opening brace of a
