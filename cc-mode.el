@@ -2509,7 +2509,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (c-add-semantics 'string (c-point 'bopl)))
 	 ;; CASE 2: in a C or C++ style comment.
 	 ((memq literal '(c c++))
-	  (c-add-semantics literal (c-point 'bopl)))
+	  ;; we need to catch multi-paragraph C comments
+	  (while (and (zerop (forward-line -1))
+		      (looking-at "^[ \t]*$")))
+	  (c-add-semantics literal (c-point 'bol)))
 	 ;; CASE 3: in a cpp preprocessor
 	 ((eq literal 'pound)
 	  (c-beginning-of-macro lim)
@@ -3104,8 +3107,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (skip-chars-forward " \t")
 		   (if (looking-at "\\*\\*?")
 		       (- (match-end 0) (match-beginning 0))
-		     0))))
-      (goto-char (cdr langelem))
+		     0)))
+	  (cs-curcol (progn (goto-char (cdr langelem))
+			    (current-column))))
       (back-to-indentation)
       (if (re-search-forward "/\\*[ \t]*" (c-point 'eol) t)
 	  (goto-char (+ (match-beginning 0)
@@ -3114,7 +3118,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			 ((= stars 1) 1)
 			 ((= stars 2) 0)
 			 (t (- (match-end 0) (match-beginning 0)))))))
-      (current-column))))
+      (- (current-column) cs-curcol))))
 
 (defun c-adaptive-block-open (langelem)
   ;; when substatement is on semantics list, return negative
