@@ -2375,7 +2375,8 @@ function definition.")
   (interactive "p")
   (let ((c++-defun-header (if c++-match-header-strongly
 			      c++-defun-header-strong
-			    c++-defun-header-weak)))
+			    c++-defun-header-weak))
+	(parse-sexp-ignore-comments t))
     (if (and (eobp) (> arg 0))
 	nil
       (if (and (> arg 0) (looking-at c++-defun-header)) (forward-char 1))
