@@ -1599,8 +1599,17 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
 		      (lambda (langelem)
 			(cons (format "%s" (car langelem)) nil)))
 		     c-offsets-alist)
-		    nil (not current-prefix-arg))
-		   ))
+		    nil (not current-prefix-arg)
+		    ;; initial contents tries to be the last element
+		    ;; on the syntactic analysis list for the current
+		    ;; line
+		    (let* ((syntax (c-guess-basic-syntax))
+			   (len (length syntax))
+			   (ic (format "%s" (car (nth (1- len) syntax)))))
+		      (if (memq 'v19 c-emacs-features)
+			  (cons ic 0)
+			ic))
+		    )))
 	  (offset (c-read-offset langelem)))
      (list langelem offset current-prefix-arg)))
   ;; sanity check offset
