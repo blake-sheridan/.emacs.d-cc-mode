@@ -900,6 +900,14 @@ supported list, along with the values for this variable:
   "Buffer local language-specific access key regexp.")
 (defvar c-class-key nil
   "Buffer local language-specific class key regexp.")
+(defconst c-protection-key
+  "\\<\\(public\\|protected\\|private\\)\\>"
+  "Regexp describing protection keywords.")
+(defconst c-symbol-key "\\(\\w\\|\\s_\\)+"
+  "Regexp describing a C/C++/ObjC symbol.
+We cannot use just `word' syntax class since `_' cannot be in word
+class.  Putting underscore in word class breaks forward word movement
+behavior that users are familiar with.")
 (defconst c-baseclass-key
   (concat
    ":?[ \t]*\\(virtual[ \t]+\\)?\\("
@@ -929,11 +937,6 @@ The expansion is entirely correct because it uses the C preprocessor."
 
 
 ;; constant regular expressions for looking at various constructs
-(defconst c-symbol-key "\\(\\w\\|\\s_\\)+"
-  "Regexp describing a C/C++/ObjC symbol.
-We cannot use just `word' syntax class since `_' cannot be in word
-class.  Putting underscore in word class breaks forward word movement
-behavior that users are familiar with.")
 (defconst c-C++-class-key "\\(class\\|struct\\|union\\)"
   "Regexp describing a C++ class declaration, including templates.")
 (defconst c-C-class-key "\\(struct\\|union\\)"
@@ -943,9 +946,6 @@ behavior that users are familiar with.")
 	  c-C++-class-key "[ \t]+" c-symbol-key
 	  "\\([ \t]*:[ \t]*\\)?\\s *[^;]")
   "Regexp describing a class inheritance declaration.")
-(defconst c-protection-key
-  "\\<\\(public\\|protected\\|private\\)\\>"
-  "Regexp describing protection keywords.")
 (defconst c-switch-label-key
   "\\(\\(case[( \t]+\\S .*\\)\\|default[ \t]*\\):"
   "Regexp describing a switch's case or default label")
