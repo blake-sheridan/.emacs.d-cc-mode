@@ -1983,21 +1983,22 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
       (skip-chars-backward " \t\n\r\f" lim)
       ;; c++ comment
       (if (eq (setq literal (c++-in-literal lim)) 'c++)
-	  (let ((skip t))
-	    (while skip
+	  (progn
+	    (skip-chars-backward "^/" lim)
+	    (skip-chars-backward "/" lim)
+	    (while (not (and (= (following-char) ?/)
+			     (= (char-after (1+ (point))) ?/)))
 	      (skip-chars-backward "^/" lim)
-	      (skip-chars-backward "/" lim)
-	      (setq skip (not (and (= (following-char) ?/)
-				   (= (char-after (1+ (point))) ?/))))
-	      ))
+	      (skip-chars-backward "/" lim)))
 	;; c comment
 	(if (eq literal 'c)
-	    (let ((skip t))
-	      (while skip
+	    (progn
+	      (skip-chars-backward "^*" lim)
+	      (skip-chars-backward "*" lim)
+	      (while (not (and (= (following-char) ?*)
+			       (= (preceding-char) ?/)))
 		(skip-chars-backward "^*" lim)
-		(skip-chars-backward "*" lim)
-		(setq skip (not (and (= (following-char) ?*)
-				     (= (preceding-char) ?/)))))
+		(skip-chars-backward "*" lim))
 	      (forward-char -1))
 	  ;; preprocessor directive
 	  (if (eq literal 'pound)
@@ -2007,13 +2008,13 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	    ;; just outside of c block
 	    (if (and (= (preceding-char) ?/)
 		     (= (char-after (- (point) 2)) ?*))
-		(let ((skip t))
-		  (forward-char -2)
-		  (while skip
+		(progn
+		  (skip-chars-backward "^*" lim)
+		  (skip-chars-backward "*" lim)
+		  (while (not (and (= (following-char) ?*)
+				   (= (preceding-char) ?/)))
 		    (skip-chars-backward "^*" lim)
-		    (skip-chars-backward "*" lim)
-		    (setq skip (not (and (= (following-char) ?*)
-					 (= (preceding-char) ?/)))))
+		    (skip-chars-backward "*" lim))
 		  (forward-char -1))
 	      ;; none of the above
 	      (setq stop t))))))))
