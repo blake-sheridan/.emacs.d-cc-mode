@@ -2340,7 +2340,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 (defun cc-backslashify-current-line (doit)
   ;; Backslashifies current line if DOIT is non-nil, otherwise
   ;; unbackslashifies the current line.
-  (end-of-line 1)
+  (end-of-line)
   (if doit
       ;; Note that "\\\\" is needed to get one backslash.
       (if (not (save-excursion
@@ -2357,27 +2357,29 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(insert " ")
 		(end-of-line))
 	      (insert "\\"))))
-    (forward-char -1)
-    (if (looking-at "\\\\")
-	(progn (skip-chars-backward " \t")
-	       (kill-line)))))
+    (if (not (bolp))
+	(progn
+	  (forward-char -1)
+	  (if (looking-at "\\\\")
+	      (let ((kill-lines-magic nil))
+		(skip-chars-backward " \t")
+		(kill-line)))))
+      ))
 
-(defun cc-macroize-region (from to arg)
+(defun cc-macroize-region (beg end arg)
   "Insert backslashes at end of every line in region.
 Useful for defining cpp macros.  If called with a prefix argument,
 it will remove trailing backslashes."
   (interactive "r\nP")
   (save-excursion
-    (goto-char from)
-    (beginning-of-line 1)
-    (let ((line (count-lines (point-min) (point)))
-	  (to-line (save-excursion
-		     (goto-char to)
-		     (count-lines (point-min) (point)))))
-      (while (< line to-line)
+    (save-restriction
+      (narrow-to-region
+       (progn (goto-char beg) (cc-point 'bol))
+       (progn (goto-char end) (cc-point 'bonl)))
+      (goto-char (point-min))
+      (while (not (eobp))
 	(cc-backslashify-current-line (null arg))
-	(forward-line 1)
-	(setq line (1+ line)))))
+	(forward-line 1))))
   (cc-keep-region-active))
 
 (defun cc-comment-region (beg end arg)
