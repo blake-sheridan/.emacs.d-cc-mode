@@ -2556,7 +2556,6 @@ URL:
 
 @end example
 
-@end example
 Note that this is a ``gzipped'' tar file.
 
 If you do not have anonymous ftp access, you can get the distribution
