@@ -888,10 +888,11 @@ Key bindings:
   ;; update the mode line accordingly
   (setq c-auto-newline auto-p
 	c-hungry-delete-key hungry-p)
-  ;; hack to get mode line updated. Emacs19 should use
-  ;; force-mode-line-update, but that isn't portable to Emacs18
-  ;; and this at least works for both
-  (set-buffer-modified-p (buffer-modified-p)))
+  ;; update mode-line.  The Emacs18 solution works in 19, but I want
+  ;; to be a good citizen
+  (if (eq c-emacs-features 'v19)
+      (force-mode-line-update)
+    (set-buffer-modified-p (buffer-modified-p))))
 
 (defun c-toggle-auto-state (arg)
   "Toggle auto-newline feature.
