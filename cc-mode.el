@@ -2004,7 +2004,8 @@ search."
 	    crossedp))
 	 ;; CASE 6: ignore labels
 	 ((or (looking-at c-access-key)
-	      (looking-at c-label-key)))
+	      (looking-at c-label-key)
+	      (looking-at c-switch-label-key)))
 	 ;; CASE 7: ObjC method def
 	 ((and (eq major-mode 'objc-mode)
 	       (c-in-objc-method-def-p))
