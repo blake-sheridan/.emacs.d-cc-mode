@@ -726,53 +726,55 @@ the lines of the expression starting after point so that this line
 becomes properly indented.  The relative indentation among the lines
 of the expression are preserved."
   (interactive "P")
-  (if whole-exp
-      ;; If arg, always indent this line as C
-      ;; and shift remaining lines of expression the same amount.
-      (let ((shift-amt (c++-indent-line))
-	    (bod (c++-point-bod))
-	    beg end)
-	(save-excursion
-	  (if (eq c++-tab-always-indent t)
-	      (beginning-of-line))
-	  (setq beg (point))
-	  (forward-sexp 1)
-	  (setq end (point))
-	  (goto-char beg)
-	  (forward-line 1)
-	  (setq beg (point)))
-	(if (> end beg)
-	    (indent-code-rigidly beg end shift-amt "#")))
-    (cond ((and (eq c++-tab-always-indent nil)
-		(save-excursion
-		  (skip-chars-backward " \t")
-		  (not (bolp))))
-	   (insert-tab))
-	  ((eq c++-tab-always-indent t)
-	   (c++-indent-line))
-	  ((or (c++-in-open-string-p bod)
-	       (c++-in-comment-p bod)
+  (let ((bod (c++-point-bod)))
+    (if whole-exp
+	;; If arg, always indent this line as C
+	;; and shift remaining lines of expression the same amount.
+	(let ((shift-amt (c++-indent-line bod))
+	      beg end)
+	  (save-excursion
+	    (if (eq c++-tab-always-indent t)
+		(beginning-of-line))
+	    (setq beg (point))
+	    (forward-sexp 1)
+	    (setq end (point))
+	    (goto-char beg)
+	    (forward-line 1)
+	    (setq beg (point)))
+	  (if (> end beg)
+	      (indent-code-rigidly beg end shift-amt "#")))
+      (cond ((and (eq c++-tab-always-indent nil)
+		  (save-excursion
+		    (skip-chars-backward " \t")
+		    (not (bolp))))
+	     (insert-tab))
+	    ((eq c++-tab-always-indent t)
+	     (c++-indent-line bod))
+	    ((or (c++-in-open-string-p bod)
+		 (c++-in-comment-p bod)
+		 (save-excursion
+		   (back-to-indentation)
+		   (eq (char-after (point)) ?#)))
+	     (let ((here (point))
+		   (boi (save-excursion (back-to-indentation) (point)))
+		   (indent-p nil))
+	       (c++-indent-line bod)
 	       (save-excursion
 		 (back-to-indentation)
-		 (eq (char-after (point)) ?#)))
-	   (let ((here (point))
-		 (boi (save-excursion (back-to-indentation) (point)))
-		 (indent-p nil))
-	     (c++-indent-line)
-	     (save-excursion
-	       (back-to-indentation)
-	       (setq indent-p (and (> here boi) (= (point) boi))))
-	     (if indent-p (insert-tab))))
-	  (t (c++-indent-line)))))
+		 (setq indent-p (and (> here boi) (= (point) boi))))
+	       (if indent-p (insert-tab))))
+	    (t (c++-indent-line bod))))))
 
-(defun c++-indent-line ()
+(defun c++-indent-line (&optional bod)
   "Indent current line as C++ code.
-Return the amount the indentation changed by."
-  (let ((indent (c++-calculate-indent nil))
-	beg shift-amt
-	(comcol nil)
-	(case-fold-search nil)
-	(pos (- (point-max) (point))))
+Return the amount the indentation changed by.  Optional BOD is the
+point of the beginning of the C++ definition."
+  (let* ((bod (or bod (c++-point-bod)))
+	 (indent (c++-calculate-indent nil bod))
+	 beg shift-amt
+	 (comcol nil)
+	 (case-fold-search nil)
+	 (pos (- (point-max) (point))))
     (beginning-of-line)
     (setq beg (point))
     (cond ((eq indent nil)
@@ -931,17 +933,19 @@ string according to mode's syntax."
 	 (not (c++-in-open-string-p bod))
 	 (not (newline)))))
 
-(defun c++-calculate-indent (&optional parse-start)
+(defun c++-calculate-indent (&optional parse-start bod)
   "Return appropriate indentation for current line as C++ code.
 In usual case returns an integer: the column to indent to.
-Returns nil if line starts inside a string, t if in a comment."
+Returns nil if line starts inside a string, t if in a comment.
+Optional PARSE-START is the location to start parsing, and optional
+BOD is the beginning of the C++ definition."
   (save-excursion
     (beginning-of-line)
     (let ((indent-point (point))
 	  (case-fold-search nil)
 	  state do-indentation
 	  containing-sexp
-	  (bod (c++-point-bod)))
+	  (bod (or bod (c++-point-bod))))
       (if parse-start
 	  (goto-char parse-start)
 	(goto-char bod))
