@@ -1933,7 +1933,7 @@ argument.  The styles are chosen from the `c-style-alist' variable."
      vars))
   (c-keep-region-active))
 
-(defun c-add-style (style descrip)
+(defun c-add-style (style descrip &optional set-p)
   "Adds a style to `c-style-alist', or updates an existing one.
 STYLE is a string identifying the style to add or update.  DESCRIP is
 an association list describing the style and must be of the form:
@@ -1942,16 +1942,17 @@ an association list describing the style and must be of the form:
 
 See the variable `c-style-alist' for the semantics of VARIABLE and
 VALUE.  This function also sets the current style to STYLE using
-`c-set-style'."
+`c-set-style' if the optional SET-P flag is non-nil."
   (interactive
    (let ((stylename (completing-read "Style to add: " c-style-alist))
 	 (description (eval-minibuffer "Style description: ")))
-     (list stylename description)))
+     (list stylename description
+	   (y-or-n-p "Set the style too? "))))
   (let ((s (assoc style c-style-alist)))
     (if s
 	(setcdr s (copy-alist descrip))	; replace
       (setq c-style-alist (cons (cons style descrip) c-style-alist))))
-  (c-set-style style))
+  (and set-p (c-set-style style)))
 
 (defun c-fill-paragraph (&optional arg)
   "Like \\[fill-paragraph] but handles C and C++ style comments.
