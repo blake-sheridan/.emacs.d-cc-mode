@@ -1,6 +1,6 @@
 ;;; cc-mode.el --- major mode for editing C++ and C code
 
-;; Authors: 1992 Barry A. Warsaw, Century Computing Inc. <bwarsaw@cen.com>
+;; Authors: 1992 Barry A. Warsaw <bwarsaw@cnri.reston.va.us>
 ;;          1987 Dave Detlefs and Stewart Clamen
 ;;          1985 Richard M. Stallman
 ;; Maintainer: cc-mode-help@anthem.nlm.nih.gov
