@@ -15,7 +15,7 @@
 ;; If you have problems or questions, you can contact me at the
 ;; following address: c++-mode-help@anthem.nlm.nih.gov
 ;;
-;; To submit bug reports hit "C-c b" in a c++-mode buffer. This runs
+;; To submit bug reports hit "C-c C-b" in a c++-mode buffer. This runs
 ;; the command c++-submit-bug-report and automatically sets up the
 ;; mail buffer with all the necessary information.
 ;;
