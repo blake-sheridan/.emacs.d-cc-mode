@@ -9,7 +9,7 @@
 ;; Created:    a long, long, time ago. adapted from the original c-mode.el
 ;; Keywords:   c languages oop
 
-(defconst c-version "5.21"
+(defconst c-version "5.22"
   "CC Mode version number.")
 
 ;; NOTE: Read the commentary below for the right way to submit bug reports!
@@ -80,6 +80,9 @@
 ;;; Code:
 
 
+(eval-when-compile
+  (require 'cc-make))
+
 (require 'cc-defs)
 
 ;; sigh.  give in to the pressure, but make really sure all the

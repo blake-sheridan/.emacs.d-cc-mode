@@ -29,6 +29,9 @@
 
 
 
+(eval-when-compile
+  (require 'cc-make))
+
 (defun c-calculate-state (arg prevstate)
   ;; Calculate the new state of PREVSTATE, t or nil, based on arg. If
   ;; arg is nil or zero, toggle the state. If arg is negative, turn
@@ -1696,9 +1699,7 @@ Optional prefix ARG means justify paragraph as well."
 		   (end-of-line)
 		   (< (point) (cdr limits))))
 	    (let (fill-prefix
-		  fill-paragraph-function
-		  ;;(end-mark (copy-marker (cdr limits))))
-		  )
+		  fill-paragraph-function)
 	      (save-restriction
 		(narrow-to-region (save-excursion
 				    (goto-char (1+ (car limits)))
