@@ -544,7 +544,7 @@ supported list, along with the values for this variable:
   (define-key c-mode-map "\C-c\C-a"  'c-toggle-auto-state)
   (define-key c-mode-map "\C-c\C-b"  'c-submit-bug-report)
   (define-key c-mode-map "\C-c\C-c"  'c-comment-region)
-  (define-key c-mode-map "\C-c\C-h"  'c-toggle-hungry-state)
+  (define-key c-mode-map "\C-c\C-d"  'c-toggle-hungry-state)
   (define-key c-mode-map "\C-c\C-o"  'c-set-offset)
   (define-key c-mode-map "\C-c\C-s"  'c-show-semantic-information)
   (define-key c-mode-map "\C-c\C-t"  'c-toggle-auto-hungry-state)
