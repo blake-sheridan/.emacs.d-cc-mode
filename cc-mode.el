@@ -2846,11 +2846,15 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		    (looking-at "\\<enum\\>"))
 		  (= char-before-ip ?=))
 	      (c-add-semantics 'brace-list-open placeholder))
+	     ;; CASE 8B.3: catch-all for unknown construct.
 	     (t
-	      ;; some other type of block open. one example I know of
-	      ;; is a try block open but as exceptions aren't
-	      ;; supported yet, I'll just this until further notice
-	      (c-add-semantics 'try-block-open placeholder))
+	      ;; Even though this isn't right, it's the best I'm going
+	      ;; to do for now. Exceptions probably fall through to
+	      ;; here, but aren't supported yet.  Also, after the next
+	      ;; release, I may call a recognition hook like so:
+	      ;; (run-hooks 'c-recognize-hook), but I dunno.
+	      (c-add-semantics 'statement-cont placeholder)
+	      (c-add-semantics 'block-open))
 	     ))
 	   ;; CASE 8C: iostream insertion or extraction operator
 	   ((looking-at "<<\\|>>")
