@@ -4600,7 +4600,10 @@ it trailing backslashes are removed."
 		   (mapcar
 		    (function
 		     (lambda (var)
-		       (cons var (symbol-value var))))
+		       (let ((val (symbol-value var)))
+			 (cons var (if (atom val) val
+				     (copy-alist val)))
+			 )))
 		    '(c-backslash-column
 		      c-basic-offset
 		      c-block-comments-indent-p
