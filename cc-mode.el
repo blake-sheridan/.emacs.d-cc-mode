@@ -1531,15 +1531,6 @@ point of the beginning of the C++ definition."
 					(c++-at-top-level-p nil bod))
 				      (- c++-block-close-brace-offset)
 				    c++-block-close-brace-offset))))
-		 ;; I think the following code is broken, but does the
-		 ;; above solution break anything else?
-;;				  (save-excursion
-;;				    (forward-char 1)
-;;				    (cond ((c++-at-top-level-p nil bod)
-;;					   (- c++-block-close-brace-offset))
-;;					  ((c++-at-top-level-p t bod)
-;;					   c-indent-level)
-;;					  (t c++-block-close-brace-offset))))))
 		 ((= (following-char) ?})
 		  (setq indent (+ (- indent c-indent-level)
 				  (if (save-excursion
