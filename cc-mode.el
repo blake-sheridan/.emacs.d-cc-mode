@@ -1475,18 +1475,16 @@ used."
       (cond
        ;; we are in a comment region. in c++-c-mode, elt 7 will tell
        ;; us if we're in a block comment (nil) or cpp directive (t).
-       ;; in c++-mode, elt 7 of t means we're in a c++ comment or cpp
-       ;; directive, nil means we're in a block comment
+       ;; in c++-mode, elt 7 of t means we're in a c++ comment
+       ;; directive, nil means we're in a block comment, otherwise we
+       ;; need to test to see if we're in a cpp directive
        ((nth 4 state)
-	(if (not (nth 7 state)) 'c
-	  (if (and (eq major-mode 'c++-mode)
-		   (progn (goto-char here)
-			  (beginning-of-line)
-			  (not (looking-at "[ \t]*#"))))
-	      'c++ 'pound)))
-       ;; a string?
-       ((nth 3 state) 'string)
-       ;; not in a literal
+	(if (nth 7 state) 'c++ 'c))
+       ((progn
+	  (goto-char here)
+	  (beginning-of-line)
+	  (looking-at "[ \t]*#"))
+	'pound)
        (t nil)))))
 
 (defun c++-in-literal (&optional lim)
@@ -2183,11 +2181,16 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	      (setq stop t))))))))
 
 (defun c++-fast-backward-syntactic-ws (&optional lim)
+  "Skip backwards over syntactic whitespace.
+Syntactic whitespace is defined as lexical whitespace, C and C++ style
+comments, and preprocessor directives. Search no farther back than
+optional LIM.  If LIM is ommitted, beginning-of-defun is used."
   (save-restriction
     (let ((parse-sexp-ignore-comments t)
 	  donep boi
-	  (lim (or lim (point-min))))
+	  (lim (or lim (c++-point 'bod))))
       (narrow-to-region lim (point))
+      (modify-syntax-entry ?# "< b" c++-mode-syntax-table)
       (while (not donep)
 	;; if you're not running a patched lemacs, the new byte
 	;; compiler will complain about this function. ignore that
@@ -2198,7 +2201,8 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	    (progn (goto-char boi)
 		   (setq donep (<= (point) lim)))
 	  (setq donep t))
-	))))
+	)
+      (modify-syntax-entry ?# "." c++-mode-syntax-table))))
 
 (if c++-emacs-is-really-fixed-p
     (fset 'c++-backward-syntactic-ws
