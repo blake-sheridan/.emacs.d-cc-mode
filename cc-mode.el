@@ -1154,6 +1154,14 @@ of the expression are preserved."
 							(point)))))
 	  (forward-line 1)
 	  (skip-chars-forward " \t")
+	  ;; check for C comment block
+	  (if (memq (c++-in-literal) '(c))
+	      (let ((eoc (save-excursion
+			   (re-search-forward "\\*/" (point-max) 'move)
+			   (point))))
+		(while (< (point) eoc)
+		  (c++-indent-line)
+		  (forward-line 1))))
 	  (if (eolp)
 	      nil
 	    (if (and (car indent-stack)
@@ -1230,7 +1238,8 @@ of the expression are preserved."
 		(if (re-search-forward
 		     comment-start-skip
 		     (save-excursion (end-of-line) (point)) t)
-		    (progn (indent-for-comment) (beginning-of-line))))))))))
+		    (progn (indent-for-comment) (beginning-of-line))))
+	    ))))))
 
 (defun c++-insert-header ()
   "Insert header denoting C++ code at top of buffer."
