@@ -47,15 +47,20 @@
 ;; supports 2 orthogonal comment styles.  Thus emacs' syntax parsing
 ;; code will sometimes choke on unbalanced parentheses and single
 ;; quotes in comments.  Please do a "C-h v c++-untame-characters" for
-;; more information. Note further that workarounds for this bug
-;; require that some buffer parsing be performed in elisp where it
-;; would normally be more efficient to do via the C primitives. I've
-;; chosen accuracy over performance but have worked hard to give
-;; acceptable performance in all but the most uncommon situations. You
-;; will most likely notice c++-mode becoming slow when you're editing
-;; a file of preprocessor commands, where the file contains few if any
-;; function definitions. None of this can be changed until emacs
-;; itself is fixed.
+;; more information. Also note that there are patches on the beta
+;; access site to fix this problem for GNU 18.58 and Lemacs 19.2. The
+;; patches aren't perfect, but they do eliminate many of the most
+;; troublesome bugs.
+;;
+;; Note further that workarounds for this bug require that some buffer
+;; parsing be performed in elisp where it would normally be more
+;; efficient to do via the C primitives. I've chosen accuracy over
+;; performance but have worked hard to give acceptable performance in
+;; all but the most uncommon situations. You will most likely notice
+;; c++-mode becoming slow when you're editing a file of preprocessor
+;; commands, or inside long functions or class definitions.
+;; Optimization is an ongoing concern, but C++ is difficult to
+;; micro-parse! 
 
 ;; Notes for Novice Users
 ;; ======================
@@ -378,6 +383,8 @@ nil.")
 (defvar c++-electric-pound-behavior nil
   "*List of behaviors for electric pound insertion.
 Only currently supported behavior is '(alignleft).")
+(defvar c++-backscan-limit 2000
+  "*Limit in characters for looking back while skipping syntactic ws.")
 
 ;; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ;; NO USER DEFINABLE VARIABLES BEYOND THIS POINT
@@ -1909,9 +1916,6 @@ argument COL0-LINE-P."
 ;; defuns to look backwards for things
 ;; ======================================================================
 
-(defvar c++-backscan-limit 2000
-  "*Limit in characters for looking back while skipping syntactic ws.")
-
 (defun c++-backward-over-syntactic-ws (&optional lim)
   "Skip backwards over syntactic whitespace.
 Syntactic whitespace is defined as lexical whitespace, C and C++ style
@@ -2295,6 +2299,7 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 		  'c++-auto-hungry-initial-state
 		  'c++-auto-hungry-toggle
 		  'c++-auto-newline
+		  'c++-backscan-limit
 		  'c++-block-close-brace-offset
 		  'c++-cleanup-list
 		  'c++-comment-only-line-offset
