@@ -941,6 +941,14 @@ Likewise, if a slash is inserted as the second slash in a C++ style line
 comment (also only on a comment-only line), then the line is indented as
 defined by @code{c-offsets-alist}.
 
+@findex c-electric-lt-gt
+@findex electric-lt-gt (c-)
+@kindex <
+@kindex >
+Less-than and greater-than signs are also electric, but only in C++
+mode.  Hitting the second of two @kbd{<} or @kbd{>} keys re-indents the
+line if it is a C++ style stream operator.
+
 
 @comment !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 @node  Clean-ups, , Other electric commands, Auto-newline insertion
