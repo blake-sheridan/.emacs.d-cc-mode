@@ -1708,7 +1708,10 @@ BOD is the beginning of the C++ definition."
 	  (case-fold-search nil)
 	  state do-indentation literal
 	  containing-sexp streamop-pos char-before-ip
-	  (MI-regexp (concat c++-class-key "[ \t]+\\(\\w+[ \t]*:[ \t]*\\)?"))
+	  (MI-regexp
+	   (concat "\\(\\<static\\>\\s +\\)?"
+		   c++-class-key
+		   "[ \t]+\\(\\w+[ \t]*:[ \t]*\\)?"))
 	  (inclass-shift 0) inclass-depth
 	  (bod (or bod (c++-point 'bod))))
       (if parse-start
@@ -1828,7 +1831,9 @@ BOD is the beginning of the C++ definition."
 		     ;; indentation of class defun opening brace
 		     ;; may not be zero
 		     (progn (goto-char (or containing-sexp bod))
-			    (current-indentation))
+			    (- (current-indentation)
+			       ;; remove some nested inclass indentation
+			       (* (max 0 (1- inclass-depth)) c-indent-level)))
 		   ;; cont arg decls or member inits
 		   (beginning-of-line)
 		   ;; we might be inside a K&R C arg decl
@@ -1856,6 +1861,7 @@ BOD is the beginning of the C++ definition."
 			     (if (= char-before-ip ?,)
 				 (progn (goto-char (match-end 0))
 					(current-column))
+			       ;; nope, its probably a nested class
 			       0)
 			   ;; we might be looking at the opening
 			   ;; brace of a class defun
