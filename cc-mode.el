@@ -1561,8 +1561,10 @@ the brace is inserted inside a literal."
 	  (and delete-temp-newline
 	       (save-excursion (delete-indentation)))
 	  ;; since we're hanging the brace, we need to recalculate
-	  ;; syntax, but we don't need to update the state cache.
-	  (setq syntax (c-guess-basic-syntax)))
+	  ;; syntax.  Update the state to accurately reflect the
+	  ;; beginning of the line.
+	  (setq c-state-cache (c-whack-state (c-point 'bol) c-state-cache)
+		syntax (c-guess-basic-syntax)))
 	;; now adjust the line's indentation. don't update the state
 	;; cache since c-guess-basic-syntax isn't called when the
 	;; syntax is passed to c-indent-line
@@ -2873,6 +2875,38 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   ))			;end-while
 	       nil))
       state)))
+
+(defun c-whack-state (bufpos state)
+  ;; whack off any state information that appears on STATE which lies
+  ;; after the bounds of BUFPOS.
+  (let (newstate car)
+    (while state
+      (setq car (car state)
+	    state (cdr state))
+      (if (consp car)
+	  ;; just check the car, because in a balanced brace
+	  ;; expression, it must be impossible for the corresponding
+	  ;; close brace to be before point, but the open brace to be
+	  ;; after.
+	  (if (<= bufpos (car car))
+	      nil			; whack it off
+	    ;; its possible that the open brace is before bufpos, but
+	    ;; the close brace is after.  In that case, convert this
+	    ;; to a non-cons element.
+	    (if (<= bufpos (cdr car))
+		(setq newstate (append newstate (list (car car))))
+	      ;; we know that both the open and close braces are
+	      ;; before bufpos, so we also know that everything else
+	      ;; on state is before bufpos, so we can glom up the
+	      ;; whole thing and exit.
+	      (setq newstate (append newstate (list car) state)
+		    state nil)))
+	(if (<= bufpos car)
+	    nil				; whack it off
+	  ;; it's before bufpos, so everything else should too
+	  (setq newstate (append newstate (list car) state)
+		state nil))))
+    newstate))
 
 (defun c-hack-state (bufpos which state)
   ;; Using BUFPOS buffer position, and WHICH (must be 'open or
