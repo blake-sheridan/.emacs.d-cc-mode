@@ -2084,11 +2084,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	 ;; CASE 12: block close brace, possibly closing the defun or
 	 ;; the class
 	 ((= char-after-ip ?})
+	  (goto-char containing-sexp)
 	  (if (= containing-sexp lim)
-	      (cc-add-semantics 'defun-close containing-sexp)
-	    (goto-char containing-sexp)
+	      (cc-add-semantics 'defun-close (cc-point 'boi))
 	    (if inclass-p
-		(cc-add-semantics 'inline-close containing-sexp)
+		(cc-add-semantics 'inline-close (cc-point 'boi))
 	      (cc-add-semantics 'block-close (cc-point 'boi))
 	      )))
 	 ;; CASE 13: statement catchall
