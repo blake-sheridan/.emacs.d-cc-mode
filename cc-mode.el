@@ -922,69 +922,6 @@ Will also cleanup double colon scope operators."
 	(goto-char (- (point-max) pos)))
       )))
 
-(defun c++-electric-colon (arg)
-  "Electrify colon.
-De-auto-newline double colons.  No auto-new-lines for member
-initialization list."
-  (interactive "P")
-  (if (c++-in-literal)
-      (self-insert-command (prefix-numeric-value arg))
-    (let ((c++-auto-newline c++-auto-newline)
-	  (insertion-point (point))
-	  (bod (c++-point 'bod)))
-      (save-excursion
-	(cond
-	 ;; check for double-colon where the first colon is not in a
-	 ;; comment or literal region
-	 ((progn (skip-chars-backward " \t\n")
-		 (and (= (preceding-char) ?:)
-		      (not (memq (c++-in-literal bod) '(c c++ string)))))
-	  (progn (delete-region insertion-point (point))
-		 (setq c++-auto-newline nil
-		       insertion-point (point))))
-	 ;; check for ?: construct which may be at any level
-	 ((progn (goto-char insertion-point)
-		 (condition-case premature-end
-		     (backward-sexp 1)
-		   (error nil))
-		 ;; is possible that the sexp we just skipped was a
-		 ;; negative number. in that case the minus won't be
-		 ;; gobbled
-		 (skip-chars-backward "-")
-		 (c++-backward-syntactic-ws bod)
-		 (= (preceding-char) ?\?))
-	  (setq c++-auto-newline nil))
-	 ;; check for being at top level or top with respect to the
-	 ;; class. if not, process as normal
-	 ((progn (goto-char insertion-point)
-		 (not (c++-at-top-level-p t bod))))
-	 ;; if at top level, check to see if we are introducing a member
-	 ;; init list. if not, continue
-	 ((progn (c++-backward-syntactic-ws bod)
-		 (= (preceding-char) ?\)))
-	  (goto-char insertion-point)
-	  ;; at a member init list, figure out about auto newlining. if
-	  ;; nil or before then put a newline before the colon and
-	  ;; adjust the insertion point, but *only* if there is no
-	  ;; newline already before the insertion point
-	  (if (and (memq c++-hanging-member-init-colon '(nil before))
-		   c++-auto-newline)
-	      (if (not (save-excursion (skip-chars-backward " \t")
-				       (bolp)))
-		  (let ((c++-auto-newline t))
-		    (c++-auto-newline)
-		    (setq insertion-point (point)))))
-	  ;; if hanging colon is after or nil, then newline is inserted
-	  ;; after colon. set up variable so c++-electric-terminator
-	  ;; places the newline correctly
-	  (setq c++-auto-newline
-		(and c++-auto-newline
-		     (memq c++-hanging-member-init-colon '(nil after)))))
-	 ;; last condition is always put newline after colon
-	 (t (setq c++-auto-newline nil))
-	 ))				; end-cond, end-save-excursion
-      (goto-char insertion-point)
-      (c++-electric-terminator arg))))
 
 
 ;; Workarounds for GNU Emacs 18 scanning deficiencies
