@@ -2349,16 +2349,26 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   "Put mark at end of a C/C++ defun, point at beginning."
   (interactive)
   (let ((here (point))
-	(bod  (c-point 'bod))
-	;; there should be a c-point position for 'eod and 'bod2
+	;; there should be a c-point position for 'eod
 	(eod  (save-excursion (end-of-defun) (point)))
-	(bod2 (save-excursion (beginning-of-defun 2) (point))))
-  (push-mark here)
-  (push-mark eod nil t)
-  (goto-char bod2)
-  (end-of-defun)
-  (if (>= (point) bod)
-      (goto-char bod2))))
+	(state (c-parse-state))
+	brace)
+    (while state
+      (setq brace (car state))
+      (if (consp brace)
+	  (goto-char (cdr brace))
+	(goto-char brace))
+      (setq state (cdr state)))
+    (if (= (following-char) ?{)
+	(progn
+	  (forward-line -1)
+	  (while (not (or (bobp)
+			  (looking-at "[ \t]*$")))
+	    (forward-line -1)))
+      (forward-line 1)
+      (skip-chars-forward " \t\n"))
+    (push-mark here)
+    (push-mark eod nil t)))
 
 
 ;; Skipping of "syntactic whitespace" for Emacs 19.  Syntactic
