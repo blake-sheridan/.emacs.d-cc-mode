@@ -357,6 +357,12 @@ from a c++-mode buffer.
 5. Paragraphs are separated by blank lines only.
 6. Delete converts tabs to spaces as it moves back.
 
+IMPORTANT NOTE: You will notice that some characters (by default, only
+single quote) will get escaped with a backslash when typed in a
+comment region.  This is a necessary workaround of a bug present in
+GNU emacs 18 and derivatives.  Enter \"\\[describe-variable] c++-untame-characters RET\"
+for more information.
+
 Key bindings:
 \\{c++-mode-map}
 
