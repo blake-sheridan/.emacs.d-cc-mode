@@ -1537,7 +1537,6 @@ move backward across a preprocessor conditional."
   (let* ((forward (> count 0))
 	 (increment (if forward -1 1))
 	 (search-function (if forward 're-search-forward 're-search-backward))
-	 (opoint (point))
 	 (new))
     (save-excursion
       (while (/= count 0)
@@ -1733,8 +1732,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (lim (c-point 'bod)))
       (while (< (point) endmark)
 	;; Indent one line as with TAB.
-	(let ((shift-amt (c-indent-via-language-element lim))
-	      nextline sexpend sexpstart)
+	(let (nextline sexpend sexpstart)
+	  ;; indent the current line
+	  (c-indent-via-language-element lim)
 	  ;; Find beginning of following line.
 	  (setq nextline (c-point 'bonl))
 	  ;; Find first beginning-of-sexp for sexp extending past this line.
@@ -2030,7 +2030,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; multiple inheritance introduction.  Optional LIM is the farthest
   ;; back we should search.
   (let ((lim (or lim (c-point 'bod)))
-	(here (point))
 	(placeholder (progn
 		       (back-to-indentation)
 		       (point))))
@@ -2091,7 +2090,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (while (not (zerop do-level))
       ;; we protect this call because trying to execute this when the
       ;; while is not associated with a do will throw an error
-      (condition-case err
+      (condition-case nil
 	  (progn
 	    (backward-sexp 1)
 	    (cond
@@ -2120,7 +2119,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (while (and (not (bobp))
 		  (not (zerop if-level)))
 	(c-backward-syntactic-ws)
-	(condition-case errcond
+	(condition-case nil
 	    (backward-sexp 1)
 	  (error
 	   (if at-if
