@@ -121,8 +121,7 @@
 ;; releases, get on the victims list -- but be forewarned, you should
 ;; be elisp and C++ fluent, and should have anon-ftp access.
 
-;; LCD Archive Entry
-;; =================
+;; LCD Archive Entry:
 ;; c++-mode|Barry A. Warsaw|c++-mode-help@anthem.nlm.nih.gov
 ;; |Mode for editing C++ code (was Detlefs' c++-mode.el)
 ;; |$Date$|$Revision$|
