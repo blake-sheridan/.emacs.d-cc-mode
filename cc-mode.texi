@@ -647,7 +647,7 @@ on the modeline of the @code{cc-mode} buffer.  When auto-newline mode is
 enabled, you will see @samp{C/a} on the mode line @footnote{Remember
 that the @samp{C} would be replaced with @samp{C++} or @samp{ObjC} if
 you were editing C++ or Objective-C code.}.  When hungry delete mode is
-enabled you would see @samp{C/h} and when mode modes are enabled, you'd
+enabled you would see @samp{C/h} and when both modes are enabled, you'd
 see @samp{C/ah}.
 
 @kindex C-c C-a
