@@ -1385,10 +1385,15 @@ Key bindings:
  	c-baseclass-key nil
 	c-recognize-knr-p nil
  	c-access-key c-Java-access-key)
-  (c-set-style "java")
+;  (c-set-style "java")
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'java-mode-hook))
 (setq c-list-of-mode-names (cons "Java" c-list-of-mode-names))
+
+(defun c-use-java-style ()
+  "Institutes `java' indentation style.
+For use with the variable `java-mode-hook'."
+  (c-set-style "java"))
 
 (defun c-common-init ()
   ;; Common initializations for c++-mode and c-mode.
