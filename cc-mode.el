@@ -2352,12 +2352,12 @@ comment."
 				   (and lim
 					(<= lim (point))
 					(not (c-in-literal lim))
-;					(looking-at c-conditional-key)
-					(save-excursion
-					  (if (c-safe
-					       (progn (backward-up-list 1) t))
-					      (/= (following-char) ?\()
-					    t))
+					(looking-at c-conditional-key)
+;					(save-excursion
+;					  (if (c-safe
+;					       (progn (backward-up-list 1) t))
+;					      (/= (following-char) ?\()
+;					    t))
 					))))
 		     ;; did we find a conditional?
 		     (if (not foundp)
@@ -3566,8 +3566,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(and (or (looking-at "enum[ \t\n]+")
 			 (= char-before-ip ?=))
 		     (save-excursion
-		       (skip-chars-forward "^;" indent-point)
-		       (/= (following-char) ?\;))))
+		       (skip-chars-forward "^;(" indent-point)
+		       (not (memq (following-char) '(?\; ?\()))
+		       )))
 	      (c-add-syntax 'brace-list-open placeholder))
 	     ;; CASE 5A.3: inline defun open
 	     (inclass-p
@@ -4107,6 +4108,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (let ((safepos (c-most-enclosing-brace fullstate)))
 	      (goto-char indent-point)
 	      (c-beginning-of-statement-1 safepos)
+	      ;; it is possible we're on the brace that opens a nested function
+	      (if (and (= (following-char) ?{)
+		       (save-excursion
+			 (c-backward-syntactic-ws safepos)
+			 (/= (preceding-char) ?\;)))
+		  (c-beginning-of-statement-1 safepos))
 	      (c-add-syntax 'statement (c-point 'boi))
 	      (if (= char-after-ip ?{)
 		  (c-add-syntax 'block-open))))
