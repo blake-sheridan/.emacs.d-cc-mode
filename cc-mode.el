@@ -3088,7 +3088,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (let ((relpos (save-excursion
 			  (goto-char containing-sexp)
 			  (if (/= (point) (c-point 'boi))
-			      (c-beginning-of-statement nil lim))
+			      (c-beginning-of-statement))
 			  (c-point 'boi))))
 	    (cond
 	     ;; CASE 13.A: does this close an inline?
