@@ -3090,6 +3090,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; returned.  If none is found and we are looking at an else clause,
   ;; an error is thrown.
   (let ((if-level 1)
+	(here (c-point 'bol))
 	(case-fold-search nil)
 	(lim (or lim (c-point 'bod)))
 	(at-if (looking-at "if\\b[^_]")))
@@ -3102,7 +3103,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (error
 	   (if at-if
 	       (throw 'orphan-if nil)
-	     (error "Orphaned `else' clause encountered."))))
+	     (error "No matching `if' found for `else' on line %d."
+		    (1+ (count-lines 1 here))))))
 	(cond
 	 ((looking-at "else\\b[^_]")
 	  (setq if-level (1+ if-level)))
