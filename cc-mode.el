@@ -2103,7 +2103,7 @@ BOD is the beginning of the C++ definition."
 		  (goto-char indent-point)
 		  (c++-backward-syntactic-ws bod)
 		  (if (= (preceding-char) ?,)
-		      c-indent-level
+		      c-continued-statement-offset
 		    0))))
 	    ((progn
 	       (beginning-of-line)
@@ -2158,7 +2158,7 @@ BOD is the beginning of the C++ definition."
 			(c++-backward-syntactic-ws bod))
 		      (forward-line 1)
 		      (not (setq in-meminit-p (looking-at "[ \t]*:"))))))
-	     c-indent-level)
+	     c-continued-statement-offset)
 	    (t
 	     (if (c++-in-parens-p)
 		 ;; we are perhaps inside a member init call
@@ -2392,7 +2392,7 @@ BOD is the `beginning-of-defun' point."
       in-enum-p)
     0)
    ;; assume we're not in a list of enums or static array elems
-   (t c-indent-level)
+   (t c-continued-statement-offset)
    ))
    
 
