@@ -1963,7 +1963,7 @@ BOD is the beginning of the C++ definition."
     (beginning-of-line)
     (let ((indent-point (point))
 	  (case-fold-search nil)
-	  state do-indentation literal
+	  state do-indentation literal in-meminit-p
 	  containing-sexp streamop-pos char-before-ip
 	  (inclass-shift 0) inclass-depth inclass-unshift
 	  (bod (or bod (c++-point 'bod))))
@@ -2154,11 +2154,19 @@ BOD is the beginning of the C++ definition."
 	       (beginning-of-line)
 	       (bobp))
 	     0)
-	    ;; this could be a compound statement
+	    ;; this could be a compound statement, but make sure its
+	    ;; not a member init list
 	    ((save-excursion
 	       (goto-char indent-point)
 	       (c++-backward-syntactic-ws bod)
-	       (= (preceding-char) ?,))
+	       (and (= (preceding-char) ?,)
+		    (save-excursion
+		      (while (and (< bod (point))
+				  (= (preceding-char) ?,))
+			(beginning-of-line)
+			(c++-backward-syntactic-ws bod))
+		      (forward-line 1)
+		      (not (setq in-meminit-p (looking-at "[ \t]*:"))))))
 	     c-indent-level)
 	    (t
 	     (if (c++-in-parens-p)
@@ -2173,16 +2181,18 @@ BOD is the beginning of the C++ definition."
 		 (progn
 		   (forward-char 1)
 		   (skip-chars-forward " \t")))
-	     ;; skip to start of compound statement
-	     (let ((ipnt (point)))
-	       (c++-backward-syntactic-ws bod)
-	       (while (and (= (preceding-char) ?,)
-			   (< bod (point)))
-		 (beginning-of-line)
-		 (skip-chars-forward " \t")
-		 (setq ipnt (point))
-		 (c++-backward-syntactic-ws bod))
-	       (goto-char ipnt))
+	     ;; skip to start of compound statement, but only if we're
+	     ;; not in a member initialization list
+	     (if (not in-meminit-p)
+		 (let ((ipnt (point)))
+		   (c++-backward-syntactic-ws bod)
+		   (while (and (= (preceding-char) ?,)
+			       (< bod (point)))
+		     (beginning-of-line)
+		     (skip-chars-forward " \t")
+		     (setq ipnt (point))
+		     (c++-backward-syntactic-ws bod))
+		   (goto-char ipnt)))
 	     ;; subtract inclass-shift since its already incorporated
 	     ;; by default in current-column
 	     (- (current-column) inclass-shift)
