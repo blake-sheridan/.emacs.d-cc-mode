@@ -2139,12 +2139,18 @@ search."
   (c-beginning-of-statement (- (or count 1)) lim)
   (c-keep-region-active))
 
+
 (defun c-beginning-of-statement-1 (&optional lim)
   ;; move to the start of the current statement, or the previous
   ;; statement if already at the beginning of one.
   (let ((firstp t)
 	(substmt-p t)
-	donep c-in-literal-cache maybe-labelp
+	donep c-in-literal-cache
+	;; KLUDGE ALERT: maybe-labelp is used to pass information
+	;; between c-crosses-statement-barrier-p and
+	;; c-beginning-of-statement-1.  A better way should be
+	;; implemented.
+	maybe-labelp
 	(last-begin (point)))
     (while (not donep)
       ;; stop at beginning of buffer
@@ -3145,7 +3151,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
      (error nil))
    ;; this will pick up array/aggregate init lists, even if they are nested.
    (save-excursion
-     (let (safepos bufpos failedp)
+     (let (bufpos failedp)
        (while (and (not bufpos)
 		   containing-sexp)
 	 (if (consp containing-sexp)
@@ -3836,9 +3842,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (c-add-syntax 'statement-cont (c-point 'boi)))
 	   ;; CASE 15D: any old statement
 	   ((< (point) indent-point)
-	    (let ((safe-pos (point)))
+	    (let ((safepos (point)))
 	      (goto-char indent-point)
-	      (c-beginning-of-statement-1 lim)
+	      (c-beginning-of-statement-1 safepos)
 	      (c-add-syntax 'statement (c-point 'boi))
 	      (if (= char-after-ip ?{)
 		  (c-add-syntax 'block-open))))
