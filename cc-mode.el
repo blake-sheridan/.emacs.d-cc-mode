@@ -2520,6 +2520,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (and inclass-p (c-add-semantics 'inclass (cdr inclass-p))))
 	   ;; CASE 4I: we are at a topmost continuation line
 	   (t
+	    (c-beginning-of-statement 1 lim)
 	    (c-add-semantics 'topmost-intro-cont (c-point 'boi)))
 	   ))				; end CASE 4
 	 ;; CASE 5: line is an expression, not a statement.  Most
