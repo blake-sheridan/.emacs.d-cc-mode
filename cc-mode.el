@@ -1190,7 +1190,7 @@ of the expression are preserved."
 			     (looking-at ":[^:]"))))
 		  (setq this-indent (max 0 (+ this-indent c-label-offset)))))
 	    ;; looking at a comment only line?
-	    (if (looking-at "//\\|/\\*")
+	    (if (looking-at comment-start-skip)
 		;; different indentation base on whether this is a
 		;; col0 comment only line or not
 		(setq this-indent (+ this-indent (c++-comment-offset (bolp)))))
