@@ -253,14 +253,14 @@ list.  Nil indicates to just after the paren.")
 This variable can take either a single integer or a list of integers.
 If a single integer this is the extra indentation offset to apply to
 all comment-only lines, except those which start in column zero. If a
-list is used, the first integer is for all non-zero-column
-comment-only lines and the second integer is for all zero-column
+list is used, the first integer is for all non-column-zero
+comment-only lines and the second integer is for all column-zero
 lines. You can also use a list containing only 1 integer, in which
 case, this value is used for all comment-only lines.  For example:
 
 value     meaning
 =====     =======
-  0       no comment-only lines indent
+  0       comment-only lines do not indent
   4       non-col0 lines indent 4 spaces, col0 lines don't indent
 '(4)      all comment-only lines indent 4 spaces
 '(4 1)    non-col0 lines indent 4 spaces, col0 lines indent 1 space")
