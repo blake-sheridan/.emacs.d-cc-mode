@@ -943,7 +943,8 @@ for member initialization list."
 	  ;; nil or before then put a newline before the colon and
 	  ;; adjust the insertion point, but *only* if there is no
 	  ;; newline already before the insertion point
-	  (if (memq c++-hanging-member-init-colon '(nil before))
+	  (if (and (memq c++-hanging-member-init-colon '(nil before))
+		   c++-auto-newline)
 	      (if (not (save-excursion (skip-chars-backward " \t")
 				       (bolp)))
 		  (let ((c++-auto-newline t))
@@ -953,7 +954,8 @@ for member initialization list."
 	  ;; after colon. set up variable so c++-electric-terminator
 	  ;; places the newline correctly
 	  (setq c++-auto-newline
-		(memq c++-hanging-member-init-colon '(nil after))))
+		(and c++-auto-newline
+		     (memq c++-hanging-member-init-colon '(nil after)))))
 	 ;; last condition is always put newline after colon
 	 (t (setq c++-auto-newline nil))
 	 ))				; end-cond, end-save-excursion
