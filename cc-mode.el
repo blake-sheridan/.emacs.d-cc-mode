@@ -3294,7 +3294,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (if (looking-at c-conditional-key)
 		(c-skip-conditional))
 	    (while (and (re-search-forward "<<\\|>>" indent-point 'move)
-			(c-in-literal)))
+			(c-in-literal placeholder)))
 	    ;; if we ended up at indent-point, then the first streamop
 	    ;; is on a separate line. Indent the line like a
 	    ;; statement-cont instead
