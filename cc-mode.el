@@ -1037,12 +1037,14 @@ containing class definition (useful for inline functions)."
 	       (= (car state) 1)
 	       (let ((here (point)))
 		 (goto-char containing-sexp)
-		 (goto-char
-		  (condition-case scanlist-err
-		      (scan-lists (point) -1 -1)
-		    (error (point-min))))
-		 (re-search-forward "\\<\\(class\\|struct\\)\\>" here 'move)
-		 ))))))
+		 (if (c++-at-top-level-p nil)
+		     nil
+		   (goto-char
+		    (condition-case scanlist-err
+			(scan-lists (point) -1 -1)
+		      (error (point-min))))
+		   (re-search-forward "\\<\\(class\\|struct\\)\\>" here 'move)
+		   )))))))
 
 (defun c++-in-literal (&optional lim)
   "Determine if point is in a C++ `literal'.
@@ -1163,11 +1165,13 @@ point of the beginning of the C++ definition."
 		  (setq indent (+ indent c++-friend-offset)))
 		 ((= (following-char) ?\))
 		  (setq indent (+ (- indent c-indent-level)
-				  (if (save-excursion
-					(forward-char 1)
-					(c++-at-top-level-p))
-				      (- c++-block-close-brace-offset)
-				    c++-block-close-brace-offset))))
+				  (save-excursion
+				    (forward-char 1)
+				    (cond ((c++-at-top-level-p)
+					   (- c++-block-close-brace-offset))
+					  ((c++-at-top-level-p t)
+					   c-indent-level)
+					  (t c++-block-close-brace-offset))))))
 		 ((= (following-char) ?})
 		  (setq indent (+ (- indent c-indent-level)
 				  (if (save-excursion
