@@ -1871,7 +1871,10 @@ BOD is the beginning of the C++ definition."
 			   (if (= (following-char) ?\{)
 			       ;; indentation of opening brace may not
 			       ;; be zero
-			       (current-indentation)
+			       (- (current-indentation)
+				  ;; remove some nested inclass indentation
+				  (* (max 0 (1- inclass-depth)) c-indent-level)
+				  )
 			     (if (eolp)
 				 ;; looking at a blank line, indent
 				 ;; next line to zero
