@@ -1480,7 +1480,7 @@ BOD is the beginning of the C++ definition."
 					   "[ \t]+"
 					   "\\(\\w+[ \t]*:[ \t]*\\)?"))
 				  (if (progn (goto-char indent-point)
-					     (skip-chars-backward " \t\n")
+					     (c++-backward-over-syntactic-ws)
 					     (= (preceding-char) ?,))
 				      (progn (goto-char (match-end 0))
 					     (current-column))
