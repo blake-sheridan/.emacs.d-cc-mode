@@ -74,8 +74,8 @@
     ()
   (setq c++-mode-syntax-table (copy-syntax-table c-mode-syntax-table))
   (modify-syntax-entry ?/ ". 12" c++-mode-syntax-table)
-  (modify-syntax-entry ?\n ">" c++-mode-syntax-table))
-;;  (modify-syntax-entry ?\' "." c++-mode-syntax-table))
+  (modify-syntax-entry ?\n ">" c++-mode-syntax-table)
+  (modify-syntax-entry ?\' "." c++-mode-syntax-table))
 
 (defvar c++-block-close-brace-offset 0
   "*Extra indentation given to close braces which close a block. This
@@ -538,7 +538,7 @@ for member initialization list."
 	  (insert last-command-char)
 	  (c++-indent-line)
 	  (and c++-auto-newline
-	       (not (c-inside-parens-p))
+	       (not (c++-in-parens-p))
 	       (progn
 		 ;; the new marker object, used to be just an integer
 		 (setq insertpos (make-marker))
@@ -660,6 +660,7 @@ Return the amount the indentation changed by."
 (defun c++-at-top-level-p ()
   "Return t if point is not inside a containing C++ expression, nil
 if it is embedded in an expression."
+  ;; hack to work around emacs comment bug
   (save-excursion
     (let ((indent-point (point))
 	  (case-fold-search nil)
@@ -673,6 +674,7 @@ if it is embedded in an expression."
 
 (defun c++-in-comment-p ()
   "Return t if in a C or C++ style comment as defined by mode's syntax."
+  ;; hack to work around emacs comment bug
   (save-excursion
     (let ((here (point))
 	  (bod (progn (beginning-of-defun) (point)))
@@ -682,12 +684,28 @@ if it is embedded in an expression."
 
 (defun c++-in-open-string-p ()
   "Return non-nil if in an open string as defined by mode's syntax."
+  ;; temporarily change tick to string syntax, just for this check
+  (modify-syntax-entry ?\' "\"" c++-mode-syntax-table)
   (save-excursion
     (let ((here (point))
 	  (bod (progn (beginning-of-defun) (point)))
-	  state)
+	  state string-p)
       (setq state (parse-partial-sexp bod here 0))
-      (nth 3 state))))
+      (setq string-p (nth 3 state))
+      ;; change tick back to punctuation syntax
+      (modify-syntax-entry ?\' "." c++-mode-syntax-table)
+      string-p)))
+
+(defun c++-in-parens-p ()
+  ;; hack to work around emacs comment bug
+  (condition-case ()
+      (save-excursion
+	(save-restriction
+	  (narrow-to-region (point)
+			    (progn (beginning-of-defun) (point)))
+	  (goto-char (point-max))
+	  (= (char-after (or (scan-lists (point) -1 1) (point-min))) ?\()))
+    (error nil)))
 
 (defun c++-auto-newline ()
   "Insert a newline iff we're not in a literal.
