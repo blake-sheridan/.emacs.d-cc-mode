@@ -95,6 +95,7 @@ reported and the semantic symbol is ignored.")
     (inline-close          . 0)
     (c++-funcdecl-cont     . -)
     (knr-argdecl-intro     . +)
+    (knr-argdecl           . 0)
     (topmost-intro         . 0)
     (topmost-intro-cont    . 0)
     (member-init-intro     . +)
@@ -1089,12 +1090,18 @@ the value of `cc-cleanup-list'."
 	(goto-char (- (point-max) pos)))
       )))
 
-(defun cc-change-semantic-symbol-offset (symbol offset)
+(defun cc-change-semantic-symbol-offset (symbol offset &optional add-p)
   "Change the value of a langelem symbol in `cc-offsets-alist'."
-  (interactive "SSemantic symbol: \nnOffset: ")
-  (setcdr (or (assq symbol cc-offsets-alist)
-	      (error "%s is not a valid semantic symbol." symbol))
-	  offset)
+  (interactive "SSemantic symbol: \nnOffset: \nP")
+  (let ((langelem (assq symbol cc-offsets-alist)))
+    (if langelem
+	(setqcdr langelem offset)
+      ;; can we add the langelem?
+      (or add-p
+	  (error "%s is not a valid semantic symbol." symbol))
+      (setq cc-offsets-alist (cons (cons symbol offset) cc-offsets-alist))
+      (message "%s added to cc-offsets-alist" symbol)
+      ))
   (cc-keep-region-active))
 
 
@@ -1914,7 +1921,18 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	      (widen)
 	      (goto-char (cdr inclass-p))
 	      (cc-add-semantics 'class-close (cc-point 'boi))))
-	   ;; CASE 4G: we are at the topmost level, make sure we skip
+	   ;; CASE 4G: we could be looking at subsequent knr-argdecls
+	   ((and (eq major-mode 'cc-c-mode)
+		 (save-excursion
+		   (cc-backward-syntactic-ws lim)
+		   (while (memq (preceding-char) '(?\; ?,))
+		     (beginning-of-line)
+		     (setq placeholder (point))
+		     (cc-backward-syntactic-ws lim))
+		   (= (preceding-char) ?\))))
+	    (goto-char placeholder)
+	    (cc-add-semantics 'knr-argdecl (cc-point 'boi)))
+	   ;; CASE 4H: we are at the topmost level, make sure we skip
 	   ;; back past any access specifiers
 	   ((progn
 	      (cc-backward-syntactic-ws lim)
@@ -1929,7 +1947,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 		  (memq (preceding-char) '(?\; ?\}))))
 	    (cc-add-semantics 'topmost-intro (cc-point 'bol))
 	    (and inclass-p (cc-add-semantics 'inclass (cdr inclass-p))))
-	   ;; CASE 4H: we are at a topmost continuation line
+	   ;; CASE 4I: we are at a topmost continuation line
 	   (t
 	    (cc-add-semantics 'topmost-intro-cont (cc-point 'boi))
 	    (and inclass-p (cc-add-semantics 'inclass (cdr inclass-p))))
