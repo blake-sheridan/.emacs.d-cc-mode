@@ -2350,10 +2350,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 (let (newstart)
 	   (while (setq newstart (scan-lists start 1 0))
 	     (setq start newstart))))
+	(widen)
+	(narrow-to-region start end)
 	;; now parse from the point we're at to end
 	(setq state (parse-partial-sexp start end))
 	(if (and (setq brace (nth 1 state))
-		 (setq start (or (c-safe (scan-lists brace -1 1))
+		 (setq start (or (c-safe (scan-lists brace -1 -1))
+				 (c-safe (scan-lists brace -1 1))
 				 start)))
 	    (progn
 	      (goto-char start)
