@@ -605,6 +605,11 @@ The expansion is entirely correct because it uses the C preprocessor."
 
 
 ;; constant regular expressions for looking at various constructs
+(defconst c-symbol-key "\\(\\w\\|\\s_\\)+"
+  "Regexp describing a C/C++ symbol.
+We cannot use just `word' syntax class since `_' cannot be in word
+class.  Putting underscore in word class breaks forward word movement
+behavior that users are familiar with.")
 (defconst c-class-key
   (concat
    "\\(\\(extern\\|typedef\\)\\s +\\)?"
@@ -613,8 +618,8 @@ The expansion is entirely correct because it uses the C preprocessor."
   "Regexp describing a class declaration, including templates.")
 (defconst c-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
-	  c-class-key
-	  "[ \t]+\\s_\\([ \t]*:[ \t]*\\)?\\s *[^;]")
+	  c-class-key "[ \t]+" c-symbol-key
+	  "\\([ \t]*:[ \t]*\\)?\\s *[^;]")
   "Regexp describing a class inheritance declaration.")
 (defconst c-protection-key
   "\\<\\(public\\|protected\\|private\\)\\>"
@@ -622,17 +627,16 @@ The expansion is entirely correct because it uses the C preprocessor."
 (defconst c-baseclass-key
   (concat
    ":?[ \t]*\\(virtual[ \t]+\\)?\\("
-   c-protection-key
-   "[ \t]+\\)\\s_")
+   c-protection-key "[ \t]+\\)" c-symbol-key)
   "Regexp describing base classes in a derived class definition.")
 (defconst c-switch-label-key
-  "\\(\\(case[ \t]+\\(\\s_\\|[']\\|-?[0-9]+\\)+\\)\\|default\\)[ \t]*:"
+  "\\(\\(case[ \t]+\\(\\w\\|\\s_\\|[-']\\)+\\)\\|default\\)[ \t]*:"
   "Regexp describing a switch's case or default label")
 (defconst c-access-key
   (concat c-protection-key ":")
   "Regexp describing access specification keywords.")
 (defconst c-label-key
-  "\\s_:\\([^:]\\|$\\)"
+  (concat c-symbol-key ":\\([^:]\\|$\\)")
   "Regexp describing any label.")
 (defconst c-conditional-key
   "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>"
