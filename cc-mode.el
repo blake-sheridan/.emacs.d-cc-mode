@@ -336,9 +336,10 @@ This variable contains an association list with elements of the
 following form: (SYNTACTIC-SYMBOL . (NL-LIST)).
 
 SYNTACTIC-SYMBOL can be any of: defun-open, defun-close, class-open,
-class-close, inline-open, inline-close, block-open,
-block-close, substatement-open, brace-list-open, or
-brace-list-close. See `c-offsets-alist' for details.
+class-close, inline-open, inline-close, block-open, block-close,
+substatement-open, brace-list-open, brace-list-close,
+brace-list-intro, or brace-list-entry. See `c-offsets-alist' for
+details.
 
 NL-LIST can contain any combination of the symbols `before' or
 `after'. It also be nil.  When a brace is inserted, the syntactic
@@ -1320,6 +1321,8 @@ the brace is inserted inside a literal."
 					 (assq 'inline-close syntax)
 					 (assq 'brace-list-open syntax)
 					 (assq 'brace-list-close syntax)
+					 (assq 'brace-list-intro syntax)
+					 (assq 'brace-list-entry syntax)
 					 (assq 'block-open syntax)
 					 (assq 'block-close syntax)
 					 (assq 'substatement-open syntax)
