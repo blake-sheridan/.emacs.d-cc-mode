@@ -2917,6 +2917,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       ;; if search-end is nil, or if the search-end character isn't an
       ;; open brace, we are definitely not in a class
       (if (or (not search-end)
+	      (< search-end (point-min))
 	      (/= (char-after search-end) ?{))
 	  nil
 	;; now, we need to look more closely at search-start.  if
