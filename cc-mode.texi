@@ -2354,8 +2354,9 @@ More detailed descriptions follow below.
 @item
 @code{inline-close} --- brace that closes an in-class inline method
 @item
-@code{ansi-funcdecl-cont} --- the nether region between an ANSI function
-declaration and the defun opening brace
+@code{func-decl-cont} --- the nether region between a function
+declaration and the defun opening brace.  In C++ and Java, this can
+include the @code{throws} clauses of a method declaration.
 @item
 @code{knr-argdecl-intro} --- first line of a K&R C argument declaration
 @item
@@ -2886,9 +2887,9 @@ The lines to note in this example include:
 
 @itemize @bullet
 
-@cindex ansi-funcdecl-cont syntactic symbol
+@cindex func-decl-cont syntactic symbol
 @item
-line 2, assigned the @code{ansi-funcdecl-cont} syntax;
+line 2, assigned the @code{func-decl-cont} syntax;
 
 @cindex comment-intro syntactic symbol
 @item
