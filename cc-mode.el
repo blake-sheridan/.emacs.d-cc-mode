@@ -117,7 +117,7 @@ reported and the semantic symbol is ignored.")
     (arglist-intro         . +)
     (arglist-cont          . 0)
     (arglist-cont-nonempty . cc-lineup-arglist)
-    (arglist-close         . 0)
+    (arglist-close         . +)
     (stream-op             . cc-lineup-streamop)
     (inclass               . +)
     (cpp-macro             . -1000)
@@ -1101,7 +1101,7 @@ the value of `cc-cleanup-list'."
   (interactive "SSemantic symbol: \nnOffset: \nP")
   (let ((langelem (assq symbol cc-offsets-alist)))
     (if langelem
-	(setqcdr langelem offset)
+	(setcdr langelem offset)
       ;; can we add the langelem?
       (or add-p
 	  (error "%s is not a valid semantic symbol." symbol))
@@ -1970,6 +1970,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	   ;; CASE 5B: we are looking at the arglist closing paren
 	   ((and (/= char-before-ip ?,)
 		 (= char-after-ip ?\)))
+	    (goto-char containing-sexp)
 	    (cc-add-semantics 'arglist-close (cc-point 'boi)))
 	   ;; CASE 5C: we are looking at an arglist continuation line,
 	   ;; but the preceding argument is on the same line as the
