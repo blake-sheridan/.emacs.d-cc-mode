@@ -1549,17 +1549,23 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	(lim (or lim (cc-point 'bod)))
 	(here (point))
 	stop)
-    (beginning-of-line)
+    (goto-char
+     (max
+      (save-excursion
+	(condition-case nil
+	    (forward-sexp -1)
+	  (error nil))
+	(point))
+      (cc-point 'bol)))
     (cc-backward-syntactic-ws lim)
     (while (not stop)
       (if (or (memq (preceding-char) charlist)
 	      (<= (point) lim))
 	  (setq stop t)
 	;; catch multi-line function calls
-	(if (= (preceding-char) ?\))
-	    (forward-sexp -1))
-	;; check for compound statements
-	(back-to-indentation)
+	(condition-case nil
+	    (forward-sexp -1)
+	  (error (goto-char lim)))
 	(setq here (point))
 	(if (looking-at "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>")
 	    (setq stop t)
@@ -1958,21 +1964,29 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	    (cc-add-semantics 'arglist-close (cc-point 'boi)))
 	   ;; CASE 5C: we are looking at an arglist continuation line,
 	   ;; but the preceding argument is on the same line as the
-	   ;; opening paren.
-	   ((= (cc-point 'bol)
-	       (save-excursion
-		 (goto-char containing-sexp)
-		 (cc-point 'bol)))
+	   ;; opening paren.  This case includes multi-line
+	   ;; mathematical paren groupings
+	   ((or (= (cc-point 'bol)
+		   (save-excursion
+		     (goto-char containing-sexp)
+		     (cc-point 'bol)))
+		(= containing-sexp
+		   (save-excursion
+		     (cc-beginning-of-statement containing-sexp)
+		     (point))))
 	    (cc-add-semantics 'arglist-cont-nonempty containing-sexp))
-	   ;; CASE 5D: it is possible that the arglist is really a
-	   ;; forloop expression, and thus maybe broken across
-	   ;; multiple lines
+	   ;; CASE 5D: two possibilities here. First, its possible
+	   ;; that the arglist we're in is really a forloop expression
+	   ;; and we are looking at one of the clauses broken up
+	   ;; across multiple lines.  ==> statement-cont
 	   ((not (memq char-before-ip '(?\; ?,)))
 	    (cc-beginning-of-statement containing-sexp)
 	    (cc-add-semantics 'statement-cont (point)))
 	   ;; CASE 5E: we are looking at just a normal arglist
 	   ;; continuation line
-	   (t (cc-add-semantics 'arglist-cont (cc-point 'boi)))
+	   (t
+	    (cc-beginning-of-statement containing-sexp)
+	    (cc-add-semantics 'arglist-cont (cc-point 'boi)))
 	   ))
 	 ;; CASE 6: func-local multi-inheritance line
 	 ((save-excursion
