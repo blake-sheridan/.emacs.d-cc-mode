@@ -915,9 +915,10 @@ Returns nil if line starts inside a string, t if in a comment."
 		 (c++-backward-to-noncomment (or parse-start (point-min)))
 		 (if (not (bobp)) (forward-char -1))
 		 (if (or (= (preceding-char) ?\))
-			 (save-excursion
-			   (forward-word -1)
-			   (looking-at "const")))
+			 (and (= (preceding-char) ?t)
+			      (save-excursion
+				(forward-word -1)
+				(looking-at "\\<const\\>"))))
 		     (progn		; first arg decl or member init
 		       (goto-char indent-point)
 		       (skip-chars-forward " \t")
