@@ -682,7 +682,9 @@ for member initialization list."
 		     insertion-point (point))))
        ;; check for ?: construct which may be at any level
        ((progn (goto-char insertion-point)
-	       (backward-sexp 1)
+	       (condition-case premature-end
+		   (backward-sexp 1)
+		 (error nil))
 	       (c++-backward-to-noncomment bod)
 	       (= (preceding-char) ?\?))
 	(setq c++-auto-newline nil))
