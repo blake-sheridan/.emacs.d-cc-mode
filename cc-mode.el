@@ -1469,8 +1469,9 @@ search."
 			    ))
 		      (not (looking-at c-conditional-key))
 		      )
-	    (setq last-begin (point)
-		  first nil))
+	    (if (not (looking-at c-label-key))
+		(setq last-begin (point)
+		      first nil)))
 	  (if (not (looking-at c-conditional-key))
 	      (goto-char last-begin)))
       ;; error for condition-case
@@ -2533,10 +2534,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (c-add-semantics 'block-open)))
 	   ))
 	 ;; CASE 8: A continued statement
-	 ((and (not (memq char-before-ip '(?\; ?})))
+	 ((and (not (memq char-before-ip '(?\; ?} ?:)))
 	       (> (point)
 		  (save-excursion
-		    (c-beginning-of-statement nil containing-sexp)
+		    (c-beginning-of-statement 1 containing-sexp)
 		    (setq placeholder (point))))
 	       (/= placeholder containing-sexp))
 	  (goto-char indent-point)
