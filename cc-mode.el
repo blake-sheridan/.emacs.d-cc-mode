@@ -1644,66 +1644,71 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
   ;; if a classkey was found, return a cons cell containing the point
   ;; of the class's opening brace in the car, and the class's
   ;; declaration start in the cdr, otherwise return nil.
-  (condition-case nil
-      (save-excursion
-	(let (search-start donep foundp)
-	  (and search-end
-	       (goto-char search-end))
-	  (while (not donep)
-	    ;; go backwards to the most enclosing C block
-	    (while (not search-end)
-	      (if (not (cc-back-block))
-		  (setq search-end (goto-char (cc-point 'bod)))
-		(if (memq (following-char) '(?} ?{))
-		    (setq search-end (point))
-		  (forward-char 1)
-		  (backward-sexp 1)
-		  )))
-	    ;; go backwards from here to the next most enclosing block
-	    (while (not search-start)
-	      (if (not (cc-back-block))
-		  (setq search-start (goto-char (cc-point 'bod)))
-		(if (memq (following-char) '(?} ?{))
-		    (setq search-start (point))
-		  (forward-char 1)
-		  (backward-sexp 1)
-		  )))
-	    (cond
-	     ;; CASE 1: search-end is a close brace. we cannot find the
-	     ;; enclosing brace
-	     ((= (char-after search-end) ?})
-	      (setq donep t))
-	     ;; CASE 2: we have exhausted all our possible searches
-	     ((= search-start search-end)
-	      (setq donep t))
-	     ;; CASE 3: now look for class key, but make sure its not in a
-	     ;; literal
-	     (t
-	      (while (and (re-search-forward cc-class-key search-end t)
-			  (cc-in-literal)))
-	      (if (and (/= (point) search-end)
-		       (/= (point) search-start)
-		       (not (cc-in-literal)))
-		  (setq donep t
-			foundp t)
-		;; if the char under search-start is a close brace,
-		;; then we just traversed a top-level defun, so
-		;; there's no way we'll find an enclosing class-key
-		;; and we need look no further.
-		(if (= (char-after search-start) ?})
-		    (setq donep t)
-		  ;; not found in this region. reset search extent and
-		  ;; try again
-		  (setq search-end search-start
-			search-start nil)
-		  (goto-char search-end))
-		))
-	     ))
-	  ;; we've search as much as we can.  if we've found a classkey,
-	  ;; then search-end should be at the class's opening brace
-	  (and foundp (cons search-end (cc-point 'boi)))
-	  ))
-    (error nil)))
+  (and (eq major-mode 'cc-c++-mode)
+       (condition-case nil
+	   (save-excursion
+	     (let (search-start donep foundp)
+	       (and search-end
+		    (goto-char search-end))
+	       (while (not donep)
+		 ;; go backwards to the most enclosing C block
+		 (while (not search-end)
+		   (if (not (cc-back-block))
+		       (setq search-end (goto-char (cc-point 'bod)))
+		     (if (memq (following-char) '(?} ?{))
+			 (setq search-end (point))
+		       (forward-char 1)
+		       (backward-sexp 1)
+		       )))
+		 ;; go backwards from here to the next most enclosing
+		 ;; block
+		 (while (not search-start)
+		   (if (not (cc-back-block))
+		       (setq search-start (goto-char (cc-point 'bod)))
+		     (if (memq (following-char) '(?} ?{))
+			 (setq search-start (point))
+		       (forward-char 1)
+		       (backward-sexp 1)
+		       )))
+		 (cond
+		  ;; CASE 1: search-end is a close brace. we cannot
+		  ;; find the enclosing brace
+		  ((= (char-after search-end) ?})
+		   (setq donep t))
+		  ;; CASE 2: we have exhausted all our possible
+		  ;; searches
+		  ((= search-start search-end)
+		   (setq donep t))
+		  ;; CASE 3: now look for class key, but make sure its
+		  ;; not in a literal
+		  (t
+		   (while (and (re-search-forward cc-class-key search-end t)
+			       (cc-in-literal)))
+		   (if (and (/= (point) search-end)
+			    (/= (point) search-start)
+			    (not (cc-in-literal)))
+		       (setq donep t
+			     foundp t)
+		     ;; if the char under search-start is a close
+		     ;; brace, then we just traversed a top-level
+		     ;; defun, so there's no way we'll find an
+		     ;; enclosing class-key and we need look no
+		     ;; further.
+		     (if (= (char-after search-start) ?})
+			 (setq donep t)
+		       ;; not found in this region. reset search
+		       ;; extent and try again
+		       (setq search-end search-start
+			     search-start nil)
+		       (goto-char search-end))
+		     ))
+		  ))
+	       ;; we've search as much as we can.  if we've found a
+	       ;; classkey, then search-end should be at the class's
+	       ;; opening brace
+	       (and foundp (cons search-end (cc-point 'boi)))
+	       ))
+	 (error nil))))
 
 ;; defuns to look backwards for things
 (defun cc-backward-to-start-of-do (&optional lim)
