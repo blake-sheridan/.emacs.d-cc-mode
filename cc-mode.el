@@ -499,7 +499,6 @@ Emacs.")
   ;; TBD: this keybinding will conflict with c-up-conditional
   ;(define-key c-mode-map "\C-c\C-u"  'c-up-block)
   (define-key c-mode-map "\C-c\C-v"  'c-version)
-  (define-key c-mode-map "\C-c\C-x"  'c-match-paren)
   ;; old Emacsen need to tame certain characters
   (if (memq 'v18 c-emacs-features)
       (progn
