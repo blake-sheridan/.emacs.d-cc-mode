@@ -1628,17 +1628,24 @@ BOD is the beginning of the C++ definition."
 			      (beginning-of-line)
 			      (skip-chars-forward " \t")
 			      (looking-at c++-access-key))
-			    ;; access specifier so add zero to inclass-shift
-			    0
+			    ;; access specifier. class defun opening brace
+			    ;; may not be in col zero
+			    (progn (goto-char containing-sexp)
+				   (current-indentation))
 			  ;; member init, so add offset, but
 			  ;; subtract inclass-shift
+			  (message "at questionable member init code...")
+			  (sit-for 4)
 			  (- c++-member-init-indent c-indent-level))
 		      (if (or (= (preceding-char) ?})
 			      (= (preceding-char) ?\))
 			      (save-excursion
 				(beginning-of-line)
 				(looking-at "[ \t]*\\<friend\\>")))
-			  0
+			  ;; indentation of class defun opening brace
+			  ;; may not be zero
+			  (progn (goto-char containing-sexp)
+				 (current-indentation))
 			;; cont arg decls or member inits
 			(beginning-of-line)
 			;; we might be inside a K&R C arg decl
@@ -1673,7 +1680,9 @@ BOD is the beginning of the C++ definition."
 				;; we might be looking at the opening
 				;; brace of a class defun
 				(if (= (following-char) ?\{)
-				    0
+				    ;; indentation of opening brace may not
+				    ;; be zero
+				    (current-indentation)
 				  (if (eolp)
 				      ;; looking at a blank line, indent
 				      ;; next line to zero
