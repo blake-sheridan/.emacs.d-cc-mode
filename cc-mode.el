@@ -1541,9 +1541,9 @@ the brace is inserted inside a literal."
 			    (c-hack-state (point) 'open c-state-cache))
 		    (if (and (car c-state-cache)
 			     (not (consp (car c-state-cache)))
-			     (< (point) (car c-state-cache)))
-			(setq c-state-cache (cdr c-state-cache))))
-		  ))
+			     (<= (point) (car c-state-cache)))
+			(setq c-state-cache (cdr c-state-cache))
+		      ))))
 	      (c-indent-line)
 	      (goto-char (- (point-max) pos))
 	      ;; if the buffer has changed due to the indentation, we
