@@ -2760,7 +2760,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			 (back-to-indentation)
 			 (not (looking-at c-label-key))))
 		  (and (memq char-after-ip '(?: ??))
-		       (not (looking-at "[ \t]*::"))))
+		       (save-excursion
+			 (goto-char indent-point)
+			 (skip-chars-forward " \t")
+			 ;; watch out for scope operator
+			 (not (looking-at "::")))))
 	      (c-add-semantics 'statement-cont (c-point 'boi)))
 	     ;; CASE 14.D: any old statement
 	     ((< (point) indent-point)
