@@ -1189,8 +1189,8 @@ Key bindings:
 	    (cons '(c-auto-hungry-string c-auto-hungry-string)
 		  minor-mode-alist))))
 
-(defun c-find-file-hook ()
-  "Hook that runs whenever a cc-mode buffer is visited.
+(defun c-postprocess-file-styles ()
+  "Function that post processes relevent file local variables.
 Currently, this function simply applies any style and offset settings
 found in the file's Local Variable list.  It first applies any style
 setting found in `c-file-style', then it applies any offset settings
@@ -1208,12 +1208,11 @@ it finds in `c-file-offsets'."
 	     )))
 	c-file-offsets)))
 
-;; now add the hook to find-file-hooks, if both it and add-hook are
-;; defined.  This won't work for Emacs 18, but then you shouldn't be
-;; using Emacs 18 anymore anyway.
+;; Add the function to hack-local-variables-hook. as of 14-Dec-1994
+;; no Emacs supports this, although it is hoped XEmacs 19.12 and Emacs
+;; 19.29 will when they are released.
 (and (fboundp 'add-hook)
-     (boundp 'find-file-hooks)
-     (add-hook 'find-file-hooks 'c-find-file-hook))
+     (add-hook 'hack-local-variables-hooks 'c-postprocess-file-styles))
 
 
 ;; macros must be defined before first use
