@@ -1369,7 +1369,16 @@ of the expression are preserved."
 		(setq this-indent
 		      (if (>= (current-column) comment-column)
 			  (current-column)
-			(c++-comment-offset (bolp) this-indent)))))
+			(c++-comment-offset
+			 (bolp)
+			 (+ this-indent
+			    (if (save-excursion
+				  (c++-backward-syntactic-ws
+				   (car contain-stack))
+				  (memq (preceding-char)
+					'(nil ?\, ?\; ?} ?: ?{)))
+				0 c-continued-statement-offset))
+			 )))))
 	     ;; looking at a friend declaration
 	     ((looking-at "friend[ \t]")
 	      (setq this-indent (+ this-indent c++-friend-offset)))
