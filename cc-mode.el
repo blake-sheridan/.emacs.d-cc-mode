@@ -2463,7 +2463,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ((save-excursion
 	     (goto-char containing-sexp)
 	     (and (c-safe (progn (forward-sexp -1) t))
-		  (looking-at c-conditional-key)))
+		  (looking-at "\\<for\\>")))
 	    (c-beginning-of-statement 1 containing-sexp)
 	    (if (= char-before-ip ?\;)
 		(c-add-semantics 'statement (point))
