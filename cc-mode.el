@@ -587,11 +587,6 @@ The expansion is entirely correct because it uses the C preprocessor."
 
 
 ;; constant regular expressions for looking at various constructs
-(defconst c-symbol-key "\\(\\w\\|_\\)+"
-  "Regexp describing a C/C++ symbol.
-We cannot use just `w' syntax class since `_' cannot be in word class.
-Putting underscore in word class breaks forward word movement behavior
-that users are familiar with.")
 (defconst c-class-key
   (concat
    "\\(\\(extern\\|typedef\\)\\s +\\)?"
@@ -601,24 +596,25 @@ that users are familiar with.")
 (defconst c-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
 	  c-class-key
-	  "[ \t]+"
-	  c-symbol-key
-	  "\\([ \t]*:[ \t]*\\)?\\s *[^;]")
+	  "[ \t]+\\s_\\([ \t]*:[ \t]*\\)?\\s *[^;]")
   "Regexp describing a class inheritance declaration.")
+(defconst c-protection-key
+  "\\<\\(public\\|protected\\|private\\)\\>"
+  "Regexp describing protection keywords.")
 (defconst c-baseclass-key
   (concat
-   ":?[ \t]*\\(virtual[ \t]+\\)?"
-   "\\(\\(public\\|private\\|protected\\)[ \t]+\\)"
-   c-symbol-key)
+   ":?[ \t]*\\(virtual[ \t]+\\)?\\("
+   c-protection-key
+   "[ \t]+\\)\\s_")
   "Regexp describing base classes in a derived class definition.")
-(defconst c-case-statement-key
-  (concat "\\(case[ \t]+\\(\\w\\|[_']\\)+[ \t]*\\)"
-	  "\\|\\(default[ \t]*\\):")
+(defconst c-switch-label-key
+  "\\(\\(case[ \t]+\\(\\s_\\|[']\\)+\\)\\|default\\)[ \t]*:"
   "Regexp describing a switch's case or default label")
-(defconst c-access-key "\\<\\(public\\|protected\\|private\\)\\>:"
+(defconst c-access-key
+  (concat c-protection-key ":")
   "Regexp describing access specification keywords.")
 (defconst c-label-key
-  (concat c-symbol-key ":\\([^:]\\|$\\)")
+  "\\s_:\\([^:]\\|$\\)"
   "Regexp describing any label.")
 (defconst c-conditional-key
   "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>"
@@ -2440,7 +2436,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		 ))
 	  (c-add-semantics 'do-while-closure placeholder))
 	 ;; CASE 10: A case or default label
-	 ((looking-at c-case-statement-key)
+	 ((looking-at c-switch-label-key)
 	  (goto-char containing-sexp)
 	  ;; for a case label, we set relpos the first non-whitespace
 	  ;; char on the line containing the switch opening brace. this
@@ -2475,10 +2471,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (forward-char 1)
 	  (c-forward-syntactic-ws indent-point)
 	  ;; we want to ignore labels when skipping forward
-	  (let ((ignore-re (concat c-case-statement-key "\\|" c-label-key))
+	  (let ((ignore-re (concat c-switch-label-key "\\|" c-label-key))
 		inswitch-p)
 	    (while (looking-at ignore-re)
-	      (if (looking-at c-case-statement-key)
+	      (if (looking-at c-switch-label-key)
 		  (setq inswitch-p t))
 	      (forward-line 1)
 	      (c-forward-syntactic-ws indent-point))
@@ -2492,7 +2488,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		     (c-backward-syntactic-ws containing-sexp)
 		     (back-to-indentation)
 		     (setq placeholder (point))
-		     (looking-at c-case-statement-key)))
+		     (looking-at c-switch-label-key)))
 	      (c-add-semantics 'statement-case-intro placeholder))
 	     ;; CASE 13.B: continued statement
 	     ((= char-before-ip ?,)
