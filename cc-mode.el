@@ -397,7 +397,10 @@ one of the following values:
 
   nil       -- no determination made, continue checking
   non-nil   -- insert a newline, and stop checking
-  'stop     -- do not insert a newline, but stop checking")
+  'stop     -- do not insert a newline, but stop checking
+
+If every function in the list is called with no determination made,
+then no newline is inserted.")
 
 (defvar c-hanging-comment-ender-p t
   "*If nil, `c-fill-paragraph' leaves C block comment enders on their own line.
