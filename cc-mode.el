@@ -1276,7 +1276,7 @@ The expansion is entirely correct because it uses the C preprocessor."
   "Regexp describing access labels for Java.")
 (defconst c-Java-class-key
   (concat
-   "\\(" c-protection-key "\\)?\\s +"
+   "\\(" c-protection-key "\\s +\\)?"
    "\\(interface\\|class\\)\\s +"
    c-symbol-key				;name of the class
    "\\(\\s *extends\\s *" c-symbol-key "\\)?" ;maybe followed by superclass 
