@@ -691,7 +691,20 @@ in C++ code based on its context."
       (skip-chars-backward " \t")
       (max
        ;; leave at least one space on non-empty lines.
-       (if (zerop (current-column)) 0 (1+ (current-column)))
+       (if (zerop (current-column))
+	   0
+	 (1+ (current-column)))
+       ;; use comment-column if previous line is comment only line
+       ;; indented to the left of comment-column
+       (save-excursion
+	 (beginning-of-line)
+	 (if (not (bobp)) (forward-line -1))
+	 (skip-chars-forward " \t")
+	 (if (looking-at "/\\*\\|//")
+	     (if (< (current-column) comment-column)
+		 comment-column
+	       (current-column))
+	   0))
        (let ((cur-pt (point)))
 	 (beginning-of-line 0)
 	 ;; If previous line had a comment, use it's indent
