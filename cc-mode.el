@@ -4355,17 +4355,23 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       )))
 
 (defun c-lineup-ObjC-method-call (langelem)
-  ;; Line up methods args as elisp-mode does with function args
+  ;; Line up methods args as elisp-mode does with function args: go to
+  ;; the position right after the message receiver, and if you are at
+  ;; (eolp) indent the current line by a constant offset from the
+  ;; opening bracket; otherwise we are looking at the first character
+  ;; of the first method call argument, so lineup the current line
+  ;; with it.
   (save-excursion
     (let* ((open-bracket-pos (cdr langelem))
            (open-bracket-col (progn (goto-char open-bracket-pos)
                                     (current-column)))
            (target-col (progn (forward-char)
                               (forward-sexp)
-                              (if (eolp)
+			      (skip-chars-forward " \t")
+			      (if (eolp)
                                   (+ open-bracket-col (* 2 c-basic-offset))
                                 (current-column)))))
-      (- (1+ target-col) open-bracket-col))))
+      (- target-col open-bracket-col))))
 
 (defun c-lineup-ObjC-method-args (langelem)
   ;; Line up the colons that separate args. This is done trying to
