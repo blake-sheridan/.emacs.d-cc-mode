@@ -931,7 +931,7 @@ Returns nil if line starts inside a string, t if in a comment."
 	      (setq parse-start (point)
 		    state pps
 		    containing-sexp (car (cdr pps))))))
-      (cond ((nth 3 state)
+      (cond ((c++-in-open-string-p)
 	     ;; in a string.
 	     nil)
 	    ((c++-in-comment-p)
@@ -1000,7 +1000,8 @@ Returns nil if line starts inside a string, t if in a comment."
 			 0
 		       (beginning-of-line) ; cont arg decls or member inits
 		       (skip-chars-forward " \t")
-		       (if (looking-at "/[/*]")
+		       (if (or (c++-in-comment-p)
+			       (looking-at "/[/*]"))
 			   0
 			 (if (= (following-char) ?:)
 			     (if c++-continued-member-init-offset
