@@ -3690,6 +3690,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; CASE 5J: we are at a topmost continuation line
 	   (t
 	    (c-beginning-of-statement-1 lim)
+	    (c-forward-syntactic-ws)
 	    (c-add-syntax 'topmost-intro-cont (c-point 'boi)))
 	   ))				; end CASE 5
 	 ;; CASE 6: line is an expression, not a statement.  Most
