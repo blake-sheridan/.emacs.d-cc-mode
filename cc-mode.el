@@ -1563,11 +1563,18 @@ BOD is the beginning of the C++ definition."
 				      ;; looking at a blank line, indent
 				      ;; next line to zero
 				      0
-				    ;; subtract inclass-shift since
-				    ;; its already incorporated by
-				    ;; defaultin current-indentation
-				    (- (current-indentation) inclass-shift)
-				    )))))))
+				    (if (save-excursion
+					  (goto-char indent-point)
+					  (beginning-of-line)
+					  (bobp))
+					;; at beginning of buffer, if
+					;; nothing else, indent to zero 
+					0
+				      ;; subtract inclass-shift since
+				      ;; its already incorporated by
+				      ;; defaultin current-indentation
+				      (- (current-indentation) inclass-shift)
+				      ))))))))
 		      ))))))
 	    ((/= (char-after containing-sexp) ?{)
 	     ;; line is expression, not statement:
