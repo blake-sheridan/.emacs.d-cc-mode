@@ -2272,7 +2272,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (narrow-to-region
 	       (progn
 		 (goto-char (1+ (car inclass-p)))
-		 (c-forward-syntactic-ws indent-point)
+		 (skip-chars-forward " \t" indent-point)
 		 (c-point 'bol))
 	       (progn
 		 (goto-char indent-point)
