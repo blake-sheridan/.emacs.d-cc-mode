@@ -1820,7 +1820,10 @@ BOD is the beginning of the C++ definition."
 		       ;; access specifier. class defun opening brace
 		       ;; may not be in col zero
 		       (progn (goto-char (or containing-sexp bod))
-			      (current-indentation))
+			      (- (current-indentation)
+				 ;; remove some nested inclass indentation
+				 (* (max 0 (1- inclass-depth)) c-indent-level)
+				 ))
 		     ;; member init, so add offset
 		     c++-member-init-indent)
 		 (if (or (= (preceding-char) ?})
