@@ -1810,17 +1810,14 @@ the leading \"// \" from each line, if any."
   (let* ((m      (if (eq (mark) nil) (error "Mark is not set!") (mark)))
 	 (start  (if (< (point) m) (point) m))
 	 (end    (if (> (point) m) (point) m))
-	 (mymark (copy-marker end))
-	 (len    (length comment-start))
-	 (char   (string-to-char comment-start)))
+	 (mymark (copy-marker end)))
     (save-excursion
 	(goto-char start)
 	(while (< (point) (marker-position mymark))
 	    (beginning-of-line)
-	    (if (looking-at (concat " *" comment-start))
-		(progn
-		  (zap-to-char 1 char)
-		  (delete-char len)))
+	    (if (looking-at (concat "[\t ]*" comment-start))
+		  (delete-char (- (match-end 0) (match-beginning 0)))
+	      )
 	    (beginning-of-line)
 	    (forward-line 1)))))
 
