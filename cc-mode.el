@@ -798,9 +798,10 @@ of the expression are preserved."
 	      (indent-code-rigidly beg end shift-amt "#")))
       (cond
        ((eq c++-tab-always-indent nil)
-	(if (save-excursion
-	      (skip-chars-backward " \t")
-	      (bolp))
+	(if (and (save-excursion
+		   (skip-chars-backward " \t")
+		   (bolp))
+		 (/= (point) (save-excursion (back-to-indentation) (point))))
 	    (c++-indent-line bod)
 	  (insert-tab)))
        ((eq c++-tab-always-indent t)
