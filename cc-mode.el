@@ -3439,72 +3439,76 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	       (/= placeholder containing-sexp))
 	  (goto-char indent-point)
 	  (skip-chars-forward " \t")
-	  (cond
-	   ;; CASE 9A: substatement
-	   ((save-excursion
-	      (goto-char placeholder)
-	      (and (looking-at c-conditional-key)
-		   (c-safe (progn (c-skip-conditional) t))
-		   (progn (c-forward-syntactic-ws)
-			  (>= (point) indent-point))))
-	    (goto-char placeholder)
-	    (if (= char-after-ip ?{)
-		(c-add-syntax 'substatement-open (c-point 'boi))
-	      (c-add-syntax 'substatement (c-point 'boi))))
-	   ;; CASE 9B: open braces for class or brace-lists
-	   ((= char-after-ip ?{)
+	  (let ((after-cond-placeholder
+		 (save-excursion
+		   (goto-char placeholder)
+		   (if (looking-at c-conditional-key)
+		       (progn
+			 (c-safe (c-skip-conditional))
+			 (c-forward-syntactic-ws)
+			 (if (memq (following-char) '(?\;))
+			     (progn
+			       (forward-char 1)
+			       (c-forward-syntactic-ws)))
+			 (point))
+		     nil))))
 	    (cond
-	     ;; CASE 9B.1: class-open
-	     ((save-excursion
-		(goto-char indent-point)
-		(skip-chars-forward " \t{")
-		(let ((decl (c-search-uplist-for-classkey (c-parse-state))))
-		  (and decl
-		       (setq placeholder (aref decl 0)))
-		  ))
-	      (c-add-syntax 'class-open placeholder))
-	     ;; CASE 9B.2: brace-list-open
-	     ((or (save-excursion
-		    (goto-char placeholder)
-		    (looking-at "\\<enum\\>"))
-		  (= char-before-ip ?=))
-	      (c-add-syntax 'brace-list-open placeholder))
-	     ;; CASE 9B.3: catch-all for unknown construct.
+	     ;; CASE 9A: substatement
+	     ((and after-cond-placeholder
+		   (>= after-cond-placeholder indent-point))
+	      (goto-char placeholder)
+	      (if (= char-after-ip ?{)
+		  (c-add-syntax 'substatement-open (c-point 'boi))
+		(c-add-syntax 'substatement (c-point 'boi))))
+	     ;; CASE 9B: open braces for class or brace-lists
+	     ((= char-after-ip ?{)
+	      (cond
+	       ;; CASE 9B.1: class-open
+	       ((save-excursion
+		  (goto-char indent-point)
+		  (skip-chars-forward " \t{")
+		  (let ((decl (c-search-uplist-for-classkey (c-parse-state))))
+		    (and decl
+			 (setq placeholder (aref decl 0)))
+		    ))
+		(c-add-syntax 'class-open placeholder))
+	       ;; CASE 9B.2: brace-list-open
+	       ((or (save-excursion
+		      (goto-char placeholder)
+		      (looking-at "\\<enum\\>"))
+		    (= char-before-ip ?=))
+		(c-add-syntax 'brace-list-open placeholder))
+	       ;; CASE 9B.3: catch-all for unknown construct.
+	       (t
+		;; Even though this isn't right, it's the best I'm
+		;; going to do for now. Exceptions probably fall
+		;; through to here, but aren't supported yet.  Also,
+		;; after the next release, I may call a recognition
+		;; hook like so: (run-hooks 'c-recognize-hook), but I
+		;; dunno.
+		(c-add-syntax 'statement-cont placeholder)
+		(c-add-syntax 'block-open))
+	       ))
+	     ;; CASE 9C: iostream insertion or extraction operator
+	     ((looking-at "<<\\|>>")
+	      (goto-char placeholder)
+	      (and after-cond-placeholder
+		   (goto-char after-cond-placeholder))
+	      (while (and (re-search-forward "<<\\|>>" indent-point 'move)
+			  (c-in-literal placeholder)))
+	      ;; if we ended up at indent-point, then the first
+	      ;; streamop is on a separate line. Indent the line like
+	      ;; a statement-cont instead
+	      (if (/= (point) indent-point)
+		  (c-add-syntax 'stream-op (c-point 'boi))
+		(c-backward-syntactic-ws lim)
+		(c-add-syntax 'statement-cont (c-point 'boi))))
+	     ;; CASE 9D: continued statement. find the accurate
+	     ;; beginning of statement or substatement
 	     (t
-	      ;; Even though this isn't right, it's the best I'm going
-	      ;; to do for now. Exceptions probably fall through to
-	      ;; here, but aren't supported yet.  Also, after the next
-	      ;; release, I may call a recognition hook like so:
-	      ;; (run-hooks 'c-recognize-hook), but I dunno.
-	      (c-add-syntax 'statement-cont placeholder)
-	      (c-add-syntax 'block-open))
-	     ))
-	   ;; CASE 9C: iostream insertion or extraction operator
-	   ((looking-at "<<\\|>>")
-	    (goto-char placeholder)
-	    (if (looking-at c-conditional-key)
-		(c-skip-conditional))
-	    (while (and (re-search-forward "<<\\|>>" indent-point 'move)
-			(c-in-literal placeholder)))
-	    ;; if we ended up at indent-point, then the first streamop
-	    ;; is on a separate line. Indent the line like a
-	    ;; statement-cont instead
-	    (if (/= (point) indent-point)
-		(c-add-syntax 'stream-op (c-point 'boi))
-	      (c-backward-syntactic-ws lim)
-	      (c-add-syntax 'statement-cont (c-point 'boi))))
-	   ;; CASE 9D: continued statement. find the accurate
-	   ;; beginning of statement or substatement
-	   (t
-	    (c-beginning-of-statement nil
-	     (save-excursion
-	       (goto-char placeholder)
-	       (and (looking-at c-conditional-key)
-		    (c-safe (progn (c-skip-conditional) t))
-		    (c-forward-syntactic-ws))
-	       (point)))
-	    (c-add-syntax 'statement-cont (point)))
-	   ))
+	      (c-beginning-of-statement nil after-cond-placeholder)
+	      (c-add-syntax 'statement-cont (point)))
+	     )))
 	 ;; CASE 10: an else clause?
 	 ((looking-at "\\<else\\>")
 	  (c-backward-to-start-of-if containing-sexp)
