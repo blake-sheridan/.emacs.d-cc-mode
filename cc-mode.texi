@@ -1444,7 +1444,7 @@ are provided, according to Emacs major mode conventions:
 @code{java-mode-hook}.  These get run as the last thing when you enter
 @code{c-mode}, @code{c++-mode}, @code{objc-mode}, or
 @code{java-mode-hook} respectively.  @code{cc-mode} also provides a hook
-called @code{c-mode-common-hook} which is run by all three modes
+called @code{c-mode-common-hook} which is run by all four modes
 @emph{before} the language specific hook.  Thus, to make changes
 consistently across all supported @code{cc-mode} modes, use
 @code{c-mode-common-hook}.  Most of the examples in this section will
