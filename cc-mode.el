@@ -302,12 +302,15 @@ according to syntactic analysis via `c-offsets-alist', even when
 (defvar c-block-comments-indent-p nil
   "*Specifies how to re-indent C style block comments.
 
-4 styles of C block comments are supported.  If this variable is nil,
-then styles 1-3 are supported.  If this variable is non-nil, style 4
-only is supported.  Note that this currently has *no* effect on how
-comments are lined up or whether stars are inserted when C comments
-are auto-filled.  In any case, you still have to insert the stars
-manually.
+Four styles of C block comment indentation are supported, as shown
+below.  When this variable is nil, block comments are indented as
+shown in styles 1 through 3.  If this variable is non-nil, block
+comments are indented as shown in style 4.
+
+Note that cc-mode does not automatically insert any stars or block
+comment delimiters.  You must type these in manually.  This variable
+only controls how the lines within the block comment are indented when
+you hit ``\\[c-indent-command]''.
 
  style 1:       style 2:       style 3:       style 4:
  /*             /*             /*             /*
