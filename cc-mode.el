@@ -412,6 +412,19 @@ Only currently supported behavior is `alignleft'.")
 			 (statement-cont . +)
 			 ))
 
+     )
+    ("Ellemtel"
+     (c-basic-offset . 3)
+     (c-comment-only-line-offset . 0)
+     (c-hanging-braces-alist     . ((block-open before)))
+     (c-offsets-alist . ((topmost-intro      . 0)
+                         (topmost-intro-cont . -6)
+                         (substatement       . 0)
+                         (case-label         . +)
+                         (access-label       . -3)
+                         (inclass            . 6)
+                         (inline-open        . -6)
+                         ))
      ))
   "Styles of Indentation.
 Elements of this alist are of the form:
