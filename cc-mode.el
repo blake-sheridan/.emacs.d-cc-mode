@@ -204,11 +204,13 @@ If the syntactic element does not match any in the `c-offsets-alist',
 an error is generated if `c-strict-syntax-p' is non-nil, otherwise
 the element is ignored.
 
-Actually, OFFSET can be an integer, a function, or the symbol `+' or
-`-', the latter designating positive or negative values of
-`c-basic-offset'. If OFFSET is a function, it is called with a single
-argument containing the cons of the syntactic element symbol and the
-relative indent point.  The function should return an integer offset.
+Actually, OFFSET can be an integer, a function, a variable, or one of
+the following symbols: `+', `-', `++', or `--'.  These latter
+designate positive or negative multiples of `c-basic-offset',
+respectively: *1, *-1, *2, and *-2. If OFFSET is a function, it is
+called with a single argument containing the cons of the syntactic
+element symbol and the relative indent point.  The function should
+return an integer offset.
 
 Here is the current list of valid syntactic element symbols:
 
@@ -1592,18 +1594,22 @@ value of `c-cleanup-list'."
   ;; read new offset value for LANGELEM from minibuffer. return a
   ;; legal value only
   (let ((oldoff (format "%s" (cdr-safe (assq langelem c-offsets-alist))))
-	(errmsg "Offset must be +, -, an integer, or function name: ")
+	(errmsg "Offset must be int, func, var, or one of +, -, ++, --: ")
 	(prompt "Offset: ")
-	offset input)
+	offset input interned)
     (while (not offset)
       (setq input (read-string prompt oldoff)
 	    offset (cond ((string-equal "+" input) '+)
 			 ((string-equal "-" input) '-)
+			 ((string-equal "++" input) '++)
+			 ((string-equal "--" input) '--)
 			 ((string-match "^-?[0-9]+$" input)
 			  (string-to-int input))
-			 ((c-safe (symbol-function (intern input)))
-			  (intern input))
-			 ;; error
+			 ((fboundp (setq interned (intern input)))
+			  interned)
+			 ((boundp interned) interned)
+			 ;; error, but don't signal one, keep trying
+			 ;; to read an input value
 			 (t (ding)
 			    (setq prompt errmsg)
 			    nil))))
@@ -1641,9 +1647,13 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
   ;; sanity check offset
   (or (eq offset '+)
       (eq offset '-)
+      (eq offset '++)
+      (eq offset '--)
       (integerp offset)
-      (c-safe (symbol-function offset))
-      (error "Offset is not +, -, an integer, or a function name: %s" offset))
+      (fboundp offset)
+      (boundp offset)
+      (error "Offset must be int, func, var, or one of +, -, ++, --: %s"
+	     offset))
   (let ((entry (assq symbol c-offsets-alist)))
     (if entry
 	(setcdr entry offset)
@@ -3494,8 +3504,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (error "don't know how to indent a %s" symbol)
 	(setq offset 0
 	      relpos 0)))
-     ((eq offset '+) (setq offset c-basic-offset))
-     ((eq offset '-) (setq offset (- c-basic-offset)))
+     ((eq offset '+)  (setq offset c-basic-offset))
+     ((eq offset '-)  (setq offset (- c-basic-offset)))
+     ((eq offset '++) (setq offset (* 2 c-basic-offset)))
+     ((eq offset '--) (setq offset (* 2 (- c-basic-offset))))
      ((and (not (numberp offset))
 	   (fboundp offset))
       (setq offset (funcall offset langelem)))
