@@ -2079,6 +2079,8 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 (defun c++-fast-backward-over-syntactic-ws (&optional lim)
   ;; we can throw away lim since its not really necessary
   (let ((parse-sexp-ignore-comments t))
+    ;; if you're not running a patched lemacs, the new byte compiler
+    ;; will complain about this function. ignore the complaint
     (backward-syntactic-ws)
     (if (not (bobp))
 	(forward-char 1))))
