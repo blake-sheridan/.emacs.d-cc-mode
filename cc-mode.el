@@ -1369,7 +1369,9 @@ To see what version of cc-mode you are running, enter `\\[c-version]'.
 
 The hook variable `java-mode-hook' is run with no args, if that value
 is bound and has a non-nil value.  Also the common hook
-`c-mode-common-hook' is run first.
+`c-mode-common-hook' is run first.  Note that this mode automatically
+sets the \"java\" style before calling any hooks so be careful if you
+set styles in `c-mode-common-hook'.
 
 Key bindings:
 \\{java-mode-map}"
@@ -1392,7 +1394,7 @@ Key bindings:
  	c-baseclass-key nil
 	c-recognize-knr-p nil
  	c-access-key c-Java-access-key)
-;  (c-set-style "java")
+  (c-set-style "java")
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'java-mode-hook))
 (setq c-list-of-mode-names (cons "Java" c-list-of-mode-names))
@@ -5101,7 +5103,7 @@ definition and conveniently use this command."
 			     c-inhibit-startup-warnings-p
 			     )))
       ;; the default style is now GNU.  This can be overridden in
-      ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
+      ;; c-mode-common-hook or {c,c++,objc,java}-mode-hook.
       (c-set-style c-site-default-style)))
 
 ;; style variables
