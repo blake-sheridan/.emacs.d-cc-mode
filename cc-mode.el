@@ -1208,14 +1208,14 @@ used."
 		(if (not (re-search-forward "*/" here 'move)) 'c))
 	       ;; looking at the opening of a double quote string
 	       ((string= "\"" match)
-		;; first try to match empty string
-		(if (= (following-char) ?\")
-		    (progn (forward-char 1)
-			   (if (<= (point) here) nil 'string))
-		  (if (not (save-restriction
-			     (narrow-to-region (point) here)
-			     (re-search-forward "[^\\]\"" here 'move)))
-		      'string)))
+		(if (not (save-restriction
+			   (narrow-to-region (point) here)
+			   (re-search-forward
+			    ;; this regexp matches a double quote
+			    ;; which is preceeded by an even number
+			    ;; of backslashes, including zero
+			    "\\([^\\]\\|^\\)\\(\\\\\\\\\\)*\"" here 'move)))
+		    'string))
 	       ;; looking at the opening of a single quote string
 	       ((string= "'" match)
 		(if (not (re-search-forward "[^\\]'" here 'move)) 'string))
