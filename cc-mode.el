@@ -1752,3 +1752,7 @@ Use \\[c++-submit-bug-report] to submit a bug report."
   (insert "\n\n")
   (c++-dump-state)
   (exchange-point-and-mark))
+
+
+;; this is sometimes useful
+(provide 'c++-mode)
