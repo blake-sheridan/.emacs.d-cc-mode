@@ -1224,8 +1224,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
     (or shutup-p
 	(message "indenting expression... (this may take a while)"))
     (goto-char start)
+    (beginning-of-line)
     (while (< (point) end)
-      (cc-indent-via-language-element bod)
+      (if (not (looking-at "[ \t]*$"))
+	  (cc-indent-via-language-element bod))
       (forward-line 1))
     (or shutup-p
 	(message "indenting expression... done."))
