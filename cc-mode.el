@@ -12,6 +12,17 @@
 ;; If you have problems or questions, you can contact me at the
 ;; following address: c++-mode-help@anthem.nlm.nih.gov
 ;;
+;; The latest version of this file should always be available for
+;; anonymous ftp on the elisp archive machine:
+;; archive.cis.ohio-state.edu.  For those of you without aftp access,
+;; try sending a message to the mail-server at library@cme.nist.gov.
+;; Put "send pub/gnu/c++-mode.el" in the body of the message (without
+;; the quotes) to get the file in uuencoded format, or send the
+;; message "help" to get more information from the mail-server.
+;; Please don't email me asking for the latest version, I may not have
+;; it readily available to send to you. The mail-server should get it
+;; to you pretty quickly.
+;;
 ;; Do a "C-h m" in a c++-mode buffer for more information on customizing
 ;; c++-mode.
 ;;
