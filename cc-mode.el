@@ -142,18 +142,6 @@ Legal values are:
      nil     -- newlines inserted before and after colon
      'after  -- newlines inserted only after colon
      'before -- newlines inserted only before colon")
-(defvar c++-mode-line-format
-  '("" mode-line-modified
-    mode-line-buffer-identification
-    "   " global-mode-string "   %[("
-    mode-name (c++-hungry-delete-key
-	       (c++-auto-newline "/ah" "/h")
-	       (c++-auto-newline "/a"))
-    minor-mode-alist "%n"
-    mode-line-process
-    ")%]----" (-3 . "%p") "-%-")
-  "*Mode line format for c++-mode.")
-
 (defvar c++-auto-hungry-initial-state 'none
   "*Initial state of auto/hungry mode when buffer is first visited.
 Legal values are:
@@ -285,9 +273,6 @@ from their c-mode cousins.
     the colon. Nil means newlines are inserted both before and after
     the colon.  'before inserts newlines only before the colon, and
     'after inserts newlines only after colon.
- c++-mode-line-format
-    Mode line format for c++-mode buffers. Includes auto-newline and
-    hungry-delete-key indicators.
  c++-auto-hungry-initial-state
     Initial state of auto/hungry mode when a C++ buffer is first visited.
  c++-auto-hungry-toggle
@@ -370,8 +355,21 @@ message."
   (set (make-local-variable 'comment-column) 32)
   (set (make-local-variable 'comment-start-skip) "/\\*+ *\\|// *")
   (set (make-local-variable 'comment-indent-hook) 'c++-comment-indent)
-  ;;
-  (setq mode-line-format c++-mode-line-format)
+  ;; hack auto-hungry designators into mode-line-format
+  (setq mode-line-format
+	(let ((modeline nil))
+	  (mapcar
+	   (function
+	    (lambda (element)
+	      (setq modeline
+		    (append modeline
+			    (if (eq element 'mode-name)
+				'(mode-name (c++-hungry-delete-key
+					     (c++-auto-newline "/ah" "/h")
+					     (c++-auto-newline "/a")))
+			      (list element))))))
+	   mode-line-format)
+	  modeline))
   (run-hooks 'c++-mode-hook)
   (c++-set-auto-hungry-state
    (memq c++-auto-hungry-initial-state '(auto-only   auto-hungry t))
@@ -1671,7 +1669,6 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 		       'c++-cleanup-}-else-{-p
 		       'c++-hanging-braces
 		       'c++-hanging-member-init-colon
-		       'c++-mode-line-format
 		       'c++-auto-hungry-initial-state
 		       'c++-auto-hungry-toggle
 		       'c++-hungry-delete-key
