@@ -1293,15 +1293,18 @@ BOD is the beginning of the C++ definition."
 				(forward-line 1)
 				(skip-chars-forward " \t")
 				(= (following-char) ?:)))
-			  (- c++-member-init-indent
-			     (if (progn (beginning-of-line)
-					(skip-chars-forward " \t")
-					(looking-at
-					 (concat
-					  "\\<\\(public\\|protected\\|private"
-					  "\\)\\>:")))
-				 inclass-shift
-			       0))
+			  ;; check to see if we're looking at a member
+			  ;; init, or access specifier
+			  (if (progn
+				(beginning-of-line)
+				(skip-chars-forward " \t")
+				(looking-at
+				 "\\<\\(public\\|protected\\|private\\)\\>:"))
+			      ;; access specifier so add zero to inclass-shift
+			      0
+			    ;; member init, so add offset, but
+			    ;; subtract inclass-shift
+			    (- c++-member-init-indent inclass-shift))
 			(if (or (= (preceding-char) ?})
 				(= (preceding-char) ?\)))
 			    0
