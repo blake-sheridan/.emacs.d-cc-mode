@@ -939,7 +939,7 @@ of the expression are preserved."
  			   (forward-sexp 1)
  			   (looking-at ":[^:]"))))
  		(setq this-indent (max 0 (+ this-indent c-label-offset))))
-	    (if (looking-at "friend[ \t]\\(class\\|struct\\)[ \t]")
+	    (if (looking-at "friend[ \t]")
 		(setq this-indent (+ this-indent c++-friend-offset)))
 	    (if (= (following-char) ?})
 		(setq this-indent (- this-indent c-indent-level)))
