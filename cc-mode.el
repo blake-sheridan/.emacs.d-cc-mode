@@ -397,7 +397,8 @@ Only currently supported behavior is `alignleft'.")
 This variable is needed because of ambiguities in C syntax that make
 fast recognition of K&R constructs problematic, and slow.  If you are
 coding with ANSI prototypes, set this variable to nil to speed up
-recognition of certain constructs.
+recognition of certain constructs.  By setting this variable to nil, I
+have seen an increase of 20 times under some circumstance.
 
 This variable is nil by default in `c++-mode', and t by default in
 `c-mode' and `objc-mode'.  This variable is buffer-local.")
