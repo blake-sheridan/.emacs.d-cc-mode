@@ -291,9 +291,12 @@ Setting this variable to nil will defeat this feature, but be
 forewarned!  Un-escaped characters in comment regions will break many
 things such as some indenting and blinking of parenthesis.
 
-Note further that only the default set of characters can be
-automatically escaped when typed in, but entering
-\\[c++-tame-comments] will escape all character in the set.")
+Note further that only the default set of characters will be escaped
+automatically as they are typed. But entering \\[c++-tame-comments]
+(c++-tame-comments) will escape all characters which are members of
+this set, found in comments throughout the file.
+
+This (mis-)feature will not be necessary in emacs 19.")
 
 (defvar c++-default-macroize-column 78
   "*Column to insert backslashes.")
