@@ -38,11 +38,6 @@
 ;; The way this is intended to be run is for you to mark a region of
 ;; code to guess the style of, then run the command, cc-guess-region.
 
-;; LCD Archive Entry:
-;; cc-guess|Barry A. Warsaw|bwarsaw@cen.com
-;; |guess cc-mode indentation variable values
-;; |$Date$|$Revision$|
-
 ;;; Code:
 
 (defvar cc-guessed-style nil
