@@ -220,7 +220,6 @@ styles in a single mode.")
   (modify-syntax-entry ?>  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?&  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?|  "."     c++-mode-syntax-table)
-  (modify-syntax-entry ?_  "w"     c++-mode-syntax-table)
   (modify-syntax-entry ?\' "\""    c++-mode-syntax-table)
   ;; comment syntax
   (if c++-emacs-is-really-fixed-p
@@ -250,7 +249,6 @@ styles in a single mode.")
   (modify-syntax-entry ?>  "."     c++-c-mode-syntax-table)
   (modify-syntax-entry ?&  "."     c++-c-mode-syntax-table)
   (modify-syntax-entry ?|  "."     c++-c-mode-syntax-table)
-  (modify-syntax-entry ?_  "w"     c++-c-mode-syntax-table)
   (modify-syntax-entry ?\' "\""    c++-c-mode-syntax-table)
   ;; comment syntax
   (if c++-emacs-is-really-fixed-p
@@ -1625,9 +1623,9 @@ point of the beginning of the C++ definition."
       (cond
        ((looking-at c++-access-key)
 	(setq indent (+ indent c++-access-specifier-offset)))
-       ((looking-at "default\\b")
+       ((looking-at "default[ \t]*:")
 	(setq indent (+ indent c-label-offset)))
-       ((or (looking-at "case\\b")
+       ((or (looking-at "case[ \t]*:")
 	    (and (looking-at "[A-Za-z]")
 		 (save-excursion
 		   (forward-sexp 1)
@@ -2008,7 +2006,7 @@ BOD is the beginning of the C++ definition."
 	    (if (save-excursion
 		  (goto-char indent-point)
 		  (skip-chars-forward " \t\n")
-		  (looking-at "case\\b"))
+		  (looking-at "case[ \t]*:"))
 		(progn
 		  (goto-char containing-sexp)
 		  (back-to-indentation)
@@ -2043,7 +2041,7 @@ BOD is the beginning of the C++ definition."
 			   (concat "//\\|friend[ \t]" c++-class-key
 				   "[ \t]"))
 			  (forward-line 1))
-			 ((looking-at "\\(case\\|default\\)\\b")
+			 ((looking-at "\\(case\\|default\\)[ \t]*:")
 			  (forward-line 1))
 			 (t
 			  (re-search-forward ":[^:]" nil 'move))))
