@@ -1264,7 +1264,7 @@ With a negative ARG, go down ARG block levels."
   "Go down ARG enclosing block levels.
 With a negative ARG, go up ARG block levels."
   (interactive "p")
-  (c-beginning-of-block arg)
+  (c-up-block arg)
   (if (< 0 arg)
       (c-safe (forward-sexp 1))
     (c-safe (backward-sexp 1)))
