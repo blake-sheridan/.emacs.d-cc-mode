@@ -564,12 +564,12 @@ backward-delete-char-untabify."
 				(and c++-hanging-braces
 				     (not (c++-at-top-level-p t)))))
 		       (setq c++-auto-newline nil))
-		   (c++-auto-newline)
-		   ;; this may have auto-filled so we need to indent
-		   ;; the previous line
-		   (save-excursion
-		     (forward-line -1)
-		     (c++-indent-line))
+		   (if (c++-auto-newline)
+		       ;; this may have auto-filled so we need to indent
+		       ;; the previous line
+		       (save-excursion
+			 (forward-line -1)
+			 (c++-indent-line)))
 		   t)))
 	(progn
 	  (if (and (memq last-command-char c++-untame-characters)
