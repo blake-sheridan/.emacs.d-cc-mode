@@ -85,9 +85,10 @@ and `cc-guess-view-style' for viewing the guessed style."
 		(assq symbol cc-guessed-style))
 	    nil
 	  (back-to-indentation)
-	  (setq point-indent (current-column))
-	  (goto-char relpos)
-	  (setq relpos-indent (current-column))
+	  (setq point-indent (current-column)
+		relpos-indent (save-excursion
+				(goto-char relpos)
+				(current-column)))
 	  ;; guessed indentation is the difference between point's and
 	  ;; relpos's current-column indentation
 	  (setq cc-guessed-style
