@@ -2002,7 +2002,16 @@ search."
 	 (firstp (setq firstp nil
 		       last-begin (point)))
 	 ;; CASE 4: are we looking at a conditional keyword?
-	 ((looking-at c-conditional-key)
+	 ((or (looking-at c-conditional-key)
+	      (and (= (following-char) ?\()
+		   (let ((here (point))
+			 (foundp (progn
+				   (c-backward-syntactic-ws)
+				   (forward-word -1)
+				   (looking-at c-conditional-key))))
+		     (if (not foundp)
+			 (goto-char here))
+		     foundp)))
 	  ;; are we in the middle of an else-if clause?
 	  (if (save-excursion
 		(c-safe (forward-sexp -1))
