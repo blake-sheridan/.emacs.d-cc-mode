@@ -115,6 +115,7 @@ reported and the semantic symbol is ignored.")
     (c                     . c-lineup-C-comments)
     (defun-open            . 0)
     (defun-close           . 0)
+    (defun-block-intro     . +)
     (class-open            . 0)
     (class-close           . 0)
     (inline-open           . +)
@@ -199,6 +200,7 @@ Here is the current list of valid semantic element symbols:
  c                      -- inside a multi-line C style block comment
  defun-open             -- brace that opens a function definition
  defun-close            -- brace that closes a function definition
+ defun-block-intro      -- the first line in a top-level defun
  class-open             -- brace that opens a class definition
  class-close            -- brace that closes a class definition
  inline-open            -- brace that opens an in-class inline method
@@ -2039,7 +2041,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 (if (memq '1-bit c-emacs-features)
     (fset 'c-in-literal 'c-1bit-il))
 
-
 
 ;; utilities for moving and querying around semantic elements
 (defun c-parse-state (&optional lim)
@@ -2746,7 +2747,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-semantics 'statement (c-point 'boi))
 	      (if (= char-after-ip ?{)
 		  (c-add-semantics 'block-open)))
-	     ;; CASE 14.E: first statement in a block
+	     ;; CASE 14.E: first statement in a top-level defun
+	     ((= containing-sexp (c-point 'bod))
+	      (goto-char containing-sexp)
+	      (c-add-semantics 'defun-block-intro (c-point 'boi)))
+	     ;; CASE 14.F: first statement in a block
 	     (t (goto-char containing-sexp)
 		(if (/= (point) (c-point 'boi))
 		    (c-beginning-of-statement))
