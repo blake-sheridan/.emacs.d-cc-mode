@@ -801,7 +801,8 @@ of the expression are preserved."
 	(if (and (save-excursion
 		   (skip-chars-backward " \t")
 		   (bolp))
-		 (/= (point) (save-excursion (back-to-indentation) (point))))
+		 (or (looking-at "[ \t]*$")
+		     (/= (point) (c++-point-boi))))
 	    (c++-indent-line bod)
 	  (insert-tab)))
        ((eq c++-tab-always-indent t)
@@ -1581,6 +1582,12 @@ string according to mode's syntax."
   "Returns the value of point at c++-beginning-of-defun."
   (save-excursion
     (c++-beginning-of-defun)
+    (point)))
+
+(defun c++-point-boi ()
+  "Returns the value of point at back-to-indentation."
+  (save-excursion
+    (back-to-indentation)
     (point)))
 
 
