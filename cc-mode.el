@@ -833,7 +833,13 @@ Returns nil if line starts inside a string, t if in a comment."
                             (beginning-of-line 1)
                             (c++-backward-to-noncomment containing-sexp)
                             (memq (preceding-char) '(nil ?\, ?\; ?} ?: ?\{)))
-                          c-continued-statement-offset 0)
+                          c-continued-statement-offset
+			;; the following statements *do* indent even
+			;; for single statements (are there others?)
+			(if (looking-at
+			     "\\(do\\|else\\|for\\|if\\|while\\)[^a-zA-Z0-9_]")
+			    c-continued-statement-offset
+			  0))
                       ;; j.peck  [8/13/91]
 		      ;; j.peck hack replaced this line:
 		      ;; \(+ c-continued-statement-offset (current-column)
