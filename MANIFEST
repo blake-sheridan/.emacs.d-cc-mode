@@ -24,6 +24,6 @@ file for cc-mode 4.85:
     manual.  VOLUNTEERS ARE SOUGHT to help complete the manual.
 
     DUMPING: A guide to ditching c-mode.el and c++-mode.el in favor of
-    cc-mode.el.
+    cc-mode.el.  Unnecessary for XEmacs 19.11!  Yay!
 
     ChangeLog: Extremely verbose history of changes.
