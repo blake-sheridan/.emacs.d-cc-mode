@@ -2287,7 +2287,7 @@ of the expression are preserved."
 	    (forward-line 1)
 	    (setq beg (point)))
 	  (if (> end beg)
-	      (indent-code-rigidly beg end shift-amt "#")))
+	      (indent-code-rigidly beg end (- shift-amt) "#")))
       ;; No arg supplied, use c-tab-always-indent to determine
       ;; behavior
       (cond
