@@ -2436,7 +2436,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-beginning-of-statement)
 	      (setq bufpos (point))
 	      (and (< bufpos containing-sexp)
-		   (looking-at "\\<enum\\>")))
+		   (looking-at "\\(typedef[ \t]+\\)?\\<enum\\>")))
        ;; this will pick up array/aggregate init lists, even if they
        ;; are nested
        (progn (goto-char containing-sexp)
