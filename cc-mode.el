@@ -3112,31 +3112,33 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     (point)))
      (error nil))
    ;; this will pick up array/aggregate init lists, even if they are nested.
-   (condition-case ()
-       (save-excursion
-	 (let (safepos bufpos)
-	   (while (and (not bufpos)
-		       containing-sexp)
-	     (if (consp containing-sexp)
-		 (setq containing-sexp (car brace-state)
-		       brace-state (cdr brace-state))
-	       ;; see if significant character just before brace is an equal
-	       (goto-char containing-sexp)
-	       (forward-sexp -1)
-	       (forward-sexp 1)
-	       (c-forward-syntactic-ws containing-sexp)
-	       (if (/= (following-char) ?=)
-		   ;; lets see if we're nested. find the most nested
-		   ;; containing brace
-		   (setq containing-sexp (car brace-state)
-			 brace-state (cdr brace-state))
-		 ;; we've hit the beginning of the aggregate list
-		 (c-beginning-of-statement
-		  nil (c-most-enclosing-brace brace-state))
-		 (setq bufpos (point)))
-	       ))
-	   bufpos))
-     (error nil))
+   (save-excursion
+     (let (safepos bufpos failedp)
+       (while (and (not bufpos)
+		   containing-sexp)
+	 (if (consp containing-sexp)
+	     (setq containing-sexp (car brace-state)
+		   brace-state (cdr brace-state))
+	   ;; see if significant character just before brace is an equal
+	   (goto-char containing-sexp)
+	   (setq failedp nil)
+	   (condition-case ()
+	       (progn
+		 (forward-sexp -1)
+		 (forward-sexp 1)
+		 (c-forward-syntactic-ws containing-sexp))
+	     (error (setq failedp t)))
+	   (if (or failedp (/= (following-char) ?=))
+	       ;; lets see if we're nested. find the most nested
+	       ;; containing brace
+	       (setq containing-sexp (car brace-state)
+		     brace-state (cdr brace-state))
+	     ;; we've hit the beginning of the aggregate list
+	     (c-beginning-of-statement
+	      nil (c-most-enclosing-brace brace-state))
+	     (setq bufpos (point)))
+	   ))
+       bufpos))
    ))
 
 
