@@ -760,8 +760,9 @@ c-mode buffer.  This automatically sets up a mail buffer with version
 information already added.  You just need to add a description of the
 problem, including a reproducable test case and send the message.
 
-Note that the details of configuring c-mode have been moved to
-the accompanying texinfo manual.
+Note that the details of configuring c-mode will soon be moved to the
+accompanying texinfo manual.  Until then, please read the README file
+that came with the cc-mode distribution.
 
 The hook variable `c-mode-hook' is run with no args, if that value is
 bound and has a non-nil value.  Also the common hook
