@@ -1510,7 +1510,7 @@ of the expression are preserved."
       (setq state (parse-partial-sexp (point) lim 0)))
     state))
 
-(defun cc-point (position)
+(defmacro cc-point (position)
   ;; Returns the value of point at certain commonly referenced POSITIONs.
   ;; POSITION can be one of the following symbols:
   ;; 
@@ -1524,25 +1524,26 @@ of the expression are preserved."
   ;; bopl -- beginning of previous line
   ;; 
   ;; This function does not modify point or mark.
-  (let ((here (point)) bufpos)
-    (cond
-     ((eq position 'bol)  (beginning-of-line))
-     ((eq position 'eol)  (end-of-line))
-     ((eq position 'bod)  (beginning-of-defun))
-     ((eq position 'boi)  (back-to-indentation))
-     ((eq position 'bonl) (forward-line 1))
-     ((eq position 'bopl) (forward-line -1))
-     ((eq position 'iopl)
-      (forward-line -1)
-      (back-to-indentation))
-     ((eq position 'ionl)
-      (forward-line 1)
-      (back-to-indentation))
-     (t (error "unknown buffer position requested: %s" position))
-     )
-    (setq bufpos (point))
-    (goto-char here)
-    bufpos))
+  (` (let ((here (point)))
+       (, (cond
+	   ((eq position 'bol)  (` (beginning-of-line)))
+	   ((eq position 'eol)  (` (end-of-line)))
+	   ((eq position 'bod)  (` (beginning-of-defun)))
+	   ((eq position 'boi)  (` (back-to-indentation)))
+	   ((eq position 'bonl) (` (forward-line 1)))
+	   ((eq position 'bopl) (` (forward-line -1)))
+	   ((eq position 'iopl)
+	    (` (forward-line -1)
+	       (back-to-indentation)))
+	   ((eq position 'ionl)
+	    (` (forward-line 1)
+	       (back-to-indentation)))
+	   (t (error "unknown buffer position requested: %s" position))
+	   ))
+       (prog1
+	   (point)
+	 (goto-char here))
+       )))
 
 (defun cc-back-block ()
   ;; move up one block, returning t if successful, otherwise returning
