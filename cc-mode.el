@@ -564,6 +564,13 @@ automatically.
 Note that file offset settings are applied after file style settings
 as designated in the variable `c-file-style'.")
 
+(defvar c-site-default-style "gnu"
+  "Default style for your site.
+To change the default style at your site, you can set this variable to
+any style defined in `c-style-alist'.  However, if cc-mode is usually
+loaded into your Emacs at compile time, you will need to set this
+variable in the `site-init.el' file and re-dump Emacs.")
+
 (defvar c-mode-hook nil
   "*Hook called by `c-mode'.")
 (defvar c++-mode-hook nil
@@ -4918,7 +4925,7 @@ definition and conveniently use this command."
 			     )))
       ;; the default style is now GNU.  This can be overridden in
       ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
-      (c-set-style "gnu")))
+      (c-set-style c-site-default-style)))
 
 ;; style variables
 (make-variable-buffer-local 'c-offsets-alist)
