@@ -997,7 +997,16 @@ Returns nil if line starts inside a string, t if in a comment."
 			(if (looking-at
 			     "\\(do\\|else\\|for\\|if\\|while\\)\\b")
 			    c-continued-statement-offset
-			  0))
+			  ;; else may be a continued statement inside
+			  ;; a simple for/else/while/if/do loop
+			  (beginning-of-line 1)
+			  (forward-char -1)
+			  (c-backward-to-start-of-continued-exp
+			   containing-sexp)
+			  (if (looking-at
+			       "\\(do\\|else\\|for\\|if\\|while\\)\\b")
+			      c-continued-statement-offset
+			    0)))
                       ;; j.peck  [8/13/91]
 		      ;; j.peck hack replaced this line:
 		      ;; \(+ c-continued-statement-offset (current-column)
