@@ -3060,11 +3060,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (skip-chars-forward " \t\n" lim)
 	    ;; if point is now left of the class opening brace, we're
 	    ;; hosed, so try a different tact
-	    (if (<= (c-point 'bol) (aref inclass-p 1))
+	    (if (<= (point) (aref inclass-p 1))
 		(progn
 		  (goto-char (1+ (aref inclass-p 1)))
 		  (c-forward-syntactic-ws lim)))
-	    (c-point 'bol))
+	    (point))
 	  ;; end point is the end of the current line
 	  (progn
 	    (goto-char lim)
@@ -3354,7 +3354,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(c-backward-syntactic-ws lim))
 	      (or (bobp)
 		  (memq (preceding-char) '(?\; ?\}))))
-	    (c-add-syntax 'topmost-intro (c-point 'bol))
+	    ;; real beginning-of-line could be narrowed out due to
+	    ;; enclosure in a class block
+	    (save-restriction
+	      (widen)
+	      (c-add-syntax 'topmost-intro (c-point 'bol)))
 	    (and inclass-p (c-add-syntax 'inclass (aref inclass-p 0))))
 	   ;; CASE 5I: we are at a method definition continuation line
 	   ((and (eq major-mode 'objc-mode)
