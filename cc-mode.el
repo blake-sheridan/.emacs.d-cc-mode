@@ -1311,47 +1311,54 @@ of the expression are preserved."
 		(setcar indent-stack
 			(setq this-indent val))))
 	    ;; Adjust line indentation according to its contents
- 	    (if (looking-at c++-access-key)
- 		(setq this-indent (+ this-indent c++-access-specifier-offset))
-	      (if (or (looking-at "case[ \t]")
-		      (and (looking-at "[A-Za-z]")
-			   (save-excursion
-			     (forward-sexp 1)
-			     (looking-at ":[^:]"))))
-		  (setq this-indent (max 0 (+ this-indent c-label-offset)))))
-	    ;; looking at a comment only line?
-	    (if (looking-at comment-start-skip)
-		;; different indentation base on whether this is a
-		;; col0 comment only line or not. also, if comment is
-		;; in, or to the right of comment-column, the comment
-		;; doesn't move
-		(progn
-		  (skip-chars-forward " \t")
-		  (setq this-indent
-			(if (>= (current-column) comment-column)
-			    (current-column)
-			  (c++-comment-offset (bolp) this-indent)))))
-	    (if (looking-at "friend[ \t]")
-		(setq this-indent (+ this-indent c++-friend-offset)))
-	    (if (= (following-char) ?})
-		(setq this-indent (- this-indent c-indent-level)))
-	    (if (= (following-char) ?{)
-		(setq this-indent (+ this-indent c-brace-offset)))
-	    ;; check for continued statements
-	    (if (save-excursion
-		  (c++-backward-syntactic-ws (car contain-stack))
-		  (and (not (c++-in-parens-p))
-		       (not (memq (preceding-char)
-				  '(nil ?\000 ?\, ?\; ?\} ?\: ?\{)))
-		       (progn
-			 (beginning-of-line)
-			 (skip-chars-forward " \t")
-			 (not (looking-at c++-class-key)))))
-		(setq this-indent (+ this-indent c-continued-statement-offset))
-	      )
-	    ;; check for stream operator
-	    (if (looking-at "\\(<<\\|>>\\)")
-		(setq this-indent (c++-calculate-indent)))
+	    (cond
+	     ;; looking at public, protected, private line
+	     ((looking-at c++-access-key)
+	      (setq this-indent (+ this-indent c++-access-specifier-offset)))
+	     ;; looking at a case, default, or other label
+	     ((or (looking-at "case[ \t]+.*:")
+		  (looking-at "default[ \t]*:")
+		  (and (looking-at "[A-Za-z]")
+		       (save-excursion
+			 (forward-sexp 1)
+			 (looking-at ":[^:]"))))
+	      (setq this-indent (max 0 (+ this-indent c-label-offset))))
+	     ;; looking at a comment only line?
+	     ((looking-at comment-start-skip)
+	      ;; different indentation base on whether this is a col0
+	      ;; comment only line or not. also, if comment is in, or
+	      ;; to the right of comment-column, the comment doesn't
+	      ;; move
+	      (progn
+		(skip-chars-forward " \t")
+		(setq this-indent
+		      (if (>= (current-column) comment-column)
+			  (current-column)
+			(c++-comment-offset (bolp) this-indent)))))
+	     ;; looking at a friend declaration
+	     ((looking-at "friend[ \t]")
+	      (setq this-indent (+ this-indent c++-friend-offset)))
+	     ;; looking at a close brace
+	     ((= (following-char) ?})
+	      (setq this-indent (- this-indent c-indent-level)))
+	     ;; looking at an open brace
+	     ((= (following-char) ?{)
+	      (setq this-indent (+ this-indent c-brace-offset)))
+	     ;; check for continued statements
+	     ((save-excursion
+		(c++-backward-syntactic-ws (car contain-stack))
+		(and (not (c++-in-parens-p))
+		     (not (memq (preceding-char)
+				'(nil ?\000 ?\, ?\; ?\} ?\: ?\{)))
+		     (progn
+		       (beginning-of-line)
+		       (skip-chars-forward " \t")
+		       (not (looking-at c++-class-key)))))
+	      (setq this-indent (+ this-indent c-continued-statement-offset)))
+	     ;; check for stream operator
+	     ((looking-at "\\(<<\\|>>\\)")
+	      (setq this-indent (c++-calculate-indent)))
+	     ) ;; end-cond
 	    ;; Put chosen indentation into effect.
 	    (or (= (current-column) this-indent)
 		(= (following-char) ?\#)
