@@ -1320,7 +1320,12 @@ it finds in `c-file-offsets'."
 	 ((or (looking-at "^#[ \t]*endif[ \t]*")
 	      (looking-at "^#[ \t]*else[ \t]*"))
 	  7)
-	 ;; CASE 3: use comment-column if previous line is a
+	 ;; CASE 3: when comment-column is nil, calculate the offset
+	 ;; according to c-offsets-alist.  E.g. identical to hitting
+	 ;; TAB.
+	 ((not comment-column)
+	  (apply '+ (mapcar 'c-get-offset (c-guess-basic-syntax))))
+	 ;; CASE 4: use comment-column if previous line is a
 	 ;; comment-only line indented to the left of comment-column
 	 ((save-excursion
 	    (beginning-of-line)
@@ -1334,14 +1339,14 @@ it finds in `c-file-offsets'."
 	  (if (< (current-column) comment-column)
 	      comment-column
 	    (current-column)))
-	 ;; CASE 4: If comment-column is 0, and nothing but space
+	 ;; CASE 5: If comment-column is 0, and nothing but space
 	 ;; before the comment, align it at 0 rather than 1.
 	 ((progn
 	    (goto-char opoint)
 	    (skip-chars-backward " \t")
 	    (and (= comment-column 0) (bolp)))
 	  0)
-	 ;; CASE 5: indent at comment column except leave at least one
+	 ;; CASE 6: indent at comment column except leave at least one
 	 ;; space.
 	 (t (max (1+ (current-column))
 		 comment-column))
