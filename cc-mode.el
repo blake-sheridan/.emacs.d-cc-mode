@@ -2419,7 +2419,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			(< (point) endmark))
 	      ;; update progress
 	      (c-progress-update)
-	      (setq laststart (point))
 	      ;; Indent one line as with TAB.
 	      (let (nextline sexpend sexpbeg)
 		;; skip blank lines
