@@ -854,64 +854,76 @@ Returns nil if line starts inside a string, t if in a comment."
 		     (and
 		      (progn
 			(goto-char indent-point)
-			(skip-chars-forward " \t")
+			(skip-chars-forward " \t\n")
 			(looking-at "while\\b"))
 		      (progn
 			(c++-backward-to-start-of-do containing-sexp)
 			(looking-at "do\\b"))
 		      (setq do-indentation (current-column))))
 		   do-indentation
-		 ;; else, this is the start of a new statement
-		 ;; Position following last unclosed open.
-		 (goto-char containing-sexp)
-		 ;; Is line first statement after an open-brace?
-		 (or
-		  ;; If no, find that first statement and indent like it.
-		  (save-excursion
-		    (forward-char 1)
-		    (while (progn (skip-chars-forward " \t\n")
-				  (looking-at
-				   (concat
-				    "#\\|/\\*\\|//"
-				    "\\|case[ \t]"
-				    "\\|[a-zA-Z0-9_$]*:[^:]"
-				    "\\|friend[ \t]class[ \t]")))
-		      ;; Skip over comments and labels following openbrace.
-		      (cond ((= (following-char) ?\#)
-			     (forward-line 1))
-			    ((looking-at "/\\*")
-			     (search-forward "*/" nil 'move))
-			    ((looking-at "//\\|friend[ \t]class[ \t]")
-			     (forward-line 1))
-			    (t
-			     (re-search-forward ":[^:]" nil 'move))))
-		    ;; The first following code counts
-		    ;; if it is before the line we want to indent.
-		    (and (< (point) indent-point)
-			 (current-column)))
-		  ;; If no previous statement,
-		  ;; indent it relative to line brace is on.
-		  ;; For open brace in column zero, don't let statement
-		  ;; start there too.  If c-indent-offset is zero,
-		  ;; use c-brace-offset + c-continued-statement-offset instead.
-		  ;; For open-braces not the first thing in a line,
-		  ;; add in c-brace-imaginary-offset.
-		  (+ (if (and (bolp) (zerop c-indent-level))
-			 (+ c-brace-offset c-continued-statement-offset)
-		       c-indent-level)
-		     ;; Move back over whitespace before the openbrace.
-		     ;; If openbrace is not first nonwhite thing on the line,
-		     ;; add the c-brace-imaginary-offset.
-		     (progn (skip-chars-backward " \t")
-			    (if (bolp) 0 c-brace-imaginary-offset))
-		     ;; If the openbrace is preceded by a parenthesized exp,
-		     ;; move to the beginning of that;
-		     ;; possibly a different line
+		 ;; this could be a case statement. if so we want to
+		 ;; indent it like the first case statement after a switch
+		 (if (save-excursion
+		       (goto-char indent-point)
+		       (skip-chars-forward " \t\n")
+		       (looking-at "case\\b"))
 		     (progn
-		       (if (eq (preceding-char) ?\))
-			   (forward-sexp -1))
-		       ;; Get initial indentation of the line we are on.
-		       (current-indentation)))))))))))
+		       (goto-char containing-sexp)
+		       (back-to-indentation)
+		       (+ (current-column) c-indent-level))
+		   ;; else, this is the start of a new statement
+		   ;; Position following last unclosed open.
+		   (goto-char containing-sexp)
+		   ;; Is line first statement after an open-brace?
+		   (or
+		    ;; If no, find that first statement and indent like it.
+		    (save-excursion
+		      (forward-char 1)
+		      (while (progn (skip-chars-forward " \t\n")
+				    (looking-at
+				     (concat
+				      "#\\|/\\*\\|//"
+				      "\\|case[ \t]"
+				      "\\|[a-zA-Z0-9_$]*:[^:]"
+				      "\\|friend[ \t]class[ \t]")))
+			;; Skip over comments and labels following openbrace.
+			(cond ((= (following-char) ?\#)
+			       (forward-line 1))
+			      ((looking-at "/\\*")
+			       (search-forward "*/" nil 'move))
+			      ((looking-at "//\\|friend[ \t]class[ \t]")
+			       (forward-line 1))
+			      ((looking-at "case\\b")
+			       (forward-line 1))
+			      (t
+			       (re-search-forward ":[^:]" nil 'move))))
+		      ;; The first following code counts
+		      ;; if it is before the line we want to indent.
+		      (and (< (point) indent-point)
+			   (current-column)))
+		    ;; If no previous statement, indent it relative to
+		    ;; line brace is on.  For open brace in column
+		    ;; zero, don't let statement start there too.  If
+		    ;; c-indent-offset is zero, use c-brace-offset +
+		    ;; c-continued-statement-offset instead.  For
+		    ;; open-braces not the first thing in a line, add
+		    ;; in c-brace-imaginary-offset.
+		    (+ (if (and (bolp) (zerop c-indent-level))
+			   (+ c-brace-offset c-continued-statement-offset)
+			 c-indent-level)
+		       ;; Move back over whitespace before the openbrace.
+		       ;; If openbrace is not first nonwhite thing on the line,
+		       ;; add the c-brace-imaginary-offset.
+		       (progn (skip-chars-backward " \t")
+			      (if (bolp) 0 c-brace-imaginary-offset))
+		       ;; If the openbrace is preceded by a parenthesized exp,
+		       ;; move to the beginning of that;
+		       ;; possibly a different line
+		       (progn
+			 (if (eq (preceding-char) ?\))
+			     (forward-sexp -1))
+			 ;; Get initial indentation of the line we are on.
+			 (current-indentation))))))))))))
 
 (defun c++-backward-to-noncomment (lim)
   "Skip backwards to first preceding non-comment character."
