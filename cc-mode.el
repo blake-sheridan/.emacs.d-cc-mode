@@ -5226,7 +5226,10 @@ command to conveniently insert and align the necessary backslashes."
   (interactive)
   ;; load in reporter
   (let ((reporter-prompt-for-summary-p t)
-	(reporter-dont-compact-list '(c-offsets-alist)))
+	(reporter-dont-compact-list '(c-offsets-alist))
+	(style c-indentation-style)
+	(hook c-special-indent-hook)
+	(c-features c-emacs-features))
     (and
      (if (y-or-n-p "Do you want to submit a report on CC Mode? ")
 	 t (message "") nil)
@@ -5265,15 +5268,15 @@ command to conveniently insert and align the necessary backslashes."
       (function
        (lambda ()
 	 (insert
-	  "Buffer Style: " c-indentation-style "\n\n"
-	  (if c-special-indent-hook
+	  "Buffer Style: " style "\n\n"
+	  (if hook
 	      (concat "\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
 		      "c-special-indent-hook is set to '"
-		      (format "%s" c-special-indent-hook)
+		      (format "%s" hook)
 		      ".\nPerhaps this is your problem?\n"
 		      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n")
 	    "\n")
-	  (format "c-emacs-features: %s\n" c-emacs-features)
+	  (format "c-emacs-features: %s\n" c-features)
 	  )))
       nil
       "Dear Barry,"
