@@ -1624,6 +1624,10 @@ of the expression are preserved."
       (if (or (memq (preceding-char) charlist)
 	      (<= (point) lim))
 	  (setq stop t)
+	;; catch multi-line function calls
+	(if (= (preceding-char) ?\))
+	    (forward-sexp -1))
+	;; check for compound statements
 	(back-to-indentation)
 	(setq here (point))
 	(if (looking-at "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>")
