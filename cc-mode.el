@@ -1210,7 +1210,8 @@ Returns nil if line starts inside a string, t if in a comment."
       (condition-case err
 	  (progn
 	    (backward-sexp 1)
-	    (cond ((looking-at "while\\b")
+	    (cond ((c++-in-comment-p))
+		  ((looking-at "while\\b")
 		   (setq do-level (1+ do-level)))
 		  ((looking-at "do\\b")
 		   (setq do-level (1- do-level)))
