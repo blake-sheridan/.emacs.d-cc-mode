@@ -3331,8 +3331,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(if (not equalp)
 	    (progn
 	      (forward-char 1)
-	      (skip-chars-forward " \t")))
-	(- (current-column) equalp))
+	      (skip-chars-forward " \t")
+	      (setq equalp 0)))
+	(- (current-column) equalp curcol))
       )))
 
 
