@@ -2024,7 +2024,7 @@ search."
 		   (looking-at "\\*/"))))
 	(forward-sentence (- count))
       (while (> count 0)
-	(c-beginning-of-statement-1)
+	(c-beginning-of-statement-1 lim)
 	(setq count (1- count)))
       (while (< count 0)
 	(c-end-of-statement-1)
@@ -2048,7 +2048,7 @@ search."
   (c-beginning-of-statement (- (or count 1)) lim)
   (c-keep-region-active))
 
-(defun c-beginning-of-statement-1 ()
+(defun c-beginning-of-statement-1 (&optional lim)
   ;; move to the start of the current statement, or the previous
   ;; statement if already at the beginning of one.
   (let ((firstp t)
@@ -2067,7 +2067,7 @@ search."
 	      ;; skip over any unary operators, or other special
 	      ;; characters appearing at front of identifier
 	      (save-excursion
-		(c-backward-syntactic-ws)
+		(c-backward-syntactic-ws lim)
 		(skip-chars-backward "-+!*&:.~ \t\n")
 		(if (= (preceding-char) ?\()
 		    (setq last-begin (point))))
@@ -2082,16 +2082,16 @@ search."
 	 ;; CASE 0: did we hit the error condition above?
 	 (donep)
 	 ;; CASE 1: are we in a literal?
-	 ((eq (c-in-literal) 'pound)
+	 ((eq (c-in-literal lim) 'pound)
 	  (beginning-of-line))
 	 ;; CASE 2: some other kind of literal?
-	 ((c-in-literal))
+	 ((c-in-literal lim))
 	 ;; CASE 3: are we looking at a conditional keyword?
 	 ((or (looking-at c-conditional-key)
 	      (and (= (following-char) ?\()
 		   (let ((here (point))
 			 (foundp (progn
-				   (c-backward-syntactic-ws)
+				   (c-backward-syntactic-ws lim)
 				   (forward-word -1)
 				   (looking-at c-conditional-key))))
 		     (if (not foundp)
