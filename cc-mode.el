@@ -3046,19 +3046,26 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; lineup the current arglist line with the arglist appearing just
   ;; after the containing paren which starts the arglist.
   (save-excursion
-    (let ((containing-sexp (cdr langelem))
-	  cs-curcol)
-    (goto-char containing-sexp)
-    (setq cs-curcol (current-column))
-    (or (eolp)
-	(progn
-	  (forward-char 1)
-	  (c-forward-syntactic-ws (c-point 'eol))
-	  ))
-    (if (eolp)
-	2
-      (- (current-column) cs-curcol)
-      ))))
+    (let* ((containing-sexp (cdr langelem))
+	   (cs-curcol (save-excursion (goto-char containing-sexp)
+				      (current-column))))
+      (if (save-excursion
+	    (beginning-of-line)
+	    (looking-at "[ \t]*)"))
+	  (progn (beginning-of-line)
+		 (skip-chars-forward " \t)")
+		 (forward-sexp -1)
+		 (forward-char 1)
+		 (c-forward-syntactic-ws)
+		 (- (current-column) cs-curcol))
+	(goto-char containing-sexp)
+	(or (eolp)
+	    (progn (forward-char 1)
+		   (c-forward-syntactic-ws (c-point 'eol))
+		   ))
+	(if (eolp) 2
+	  (- (current-column) cs-curcol)
+	  )))))
 
 (defun c-lineup-streamop (langelem)
   ;; lineup stream operators
