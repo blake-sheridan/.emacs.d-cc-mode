@@ -2200,26 +2200,28 @@ Syntactic whitespace is defined as lexical whitespace, C and C++ style
 comments, and preprocessor directives. Search no farther back than
 optional LIM.  If LIM is ommitted, beginning-of-defun is used."
   (save-restriction
-    (if (< lim (point))
-	(let ((parse-sexp-ignore-comments t)
-	      donep boi char
-	      (lim (or lim (c++-point 'bod))))
-	  (narrow-to-region lim (point))
-	  (modify-syntax-entry ?# "< b" c++-mode-syntax-table)
-	  (while (not donep)
-	    ;; if you're not running a patched lemacs, the new byte
-	    ;; compiler will complain about this function. ignore that
-	    (backward-syntactic-ws)
-	    (if (not (looking-at "#\\|/\\*\\|//"))
-		(forward-char 1))
-	    (setq boi (c++-point 'boi)
-		  char (char-after boi))
-	    (if (and char (= char ?#))
-		(progn (goto-char boi)
-		       (setq donep (<= (point) lim)))
-	      (setq donep t))
-	    )
-	  (modify-syntax-entry ?# "." c++-mode-syntax-table)))))
+    (let ((parse-sexp-ignore-comments t)
+	  donep boi char
+	  (lim (or lim (c++-point 'bod))))
+      (if (< lim (point))
+	  (progn
+	    (narrow-to-region lim (point))
+	    (modify-syntax-entry ?# "< b" c++-mode-syntax-table)
+	    (while (not donep)
+	      ;; if you're not running a patched lemacs, the new byte
+	      ;; compiler will complain about this function. ignore that
+	      (backward-syntactic-ws)
+	      (if (not (looking-at "#\\|/\\*\\|//"))
+		  (forward-char 1))
+	      (setq boi (c++-point 'boi)
+		    char (char-after boi))
+	      (if (and char (= char ?#))
+		  (progn (goto-char boi)
+			 (setq donep (<= (point) lim)))
+		(setq donep t))
+	      )
+	    (modify-syntax-entry ?# "." c++-mode-syntax-table)))
+      )))
 
 (if c++-emacs-is-really-fixed-p
     (fset 'c++-backward-syntactic-ws
