@@ -1241,9 +1241,8 @@ The expansion is entirely correct because it uses the C preprocessor."
    ;; since it is considered the end of //-comments.
    "[ \t\n]*" c-symbol-key)
   "Regexp describing a Java method intro.")
-(defconst c-Java-access-key
-  (concat c-protection-key)
-  "Regexp describing access specification keywords for Java.")
+(defconst c-Java-access-key nil
+  "Regexp describing access labels for Java.")
 (defconst c-Java-class-key
   (concat
    "\\(interface\\|class\\)\\s +"
