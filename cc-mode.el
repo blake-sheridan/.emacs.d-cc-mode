@@ -1156,6 +1156,9 @@ Key bindings:
 	outline-level 'c-outline-level
 	comment-column 32
 	comment-start-skip "/\\*+ *\\|// *")
+  ;; we have to do something special for c-offsets-alist so that the
+  ;; buffer local value is a deep copy of the global value
+  (setq c-offsets-alist (copy-alist c-offsets-alist))
   ;; setup the comment indent variable in a Emacs version portable way
   ;; ignore any byte compiler warnings you might get here
   (if (boundp 'comment-indent-function)
