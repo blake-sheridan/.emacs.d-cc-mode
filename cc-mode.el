@@ -1418,17 +1418,21 @@ construct, and we are on a comment-only-line, indent line as comment.
 If numeric ARG is supplied or point is inside a literal, indentation
 is inhibited."
   (interactive "P")
-  (let ((indentp (and (not arg)
-		      (or (and (memq (c-in-literal) '(c))
-			       (save-excursion
-				 (skip-chars-backward "* \t")
-				 (bolp)))
-			  (= (preceding-char) ?/))))
-	;; shut this up
-	(c-echo-syntactic-information-p nil))
-    (self-insert-command (prefix-numeric-value arg))
-    (if indentp
-	(c-indent-line))))
+  (self-insert-command (prefix-numeric-value arg))
+  ;; if we are in a literal, or if arg is given do not re-indent the
+  ;; current line, unless this star introduces a comment-only line.
+  (if (and (not arg)
+	   (memq (c-in-literal) '(c))
+	   (= (preceding-char) ?*)
+	   (= (char-after (- (point) 2)) ?/)
+	   (save-excursion
+	     (forward-char -2)
+	     (skip-chars-backward " \t")
+	     (bolp)))
+      ;; shut this up
+      (let (c-echo-syntactic-information-p)
+	(c-indent-line))
+    ))
 
 (defun c-electric-semi&comma (arg)
   "Insert a comma or semicolon.
