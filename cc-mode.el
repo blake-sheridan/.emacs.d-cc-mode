@@ -1699,8 +1699,7 @@ BOD is the beginning of the C++ definition."
 			  ;; is not an empty arglist.
 			  (save-excursion
 			    (goto-char (1+ containing-sexp))
-			    (not
-			     (looking-at "\\( \\|\t\\)*[^/\n]")))))
+			    (looking-at "[ \t]*[/\n]"))))
 		 (progn
 		   (goto-char containing-sexp)
 		   (beginning-of-line)
