@@ -890,7 +890,7 @@ Key bindings:
 	c-hungry-delete-key hungry-p)
   ;; update mode-line.  The Emacs18 solution works in 19, but I want
   ;; to be a good citizen
-  (if (eq c-emacs-features 'v19)
+  (if (memq 'v19 c-emacs-features)
       (force-mode-line-update)
     (set-buffer-modified-p (buffer-modified-p))))
 
