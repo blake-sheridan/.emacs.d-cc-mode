@@ -1902,7 +1902,7 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
 		)))
 	   val))
 	)))
-   vars))
+   stylevars))
 
 (defun c-set-style (stylename)
   "Set cc-mode variables to use one of several different indentation styles.
@@ -1911,7 +1911,7 @@ styles described in the variable `c-style-alist'.  See that variable
 for details of setting up styles."
   (interactive (list (completing-read "Indentation style? "
                                       c-style-alist nil t)))
-  (let ((vars (cdr (assoc style c-style-alist)))
+  (let ((vars (cdr (assoc stylename c-style-alist)))
 	(default (assoc "Default" c-style-alist)))
     (or vars (error "Invalid indentation style `%s'" style))
     (or default (error "No \"Default\" style found!"))
