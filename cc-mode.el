@@ -1345,10 +1345,23 @@ value of `c-cleanup-list'."
 	    arg
 	    (not (looking-at "[ \t]*$")))
 	(c-insert-special-chars arg)
+      ;; insert the colon, then do any specified cleanups
+      (self-insert-command (prefix-numeric-value arg))
+      (let ((pos (- (point-max) (point)))
+	    (here (point)))
+	(if (and c-auto-newline
+		 (memq 'scope-operator c-cleanup-list)
+		 (= (preceding-char) ?:)
+		 (progn
+		   (forward-char -1)
+		   (skip-chars-backward " \t\n")
+		   (= (preceding-char) ?:))
+		 (not (c-in-literal))
+		 (not (= (char-after (- (point) 2)) ?:)))
+	    (delete-region (point) (1- here)))
+	(goto-char (- (point-max) pos)))
       ;; lets do some special stuff with the colon character
-      (setq semantics (progn
-			(self-insert-command (prefix-numeric-value arg))
-			(c-guess-basic-semantics bod))
+      (setq semantics (c-guess-basic-semantics bod)
 	    ;; some language elements can only be determined by
 	    ;; checking the following line.  Lets first look for ones
 	    ;; that can be found when looking on the line with the
@@ -1385,20 +1398,6 @@ value of `c-cleanup-list'."
 	  (progn
 	    (newline)
 	    (c-indent-via-language-element bod)))
-      ;; we may have to clean up double colons
-      (let ((pos (- (point-max) (point)))
-	    (here (point)))
-	(if (and c-auto-newline
-		 (memq 'scope-operator c-cleanup-list)
-		 (= (preceding-char) ?:)
-		 (progn
-		   (forward-char -1)
-		   (skip-chars-backward " \t\n")
-		   (= (preceding-char) ?:))
-		 (not (c-in-literal))
-		 (not (= (char-after (- (point) 2)) ?:)))
-	    (delete-region (point) (1- here)))
-	(goto-char (- (point-max) pos)))
       )))
 
 (defun c-read-offset (langelem)
