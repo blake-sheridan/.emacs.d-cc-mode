@@ -37,11 +37,6 @@
 ;; (require 'cc-compat)
 ;; (c-set-style "BOCM")
 
-;; LCD Archive Entry:
-;; cc-compat.el|Barry A. Warsaw|cc-mode-help@merlin.cnri.reston.va.us
-;; |cc-mode compatibility with c-mode.el confusion
-;; |$Date$|$Revision$|
-
 ;;; Code:
 
 
