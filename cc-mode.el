@@ -805,7 +805,7 @@ ARG is supplied, indentation is inhibited."
 		      (not (cc-in-literal)))))
     (self-insert-command (prefix-numeric-value arg))
     (if indentp
-	(cc-indent-line))))
+	(cc-indent-via-language-element))))
 
 (defun cc-electric-star (arg)
   "Insert a start, possibly indenting line as a C block comment.
@@ -819,7 +819,7 @@ If numeric ARG is supplied, indentation is inhibited."
 			  (= (preceding-char) ?/)))))
     (self-insert-command (prefix-numeric-value arg))
     (if indentp
-	(cc-indent-line))))
+	(cc-indent-via-language-element))))
 
 (defun cc-electric-semi&comma (arg)
   "Insert a comma or semicolon, possibly re-indenting line.
