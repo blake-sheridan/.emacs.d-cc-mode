@@ -1846,7 +1846,7 @@ value of `c-cleanup-list'."
 	    ;; colon
 	    newlines
 	    (and c-auto-newline
-		 (or (c-lookup-lists '(case-label 'label 'access-label)
+		 (or (c-lookup-lists '(case-label label access-label)
 				     syntax c-hanging-colons-alist)
 		     (c-lookup-lists '(member-init-intro inher-intro)
 				     (prog2
