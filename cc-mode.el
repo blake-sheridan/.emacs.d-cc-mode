@@ -1828,8 +1828,12 @@ BOD is the beginning of the C++ definition."
 				 ;; remove some nested inclass indentation
 				 (* (max 0 (1- inclass-depth)) c-indent-level)
 				 ))
-		     ;; member init, so add offset
-		     c++-member-init-indent)
+		     ;; member init, so add offset. add additional
+		     ;; offset if looking at line with just a member
+		     ;; init colon
+		     (+ c++-member-init-indent
+			(if (looking-at ":[ \t]*$")
+			    (or c++-continued-member-init-offset 0) 0)))
 		 (if (or (= (preceding-char) ?})
 			 (= (preceding-char) ?\))
 			 (save-excursion
