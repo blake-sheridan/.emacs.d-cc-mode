@@ -715,24 +715,19 @@ if it is embedded in an expression."
 
 (defun c++-in-comment-p ()
   "Return t if in a C or C++ style comment as defined by mode's syntax."
-  ;; hack to work around emacs comment bug
   (save-excursion
-    (let ((here (point))
-	  (bod (progn (beginning-of-defun) (point)))
-	  state)
-      (setq state (parse-partial-sexp bod here 0))
-      (nth 4 state))))
+    (let ((here (point)))
+      (beginning-of-defun)
+      (nth 4 (parse-partial-sexp (point) here 0)))))
 
 (defun c++-in-open-string-p ()
   "Return non-nil if in an open string as defined by mode's syntax."
   ;; temporarily change tick to string syntax, just for this check
   (modify-syntax-entry ?\' "\"" c++-mode-syntax-table)
   (save-excursion
-    (let ((here (point))
-	  (bod (progn (beginning-of-defun) (point)))
-	  state string-p)
-      (setq state (parse-partial-sexp bod here 0))
-      (setq string-p (nth 3 state))
+    (let* ((here (point))
+	   (string-p (progn (beginning-of-defun)
+			    (nth 3 (parse-partial-sexp (point) here 0)))))
       ;; change tick back to punctuation syntax
       (modify-syntax-entry ?\' "." c++-mode-syntax-table)
       string-p)))
