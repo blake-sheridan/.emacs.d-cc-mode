@@ -34,16 +34,18 @@
 ;; Objective-C code. It is intended to be a replacement for c-mode.el
 ;; (a.k.a. BOCM -- Boring Old C-Mode), and c++-mode.el, both of which
 ;; are ancestors of this file.  A number of important improvements
-;; have been made, briefly: complete K&R C, ANSI C, and C++ support
-;; with consistent indentation across all modes, more intuitive
-;; indentation controlling variables, compatibility across all known
-;; Emacsen, nice new features, and tons of bug fixes.  This package is
-;; called "cc-mode" to distinguish it from its ancestors, but there
-;; really is no top-level cc-mode.
+;; have been made, briefly: complete K&R C, ANSI C, `ARM' C++, and
+;; Objective-C support with consistent indentation across all modes,
+;; more intuitive indentation controlling variables, compatibility
+;; across all known Emacsen, nice new features, and tons of bug fixes.
+;; This package is called "cc-mode" to distinguish it from its
+;; ancestors, but there really is no top-level cc-mode.
 
-;; Details on how to use cc-mode will soon be contained in an
-;; accompanying texinfo manual.  Volunteers to help finish this
-;; manual would be greatly appreciated!
+;; Details on how to use cc-mode will some day be contained in an
+;; accompanying texinfo manual.  Volunteers to help finish this manual
+;; would be greatly appreciated!  Contact me at the address above if
+;; you'd like to volunteer. Until the manual is finished, an
+;; accompanying README is the only documentation available.
 
 ;; To submit bug reports, hit "C-c C-b", and please try to include a
 ;; code sample and exact recipe so I can reproduce your problem.  If
