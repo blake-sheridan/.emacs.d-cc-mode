@@ -1474,8 +1474,16 @@ search."
 	    (if (not (looking-at c-label-key))
 		(setq last-begin (point)
 		      first nil)))
-	  (if (not (looking-at c-conditional-key))
-	      (goto-char last-begin)))
+	  (cond
+	   ;; CASE 1: we're in the middle of an else-if clause
+	   ((save-excursion
+	      (c-safe (forward-sexp -1))
+	      (looking-at "\\<else\\>[ \t]+\\<if\\>"))
+	    (forward-sexp -1))
+	   ;; CASE 2: we're looking at any other conditional clause
+	   ((looking-at c-conditional-key))
+	   ;; CASE 3: anything else
+	   (t (goto-char last-begin))))
       ;; error for condition-case
       (error (if first
 		 (backward-up-list 1)
@@ -2550,9 +2558,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (goto-char placeholder)
 	      (and (looking-at c-conditional-key)
 		   (c-safe (progn (forward-sexp
-				   ;; do and else aren't followed by parens
-				   (if (looking-at "\\<\\(do\\|else\\)\\>")
-				       1 2))
+				   ;; else if()
+				   (if (looking-at "\\<else\\>[ \t]+\\<if\\>")
+				       3
+				     ;; do and else aren't followed by parens
+				     (if (looking-at "\\<\\(do\\|else\\)\\>")
+					 1 2)))
 				  t))
 		   (progn (c-forward-syntactic-ws)
 			  (>= (point) indent-point))))
