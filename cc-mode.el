@@ -1966,7 +1966,7 @@ search."
   ;; move to the start of the current statement, or the previous
   ;; statement if already at the beginning of one.
   (let ((firstp t)
-	donep literal-cache
+	donep c-in-literal-cache
 	(last-begin (point)))
     (while (not donep)
       ;; stop at beginning of buffer
@@ -1994,10 +1994,10 @@ search."
 	 ;; CASE 0: did we hit the error condition above?
 	 (donep)
 	 ;; CASE 1: are we in a literal?
-	 ((eq (setq literal-cache (c-in-literal)) 'pound)
+	 ((eq (c-in-literal) 'pound)
 	  (beginning-of-line))
 	 ;; CASE 2: some other kind of literal?
-	 (literal-cache)
+	 ((c-in-literal))
 	 ;; CASE 3: is this the first time we're checking?
 	 (firstp (setq firstp nil
 		       last-begin (point)))
@@ -2020,13 +2020,14 @@ search."
 	  (setq last-begin (point)
 		donep t))
 	 ;; CASE 5: have we crossed a statement barrier?
-	 ((let (crossedp)
+	 ((let ((lim (point))
+		crossedp)
 	    (save-excursion
 	      (while (and (not crossedp)
 			  (< (point) last-begin))
 		(skip-chars-forward "^;{}" last-begin)
 		(if (and (memq (following-char) '(?\; ?{ ?}))
-			 (not (c-in-literal)))
+			 (not (c-in-literal lim)))
 		    (setq crossedp t
 			  donep t)
 		  (forward-char 1))))
