@@ -3549,7 +3549,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-syntax 'member-init-cont (point)))
 	     ;; CASE 5D.3: perhaps a multiple inheritance line?
 	     ((looking-at c-inher-key)
-	      (c-add-syntax 'inher-cont-1 (c-point 'boi)))
+	      (c-add-syntax 'inher-cont (c-point 'boi)))
 	     ;; CASE 5D.4: perhaps a template list continuation?
 	     ((save-excursion
 		(skip-chars-backward "^<" lim)
