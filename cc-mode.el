@@ -1236,7 +1236,8 @@ enclosing class, or the depth of class nesting at point."
 	(while (and (setq foundp (re-search-backward
 				  "}\\|\\<\\(class\\|struct\\)\\>"
 				  (point-min) t))
-		    (c++-in-literal)))
+		    (or (c++-in-literal)
+			(c++-in-parens-p))))
 	(if (= (following-char) ?})
 	    nil
 	  (setq state (c++-parse-state containing-sexp))
