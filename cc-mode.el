@@ -3100,6 +3100,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; statement if we're inside a brace list, otherwise return nil.
   ;; CONTAINING-SEXP is the buffer pos of the innermost containing
   ;; paren. BRACE-STATE is the remainder of the state of enclosing braces
+  ;;
+  ;; N.B.: This algorithm can potentially get confused by cpp macros
+  ;; places in inconvenient locations.  Its a trade-off we make for
+  ;; speed.
   (or
    ;; this will pick up enum lists
    (condition-case ()
