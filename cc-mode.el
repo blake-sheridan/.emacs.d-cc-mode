@@ -2519,7 +2519,7 @@ Use \\[c++-submit-bug-report] to submit a bug report."
     (if c++-special-indent-hook
 	(insert "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
 		"c++-special-indent-hook is set to '"
-		(symbol-name c++-special-indent-hook)
+		(format "%s" c++-special-indent-hook)
 		".\nPerhaps this is your problem?\n"
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n"))
     (insert (emacs-version) "\n")
