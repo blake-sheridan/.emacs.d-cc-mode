@@ -2165,7 +2165,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 ;; is used as the backward limit of the search.  If omitted, or nil,
 ;; `beginning-of-defun' is used."
 
-;; This is for all Emacsen supporting 8-bit syntax (Lucid 19, patched Emacs 18)
+;; This is for all v19 Emacsen supporting either 1-bit or 8-bit syntax
 (defun c-in-literal (&optional lim)
   ;; Determine if point is in a C++ literal
   (save-excursion
@@ -2181,27 +2181,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (looking-at "[ \t]*#"))
 	'pound)
        (t nil)))))
-
-;; This is for all 1-bit emacsen (FSF Emacs 19)
-(defun c-1bit-il (&optional lim)
-  ;; Determine if point is in a C++ literal
-  (save-excursion
-    (let* ((lim  (or lim (c-point 'bod)))
-	   (here (point))
-	   (state (parse-partial-sexp lim (point))))
-      (cond
-       ((nth 3 state) 'string)
-       ((nth 4 state) (if (nth 7 state) 'c++ 'c))
-       ((progn
-	  (goto-char here)
-	  (beginning-of-line)
-	  (looking-at "[ \t]*#"))
-	'pound)
-       (t nil)))))
-
-;; FSF Emacs 19 does this differently than Lucid 19
-(if (memq '1-bit c-emacs-features)
-    (fset 'c-in-literal 'c-1bit-il))
 
 
 ;; utilities for moving and querying around semantic elements
