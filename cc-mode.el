@@ -4617,7 +4617,7 @@ it trailing backslashes are removed."
 		     (lambda (var)
 		       (let ((val (symbol-value var)))
 			 (cons var (if (atom val) val
-				     (copy-alist val)))
+				     (copy-tree val)))
 			 )))
 		    '(c-backslash-column
 		      c-basic-offset
