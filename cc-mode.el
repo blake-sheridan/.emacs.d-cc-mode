@@ -4193,7 +4193,8 @@ it trailing backslashes are removed."
   "Submit via mail a bug report on cc-mode."
   (interactive)
   ;; load in reporter
-  (let ((reporter-prompt-for-summary-p t))
+  (let ((reporter-prompt-for-summary-p t)
+	(reporter-dont-compact-list '(c-offsets-alist)))
     (and
      (y-or-n-p "Do you want to submit a report on cc-mode? ")
      (require 'reporter)
