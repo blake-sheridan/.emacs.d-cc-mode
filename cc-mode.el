@@ -258,6 +258,12 @@ from their c-mode cousins.
     Initial state of auto/hungry mode when a C++ buffer is first visited.
  c++-auto-hungry-toggle
     Enable/disable toggling of auto/hungry states.
+ c++-mailer
+    Mailer to use when sending bug reports.
+ c++-mode-help-address
+    Address to send bug report via email.
+ c++-default-macroize-column
+    Column to insert backslashes when macroizing a region.
 
 Auto-newlining is no longer an all or nothing proposition. To be
 specific I don't believe it is possible to implement a perfect
@@ -300,7 +306,12 @@ Settings for K&R, BSD, and Stroustrup indentation styles are
   c++-friend-offset                       0
 
 Turning on C++ mode calls the value of the variable c++-mode-hook with
-no args, if that value is non-nil."
+no args, if that value is non-nil.
+
+Report bugs by entering \"\\[c++-submit-bug-report]\". This
+automatically sets up a mail buffer with version information already
+added. You just need to add a description of the problem and send the
+message."
   (interactive)
   (kill-all-local-variables)
   (use-local-map c++-mode-map)
