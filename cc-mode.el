@@ -1975,48 +1975,48 @@ Syntactic whitespace is defined as lexical whitespace, C and C++ style
 comments, and preprocessor directives. Search no farther back than
 optional LIM.  If LIM is ommitted, beginning-of-defun is used."
   (let ((lim (or lim (c++-point 'bod)))
-	literal stop skip)
+	literal stop)
     (if (and c++-backscan-limit
 	     (> (- (point) lim) c++-backscan-limit))
 	(setq lim (- (point) c++-backscan-limit)))
     (while (not stop)
       (skip-chars-backward " \t\n\r\f" lim)
-      (setq literal (c++-in-literal lim))
-      (cond
-       ;; in a c++ comment
-       ((eq literal 'c++)
-	(setq skip t)
-	(while skip
-	  (skip-chars-backward "^/" lim)
-	  (skip-chars-backward "/" lim)
-	  (setq skip (not (and (= (following-char) ?/)
-			       (= (char-after (1+ (point))) ?/))))))
-       ;; in a c comment block
-       ((eq literal 'c)
-	(setq skip t)
-	(while skip
-	  (skip-chars-backward "^*" lim)
-	  (skip-chars-backward "*" lim)
-	  (setq skip (not (and (= (following-char) ?*)
-			       (= (preceding-char) ?/)))))
-	(forward-char -1))
-       ;; in a preprocessor directive
-       ((eq literal 'pound)
-	(beginning-of-line)
-	(setq stop (<= (point) lim)))
-       ;; looking at end of a c block comment
-       ((and (= (preceding-char) ?/)
-	     (= (char-after (- (point) 2)) ?*))
-	(forward-char -2)
-	(setq skip t)
-	(while skip
-	  (skip-chars-backward "^*" lim)
-	  (skip-chars-backward "*" lim)
-	  (setq skip (not (and (= (following-char) ?*)
-			       (= (preceding-char) ?/)))))
-	(forward-char -1))
-       ;; none of the above
-       (t (setq stop t))))))
+      ;; c++ comment
+      (if (eq (setq literal (c++-in-literal lim)) 'c++)
+	  (let ((skip t))
+	    (while skip
+	      (skip-chars-backward "^/" lim)
+	      (skip-chars-backward "/" lim)
+	      (setq skip (not (and (= (following-char) ?/)
+				   (= (char-after (1+ (point))) ?/))))
+	      ))
+	;; c comment
+	(if (eq literal 'c)
+	    (let ((skip t))
+	      (while skip
+		(skip-chars-backward "^*" lim)
+		(skip-chars-backward "*" lim)
+		(setq skip (not (and (= (following-char) ?*)
+				     (= (preceding-char) ?/)))))
+	      (forward-char -1))
+	  ;; preprocessor directive
+	  (if (eq literal 'pound)
+	      (progn
+		(beginning-of-line)
+		(setq stop (<= (point) lim)))
+	    ;; just outside of c block
+	    (if (and (= (preceding-char) ?/)
+		     (= (char-after (- (point) 2)) ?*))
+		(let ((skip t))
+		  (forward-char -2)
+		  (while skip
+		    (skip-chars-backward "^*" lim)
+		    (skip-chars-backward "*" lim)
+		    (setq skip (not (and (= (following-char) ?*)
+					 (= (preceding-char) ?/)))))
+		  (forward-char -1))
+	      ;; none of the above
+	      (setq stop t))))))))
 
 (defun c++-backward-to-start-of-do (&optional limit)
   "Move to the start of the last ``unbalanced'' do."
