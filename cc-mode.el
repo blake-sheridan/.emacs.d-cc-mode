@@ -2784,6 +2784,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; CASE 8C: iostream insertion or extraction operator
 	   ((looking-at "<<\\|>>")
 	    (goto-char placeholder)
+	    (if (looking-at c-conditional-key)
+		(c-skip-conditional))
 	    (while (and (re-search-forward "<<\\|>>" indent-point 'move)
 			(c-in-literal)))
 	    ;; if we ended up at indent-point, then the first streamop
