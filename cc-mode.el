@@ -175,6 +175,12 @@ Nil is synonymous for 'none and t is synonymous for 'auto-hungry.")
 (defconst c++-mode-help-address "c++-mode-help@anthem.nlm.nih.gov"
   "Address accepting submission of bug reports.")
 
+(defvar c++-relative-offset-p t
+  "*Control the calculation for indentation.
+When non-nil (the default), indentation is calculated relative to the
+first statement in the block.  When nil, the indentation is calculated
+without regard to how the first statement is indented.")
+
 (defvar c++-untame-characters '(?\( ?\) ?\' ?\{ ?\} ?\[ ?\])
   "*Utilize a backslashing workaround of an emacs scan-lists bug.
 If non-nil, this variable should contain a list of characters which
@@ -285,6 +291,11 @@ from their c-mode cousins.
     Mailer to use when sending bug reports.
  c++-mode-help-address
     Address to send bug report via email.
+ c++-relative-offset-p
+    Control the calculation for indentation. When non-nil (the
+    default), indentation is calculated relative to the first
+    statement in the block.  When nil, the indentation is calculated
+    without regard to how the first statement is indented. 
  c++-default-macroize-column
     Column to insert backslashes when macroizing a region.
  c++-untame-characters
@@ -447,7 +458,7 @@ Optional argument has the following meanings when supplied:
      positive number
           turn on both auto-newline and hungry-delete-key.
      zero
-          toggle both states regardless of c++auto-hungry-toggle-p."
+          toggle both states regardless of c++-auto-hungry-toggle-p."
   (interactive "P")
   (let* ((numarg (prefix-numeric-value arg))
 	 (apl (list 'auto-only   'auto-hungry t))
@@ -1124,19 +1135,23 @@ Returns nil if line starts inside a string, t if in a comment."
 		   (goto-char containing-sexp)
 		   ;; Is line first statement after an open-brace?
 		   (or
-		    ;; If no, find that first statement and indent like it.
-		    (save-excursion
-		      (forward-char 1)
-		      (while (progn (skip-chars-forward " \t\n")
-				    (looking-at
-				     (concat
-				      "#\\|/\\*\\|//"
-				      "\\|\\(case\\|default\\)[ \t]"
-				      "\\|[a-zA-Z0-9_$]*:[^:]"
-				      "\\|friend[ \t]"
-				      "\\(class\\|struct\\)[ \t]")))
-			;; Skip over comments and labels following openbrace.
-			(cond ((= (following-char) ?\#)
+		    (and c++-relative-offset-p
+			 ;; If no, find that first statement and
+			 ;; indent like it.
+			 (save-excursion
+			   (forward-char 1)
+			   (while (progn (skip-chars-forward " \t\n")
+					 (looking-at
+					  (concat
+					   "#\\|/\\*\\|//"
+					   "\\|\\(case\\|default\\)[ \t]"
+					   "\\|[a-zA-Z0-9_$]*:[^:]"
+					   "\\|friend[ \t]"
+					   "\\(class\\|struct\\)[ \t]")))
+			     ;; Skip over comments and labels
+			     ;; following openbrace.
+			     (cond
+			      ((= (following-char) ?\#)
 			       (forward-line 1))
 			      ((looking-at "/\\*")
 			       (search-forward "*/" nil 'move))
@@ -1147,10 +1162,10 @@ Returns nil if line starts inside a string, t if in a comment."
 			       (forward-line 1))
 			      (t
 			       (re-search-forward ":[^:]" nil 'move))))
-		      ;; The first following code counts
-		      ;; if it is before the line we want to indent.
-		      (and (< (point) indent-point)
-			   (current-column)))
+			   ;; The first following code counts
+			   ;; if it is before the line we want to indent.
+			   (and (< (point) indent-point)
+				(current-column))))
 		    ;; If no previous statement, indent it relative to
 		    ;; line brace is on.  For open brace in column
 		    ;; zero, don't let statement start there too.  If
@@ -1693,6 +1708,7 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 		       'c++-defun-header-strong-struct-equivs
 		       'c++-tab-always-indent
 		       'c++-untame-characters
+		       'c++-relative-offset-p
 		       'c-indent-level
 		       'c-continued-statement-offset
 		       'c-continued-brace-offset
