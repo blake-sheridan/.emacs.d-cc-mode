@@ -455,10 +455,10 @@ would see:
 This indicates that the @samp{int} line is the first statement in a top
 level function block, and is indented relative to buffer position 29,
 which is the brace just after the function header.
-@group
 
 Here's another example:
 @example 
+@group
 
 Example 2:
 
@@ -471,9 +471,10 @@ Example 2:
   7:     return( val );
   8: @}
 
-@end example
 @end group
+@end example
 
+@noindent
 Hitting @kbd{C-c C-s} on line 4 gives us:
 @example
 
