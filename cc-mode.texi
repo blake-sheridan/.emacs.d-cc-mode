@@ -149,7 +149,7 @@ USA.
 
 This manual was generated from $Revision$ of $RCSfile$, which can be
 downloaded from
-@url{http://cc-mode.sf.net/viewcvs.py/cc-mode/cc-mode/cc-mode.texi}.
+@url{http://cvs.sf.net/viewcvs.py/cc-mode/cc-mode/cc-mode.texi}.
 @end titlepage
 
 @comment !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
