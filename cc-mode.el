@@ -2854,21 +2854,30 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
      (if (looking-at "\\<\\(do\\|else\\)\\>")
 	 1 2))))
 
-(defun c-skip-case-statement-forward (&optional lim)
+(defun c-skip-case-statement-forward (state &optional lim)
   ;; skip forward over case/default bodies, with optional maximal
   ;; limit. if no next case body is found, nil is returned and point
   ;; is not moved
   (let ((lim (or lim (point-max)))
 	(here (point))
-	donep foundp)
+	donep foundp bufpos
+	(balanced (car state)))
+    ;; search until we've passed the limit, or we've found our match
     (while (and (< (point) lim)
 		(not donep))
+      ;; see if we can find a case statement, not in a literal
       (if (and (re-search-forward c-switch-label-key lim 'move)
-	       (save-match-data
-		 (not (c-in-literal)))
-	       (/= (match-beginning 0) here))
-	  (progn
-	    (goto-char (match-beginning 0))
+	       (progn (setq bufpos (match-beginning 0)) t)
+	       (not (c-in-literal))
+	       (/= bufpos here))
+	  ;; if we crossed into a balanced sexp, we know the case is
+	  ;; not part of our switch statement, so just bound over the
+	  ;; sexp and keep looking.
+	  (if (and (consp balanced)
+		   (> bufpos (car balanced))
+		   (< bufpos (cdr balanced)))
+	      (goto-char (cdr balanced))
+	    (goto-char bufpos)
 	    (setq donep t
 		  foundp t))))
     (if (not foundp)
@@ -3058,7 +3067,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (beginning-of-line)
       (let* ((indent-point (point))
 	     (case-fold-search nil)
-	     (state (c-parse-state))
+	     (fullstate (c-parse-state))
+	     (state fullstate)
 	     (in-method-intro-p (and (eq major-mode 'objc-mode)
 				     (looking-at c-ObjC-method-key)))
 	     literal containing-sexp char-before-ip char-after-ip lim
@@ -3604,7 +3614,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		    ;; we also want to skip over the body of the
 		    ;; case/switch statement if that doesn't put us at
 		    ;; after the indent-point
-		    (while (c-skip-case-statement-forward indent-point))))
+		    (while (c-skip-case-statement-forward fullstate
+			    indent-point))))
 	      (forward-line 1)
 	      (c-forward-syntactic-ws indent-point))
 	    (cond
