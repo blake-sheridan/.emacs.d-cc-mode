@@ -1314,7 +1314,7 @@ exist."
      (list langelem (cond
 		     ((string-equal "+" offset) '+)
 		     ((string-equal "-" offset) '-)
-		     ((string-match "^[0-9]+$" offset)
+		     ((string-match "^-?[0-9]+$" offset)
 		      (string-to-int offset))
 		     ;; must be a function symbol
 		     (t (intern offset))
