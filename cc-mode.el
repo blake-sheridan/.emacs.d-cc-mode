@@ -159,11 +159,7 @@ reported and the semantic symbol is ignored.")
 Do not change this constant!  See the variable `c-offsets-alist' for
 more information.")
 
-;; we set this later on because, 1. it must be a copy of
-;; c-offsets-alist-default, 2. copy-sequence is broken under FSF Emacs
-;; 18 and 19 for cons cells, and c-copy-sequence isn't defined yet.
-;; See end of file
-(defvar c-offsets-alist nil
+(defvar c-offsets-alist (copy-alist c-offsets-alist-default)
   "*Association list of syntactic element symbols and indentation offsets.
 As described below, each cons cell in this list has the form:
 
@@ -1362,17 +1358,6 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
 	(error "%s is not a valid syntactic symbol." symbol))))
   (c-keep-region-active))
 
-(defun c-copy-sequence (sequence)
-  ;; copies SEQUENCE, but works when the sequence is a cons cell
-  ;; we can't just use (mapcar 'copy-sequence c-offsets-alist-default)
-  ;; because it won't copy cons cells in FSF Emacs 19 or 18.
-  (mapcar
-   (if (memq 'Lucid c-emacs-features) 'copy-sequence
-     (function
-      (lambda (conscell)
-	(cons (car conscell) (cdr conscell)))))
-   sequence))
-
 (defun c-set-style (style &optional global)
   "Set cc-mode variables to use one of several different indentation styles.
 The arguments are a string representing the desired style and a flag
@@ -1398,7 +1383,7 @@ flag comes from the prefix argument.  The styles are chosen from the
 	  (if (not (eq var 'c-offsets-alist))
 	      (set var val)
 	    ;; reset c-offsets-alist to the default value first
-	    (setq c-offsets-alist (c-copy-sequence c-offsets-alist-default))
+	    (setq c-offsets-alist (copy-alist c-offsets-alist-default))
 	    ;; now set the langelems that are different
 	    (mapcar
 	     (function
@@ -3385,10 +3370,6 @@ region."
 	 (lambda (elt)
 	   (make-obsolete-variable (car elt) (cdr elt))))
 	vars)))
-
-;; wish we could do this earlier
-(or c-offsets-alist
-    (setq c-offsets-alist (c-copy-sequence c-offsets-alist-default)))
 
 (provide 'cc-mode)
 ;;; cc-mode.el ends here
