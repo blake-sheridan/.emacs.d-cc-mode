@@ -1405,42 +1405,50 @@ BOD is the beginning of the C++ definition."
 		 ;; previous line of the statement.
 		 (progn
 		   (c-backward-to-start-of-continued-exp containing-sexp)
-                   (+ (current-column)
-                      ;; j.peck hack to prevent repeated continued indentation:
-                      (if (save-excursion
-                            (beginning-of-line 1)
-                            (c++-backward-to-noncomment containing-sexp)
-                            (memq (preceding-char) '(nil ?\, ?\; ?} ?: ?\{)))
-                          c-continued-statement-offset
-			;; the following statements *do* indent even
-			;; for single statements (are there others?)
-			(if (looking-at
-			     "\\(do\\|else\\|for\\|if\\|while\\)\\b")
+		   ;; take care of << and >> while in streams
+		   (if (save-excursion
+			 (goto-char indent-point)
+			 (looking-at "[ \t]*\\(<<\\|>>\\)"))
+		       (progn (skip-chars-forward "^><")
+			      (current-column))
+		     (+ (current-column)
+			;; j.peck hack to prevent repeated continued
+			;; indentation:
+			(if (save-excursion
+			      (beginning-of-line 1)
+			      (c++-backward-to-noncomment containing-sexp)
+			      (memq (preceding-char)
+				    '(nil ?\, ?\; ?} ?: ?\{)))
 			    c-continued-statement-offset
-			  ;; else may be a continued statement inside
-			  ;; a simple for/else/while/if/do loop
-			  (beginning-of-line 1)
-			  (forward-char -1)
-			  (c-backward-to-start-of-continued-exp
-			   containing-sexp)
+			  ;; the following statements *do* indent even
+			  ;; for single statements (are there others?)
 			  (if (looking-at
 			       "\\(do\\|else\\|for\\|if\\|while\\)\\b")
 			      c-continued-statement-offset
-			    0)))
-                      ;; j.peck  [8/13/91]
-		      ;; j.peck hack replaced this line:
-		      ;; \(+ c-continued-statement-offset (current-column)
-		      ;; Add continued-brace-offset? [weikart]
-		      (save-excursion
-			(goto-char indent-point)
-			(skip-chars-forward " \t")
-			(cond ((= (following-char) ?\{)
-			       c-continued-brace-offset)
-			      ((and (= (following-char) ?\})
-				    (progn (forward-char 1)
-					   (c++-at-top-level-p)))
-			       (- c-continued-statement-offset))
-			      (t 0)))))
+			    ;; else may be a continued statement inside
+			    ;; a simple for/else/while/if/do loop
+			    (beginning-of-line 1)
+			    (forward-char -1)
+			    (c-backward-to-start-of-continued-exp
+			     containing-sexp)
+			    (if (looking-at
+				 "\\(do\\|else\\|for\\|if\\|while\\)\\b")
+				c-continued-statement-offset
+			      0)))
+			;; j.peck  [8/13/91]
+			;; j.peck hack replaced this line:
+			;; \(+ c-continued-statement-offset (current-column)
+			;; Add continued-brace-offset? [weikart]
+			(save-excursion
+			  (goto-char indent-point)
+			  (skip-chars-forward " \t")
+			  (cond ((= (following-char) ?\{)
+				 c-continued-brace-offset)
+				((and (= (following-char) ?\})
+				      (progn (forward-char 1)
+					     (c++-at-top-level-p)))
+				 (- c-continued-statement-offset))
+				(t 0))))))
 	       ;; This line may start a new statement, or it could
 	       ;; represent the while closure of a do/while construct
 	       (if (save-excursion
