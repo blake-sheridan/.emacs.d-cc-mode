@@ -98,7 +98,7 @@
 
 ;; LCD Archive Entry:
 ;; cc-mode.el|Barry A. Warsaw|cc-mode-help@anthem.nlm.nih.gov
-;; |Major mode for editing C++, and ANSI/K&R C code
+;; |Major mode for editing C++, Objective-C, and ANSI/K&R C code
 ;; |$Date$|$Revision$|
 
 ;;; Code:
