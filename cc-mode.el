@@ -4918,13 +4918,24 @@ With universal argument, inserts the analysis as a comment on that line."
 (defun c-lineup-C-comments (langelem)
   ;; line up C block comment continuation lines
   (save-excursion
-    (let ((stars (progn (back-to-indentation)
+    (let ((here (point))
+	  (stars (progn (back-to-indentation)
 			(skip-chars-forward "*")))
 	  (cs-curcol (progn (goto-char (cdr langelem))
 			    (current-column))))
       (back-to-indentation)
       (if (not (re-search-forward "/[*]+" (c-point 'eol) t))
-	  (- (current-column) cs-curcol)
+	  (progn
+	    (if (not (looking-at "[*]+"))
+		(progn
+		  ;; we now have to figure out where this comment begins.
+		  (goto-char here)
+		  (back-to-indentation)
+		  (if (re-search-forward "[*]+/" (c-point 'eol) t)
+		      (forward-comment -1)
+		    (goto-char (cdr langelem))
+		    (back-to-indentation))))
+	    (- (current-column) cs-curcol))
 	(if (zerop stars)
 	    (skip-chars-forward " \t"))
 	(- (current-column) stars cs-curcol))
