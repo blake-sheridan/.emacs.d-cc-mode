@@ -1752,20 +1752,20 @@ search."
 
 (defun c-beginning-of-statement-1 ()
   (let ((last-begin (point))
+	in-literal
 	(first t))
     (condition-case ()
 	(progn
-	  (while (and (progn (c-backward-syntactic-ws) t)
-		      (not (bobp))
+	  (while (and (not (bobp))
 		      (progn
 			(backward-sexp 1)
 			(or first
 			    (not (re-search-forward "[;{}]" last-begin t))
 			    ))
-		      (not (or (c-in-literal)
+		      (not (or (setq in-literal (c-in-literal))
 			       (looking-at c-conditional-key)))
 		      )
-	    (if (and (not (c-in-literal))
+	    (if (and (not in-literal)
 		     (not (looking-at c-switch-label-key))
 		     (not (looking-at c-label-key)))
 		(setq last-begin (point)
