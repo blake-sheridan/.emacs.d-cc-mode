@@ -4427,7 +4427,7 @@ ACTION associated with `block-close' syntax."
 	       (setq langelem (assq 'block-close c-syntactic-context))
 	       (progn (goto-char (cdr langelem))
 		      (if (= (following-char) ?{)
-			  (forward-sexp -1))
+			  (c-safe (forward-sexp -1)))
 		      (looking-at "\\<do\\>[^_]")))
 	  '(before)
 	'(before after)))))
