@@ -225,7 +225,6 @@ styles in a single mode.")
   (if c++-emacs-is-really-fixed-p
       ;; these entries will only work with the latest patches to lemacs
       (progn
-	(modify-syntax-entry ?# "< b"     c++-mode-syntax-table)
 	(modify-syntax-entry ?/  ". 1456" c++-mode-syntax-table)
 	(modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
 	(modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
@@ -254,7 +253,6 @@ styles in a single mode.")
   (if c++-emacs-is-really-fixed-p
       ;; these entries will only work with the latest patches to lemacs
       (progn
-	(modify-syntax-entry ?# "< b"   c++-c-mode-syntax-table)
 	(modify-syntax-entry ?\n "> b"  c++-c-mode-syntax-table)
 	(modify-syntax-entry ?/  ". 14" c++-c-mode-syntax-table)
 	(modify-syntax-entry ?*  ". 23" c++-c-mode-syntax-table)
@@ -2185,13 +2183,22 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	      (setq stop t))))))))
 
 (defun c++-fast-backward-syntactic-ws (&optional lim)
-  ;; we can throw away lim since its not really necessary
-  (let ((parse-sexp-ignore-comments t))
-    ;; if you're not running a patched lemacs, the new byte compiler
-    ;; will complain about this function. ignore the complaint
-    (backward-syntactic-ws)
-    (if (not (bobp))
-	(forward-char 1))))
+  (save-restriction
+    (let ((parse-sexp-ignore-comments t)
+	  donep boi
+	  (lim (or lim (point-min))))
+      (narrow-to-region lim (point))
+      (while (not donep)
+	;; if you're not running a patched lemacs, the new byte
+	;; compiler will complain about this function. ignore that
+	(backward-syntactic-ws)
+	(if (not (bobp))
+	    (forward-char 1))
+	(if (= (char-after (setq boi (c++-point 'boi))) ?#)
+	    (progn (goto-char boi)
+		   (setq donep (<= (point) lim)))
+	  (setq donep t))
+	))))
 
 (if c++-emacs-is-really-fixed-p
     (fset 'c++-backward-syntactic-ws
