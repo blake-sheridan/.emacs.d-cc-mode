@@ -1301,13 +1301,9 @@ BOD is the beginning of the C++ definition."
       (if parse-start
 	  (goto-char parse-start)
 	(goto-char bod))
-      (while (< (point) indent-point)
-	(let ((here (point))
-	      (pps (parse-partial-sexp (point) indent-point 0)))
-	  (if (not (c++-in-comment-p bod))
-	      (setq parse-start (point)
-		    state pps
-		    containing-sexp (car (cdr pps))))))
+      (setq state (c++-parse-state indent-point)
+	    containing-sexp (nth 1 state)
+	    parse-start (point))
       (cond ((c++-in-open-string-p bod)
 	     ;; in a string.
 	     nil)
