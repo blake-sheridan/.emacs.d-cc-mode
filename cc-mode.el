@@ -1055,7 +1055,11 @@ the brace is inserted inside a literal."
 	    (not (looking-at "[ \t]*$")))
 	(c-insert-special-chars arg)
       (setq semantics (progn
-			(newline)
+			;; only insert a newline if there is non-whitespace behind us
+			(if (save-excursion
+			      (skip-chars-backward " \t")
+			      (not (bolp)))
+			    (newline))
 			(self-insert-command (prefix-numeric-value arg))
 			(c-guess-basic-semantics bod))
 	    newlines (and
