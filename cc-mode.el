@@ -3318,6 +3318,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; CASE 6F: we are looking at just a normal arglist
 	   ;; continuation line
 	   (t (c-beginning-of-statement 1 containing-sexp)
+	      (forward-char 1)
 	      (c-forward-syntactic-ws indent-point)
 	      (c-add-syntax 'arglist-cont (c-point 'boi)))
 	   ))
