@@ -1363,12 +1363,12 @@ c++-untame-characters."
 
 (defun c++-forward-sexp (&optional arg)
   (interactive "p")
-  (let ((parse-sexp-ignore-comments t))
+  (let ((parse-sexp-ignore-comments c++-emacs-is-fixed-p))
     (forward-sexp arg)))
 
 (defun c++-backward-sexp (&optional arg)
   (interactive "p")
-  (let ((parse-sexp-ignore-comments t))
+  (let ((parse-sexp-ignore-comments c++-emacs-is-fixed-p))
     (backward-sexp arg)))
 
 
