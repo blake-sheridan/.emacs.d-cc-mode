@@ -599,7 +599,7 @@ re-dump Emacs.")
   "*Hook called by `java-mode'.")
 
 (defvar c-mode-common-hook nil
-  "*Hook called by `c-mode', `c++-mode', and 'objc-mode' during common init.")
+  "*Hook called by all cc-mode modes for common initializations.")
 
 (defvar c-mode-menu
   '(["Comment Out Region"     comment-region (mark)]
