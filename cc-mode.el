@@ -1086,15 +1086,13 @@ Returns nil if line starts inside a string, t if in a comment."
 	       ;; This line may start a new statement, or it could
 	       ;; represent the while closure of a do/while construct
 	       (if (save-excursion
-		     (and
-		      (progn
-			(goto-char indent-point)
-			(skip-chars-forward " \t\n")
-			(looking-at "while\\b"))
-		      (progn
-			(c++-backward-to-start-of-do containing-sexp)
-			(looking-at "do\\b"))
-		      (setq do-indentation (current-column))))
+		     (and (progn (goto-char indent-point)
+				 (skip-chars-forward " \t\n")
+				 (looking-at "while\\b"))
+			  (progn
+			    (c++-backward-to-start-of-do containing-sexp)
+			    (looking-at "do\\b"))
+			  (setq do-indentation (current-column))))
 		   do-indentation
 		 ;; this could be a case statement. if so we want to
 		 ;; indent it like the first case statement after a switch
