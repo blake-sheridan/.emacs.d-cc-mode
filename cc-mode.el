@@ -2248,7 +2248,7 @@ No indentation or other \"electric\" behavior is performed."
   (insert "::"))
 
 
-(defun c-beginning-of-statement (&optional count lim)
+(defun c-beginning-of-statement (&optional count lim act-interactive-p)
   "Go to the beginning of the innermost C statement.
 With prefix arg, go back N - 1 statements.  If already at the
 beginning of a statement then go to the beginning of the preceding
@@ -2266,7 +2266,7 @@ search."
     (save-excursion
       (goto-char lim)
       (setq state (parse-partial-sexp (point) here nil nil)))
-    (if (and (interactive-p)
+    (if (and (or (interactive-p) act-interactive-p)
 	     (or (nth 3 state)
 		 (nth 4 state)
 		 (looking-at (concat "[ \t]*" comment-start-skip))
@@ -2297,7 +2297,7 @@ When called from a program, this function takes 2 optional args: the
 prefix arg, and a buffer position limit which is the farthest back to
 search."
   (interactive "p")
-  (c-beginning-of-statement (- (or count 1)) lim)
+  (c-beginning-of-statement (- (or count 1)) lim t)
   (c-keep-region-active))
 
 
