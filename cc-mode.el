@@ -3314,7 +3314,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 (defun c-lineup-math (langelem)
   ;; line up math statement-cont after the equals
   (save-excursion
-    (let ((equalp (= (char-after (c-point 'boi)) ?=))
+    (let ((equalp (save-excursion
+		    (goto-char (c-point 'boi))
+		    (skip-chars-forward "^=" (c-point 'eol))
+		    (and (= (following-char) ?=)
+			 (- (point) (c-point 'boi)))))
 	  (curcol (progn
 		    (goto-char (cdr langelem))
 		    (current-column))))
@@ -3323,12 +3327,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  ;; there's no equal sign on the line
 	  c-basic-offset
 	;; calculate indentation column after equals and ws, unless
-	;; our line starts with an equal sign
+	;; our line contains an equals sign
 	(if (not equalp)
 	    (progn
 	      (forward-char 1)
 	      (skip-chars-forward " \t")))
-	(- (current-column) curcol))
+	(- (current-column) equalp))
       )))
 
 
