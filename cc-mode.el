@@ -4730,14 +4730,25 @@ With universal argument, inserts the analysis as a comment on that line."
   ;; only-lines
   (save-excursion
     (back-to-indentation)
-    ;; indent as specified by c-comment-only-line-offset
-    (if (not (bolp))
+    ;; this highly kludgiforous flag prevents the mapcar over
+    ;; c-syntactic-context from entering an infinite loop
+    (let ((recurse-prevention-flag (boundp 'recurse-prevention-flag)))
+      (cond
+       ;; CASE 1: preserve comment-column
+       (recurse-prevention-flag 0)
+       ((= (current-column) comment-column)
+	;; we have to subtract out all other indentation
+	(- comment-column (apply '+ (mapcar 'c-get-offset
+					    c-syntactic-context))))
+       ;; indent as specified by c-comment-only-line-offset
+       ((not (bolp))
 	(or (car-safe c-comment-only-line-offset)
-	    c-comment-only-line-offset)
-      (or (cdr-safe c-comment-only-line-offset)
-	  (car-safe c-comment-only-line-offset)
-	  -1000				;jam it against the left side
-	  ))))
+	    c-comment-only-line-offset))
+       (t
+	(or (cdr-safe c-comment-only-line-offset)
+	    (car-safe c-comment-only-line-offset)
+	    -1000))			;jam it against the left side
+       ))))
 
 (defun c-lineup-runin-statements (langelem)
   ;; line up statements in coding standards which place the first
