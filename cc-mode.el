@@ -569,6 +569,50 @@ as designated in the variable `c-file-style'.")
     )
   "XEmacs 19 (formerly Lucid) menu for C/C++/ObjC modes.")
 
+(defvar cc-imenu-c++-generic-expression
+  (` 
+   ((nil
+     (, 
+      (concat
+       "^"				; beginning of line is required
+       "\\(template[ \t]*<[^>]+>[ \t]*\\)?" ; there may be a "template <...>"
+       "\\([a-zA-Z0-9_:]+[ \t]+\\)?"	; type specs; there can be no
+       "\\([a-zA-Z0-9_:]+[ \t]+\\)?"	; more than 3 tokens, right?
+        
+       "\\("				; last type spec including */&
+       "[a-zA-Z0-9_:]+"
+       "\\([ \t]*[*&]+[ \t]*\\|[ \t]+\\)" ; either pointer/ref sign or whitespace
+       "\\)?"				; if there is a last type spec
+       "\\("				; name; take that into the imenu entry
+       "[a-zA-Z0-9_:~]+"		; member function, ctor or dtor...
+ 					; (may not contain * because then 
+ 					; "a::operator char*" would become "char*"!)
+       "\\|"
+       "\\([a-zA-Z0-9_:~]*::\\)?operator"
+       "[^a-zA-Z1-9_][^(]*"		; ...or operator
+       " \\)"
+       "[ \t]*([^)]*)[ \t\n]*[^		;]" ; require something other than a ; after
+ 					; the (...) to avoid prototypes.  Can't
+ 					; catch cases with () inside the parentheses
+ 					; surrounding the parameters
+ 					; (like "int foo(int a=bar()) {...}"
+        
+       )) 6)    
+    ("Class" 
+     (, (concat 
+ 	 "^"				; beginning of line is required
+ 	 "\\(template[ \t]*<[^>]+>[ \t]*\\)?" ; there may be a "template <...>"
+ 	 "class[ \t]+"
+ 	 "\\([a-zA-Z0-9_]+\\)"		; this is the string we want to get
+ 	 "[ \t]*[:{]"
+ 	 )) 2)))
+  "Imenu generic expression for C++ mode.  See `imenu-generic-expression'.")
+ 
+(defvar cc-imenu-c-generic-expression
+  cc-imenu-c++-generic-expression
+  "Imenu generic expression for C mode.  See `imenu-generic-expression'.")
+
+
 
 ;; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ;; NO USER DEFINABLE VARIABLES BEYOND THIS POINT
@@ -1047,7 +1091,8 @@ Key bindings:
 	c-conditional-key c-C++-conditional-key
 	c-comment-start-regexp c-C++-comment-start-regexp
 	c-class-key c-C++-class-key
-	c-access-key c-C++-access-key)
+	c-access-key c-C++-access-key
+	imenu-generic-expression cc-imenu-c++-generic-expression)
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'c++-mode-hook))
 (setq c-list-of-mode-names (cons "C++" c-list-of-mode-names))
@@ -1082,7 +1127,8 @@ Key bindings:
 	c-conditional-key c-C-conditional-key
 	c-class-key c-C-class-key
 	c-baseclass-key nil
-	c-comment-start-regexp c-C-comment-start-regexp)
+	c-comment-start-regexp c-C-comment-start-regexp
+	imenu-generic-expression cc-imenu-c-generic-expression)
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'c-mode-hook))
 (setq c-list-of-mode-names (cons "C" c-list-of-mode-names))
@@ -1141,6 +1187,7 @@ Key bindings:
   (make-local-variable 'outline-regexp)
   (make-local-variable 'outline-level)
   (make-local-variable 'adaptive-fill-regexp)
+  (make-local-variable 'imenu-generic-expression) ;set in the mode functions
   ;; Emacs 19.30 and beyond only, AFAIK
   (if (boundp 'fill-paragraph-function)
       (progn
