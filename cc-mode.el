@@ -384,7 +384,8 @@ Only currently supported behavior is '(alignleft).")
   "*Limit in characters for looking back while skipping syntactic ws.
 If you typically write really big methods, and start noticing
 incorrect indentations, try cranking this value up.  The larger this
-value is, though, the slower parts of c++-mode can become.")
+value is, though, the slower parts of c++-mode can become. Setting
+this variable to nil defeats backscan limits.")
 
 ;; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ;; NO USER DEFINABLE VARIABLES BEYOND THIS POINT
@@ -1973,7 +1974,8 @@ comments, and preprocessor directives. Search no farther back than
 optional LIM.  If LIM is ommitted, point-min is used."
   (let ((lim (or lim (point-min)))
 	literal stop skip)
-    (if (> (- (point) lim) c++-backscan-limit)
+    (if (and c++-backscan-limit
+	     (> (- (point) lim) c++-backscan-limit))
 	(setq lim (- (point) c++-backscan-limit)))
     (while (not stop)
       (skip-chars-backward " \t\n\r\f" lim)
