@@ -2655,7 +2655,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (goto-char placeholder)
 	    (while (and (re-search-forward "<<\\|>>" indent-point 'move)
 			(c-in-literal)))
-	    (c-add-semantics 'stream-op (c-point 'boi)))
+	    ;; if we ended up at indent-point, then the first streamop
+	    ;; is on a separate line. Indent the line like a
+	    ;; statement-cont instead
+	    (if (/= (point) indent-point)
+		(c-add-semantics 'stream-op (c-point 'boi))
+	      (c-backward-syntactic-ws lim)
+	      (c-add-semantics 'statement-cont (c-point 'boi))))
 	   ;; CASE 8D: continued statement. find the accurate
 	   ;; beginning of statement or substatement
 	   (t
