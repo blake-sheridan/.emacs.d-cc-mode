@@ -2021,8 +2021,8 @@ BOD is the beginning of the C++ definition."
       ;; beginning of the C++ definition. The following code attempts
       ;; to work around this.  It is probably better to just use
       ;; c++-match-header-strongly, but there are performance questions
-      (if (null state)
-	  (error "null state!"))
+;;      (if (null state)
+;;	  (error "null state!"))
 ;;	  (let* ((c++-match-header-strongly t)
 ;;		 (bod (c++-point 'bod)))
 ;;	    (goto-char bod)
