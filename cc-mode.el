@@ -1304,6 +1304,17 @@ BOD is the beginning of the C++ definition."
       (setq state (c++-parse-state indent-point)
 	    containing-sexp (nth 1 state)
 	    parse-start (point))
+      ;; it is possible that c++-defun-header-weak could not find the
+      ;; beginning of the C++ definition. The following code attempts
+      ;; to work around this.  It is probably better to just use
+      ;; c++-match-header-strongly, but there are performance questions
+      (if (null state)
+	  (let* ((c++-match-header-strongly t)
+		 (bod (c++-point-bod)))
+	    (goto-char bod)
+	    (setq state (c++-parse-state indent-point)
+		  containing-sexp (nth 1 state)
+		  parse-start (point))))
       (cond ((c++-in-open-string-p bod)
 	     ;; in a string.
 	     nil)
