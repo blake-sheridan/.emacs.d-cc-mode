@@ -4084,7 +4084,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; line, or continuation of a multiple inheritance
 	   ((or (and c-baseclass-key (looking-at c-baseclass-key))
 		(and (or (= char-before-ip ?:)
-			 (= char-after-ip ?:))
+			 ;; watch out for scope operator
+			 (save-excursion
+			   (and (= char-after-ip ?:)
+				(c-safe (progn (forward-char 1) t))
+				(/= (following-char) ?:)
+				)))
 		     (save-excursion
 		       (c-backward-syntactic-ws lim)
 		       (if (= char-before-ip ?:)
