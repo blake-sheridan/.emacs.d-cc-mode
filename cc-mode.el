@@ -775,9 +775,17 @@ if it is embedded in an expression."
 (defun c++-in-comment-p ()
   "Return t if in a C or C++ style comment as defined by mode's syntax."
   (save-excursion
-    (let ((here (point)))
-      (beginning-of-defun)
-      (nth 4 (parse-partial-sexp (point) here 0)))))
+    (let ((here (point))
+	  (bod (save-excursion (beginning-of-defun) (point))))
+      (or
+       ;; in a c++ style comment?
+       (nth 4 (parse-partial-sexp bod here 0))
+       ;; special case for checking c style comment
+       (let ((in-c-comment-p
+	      (progn (modify-syntax-entry ?\n " " c++-mode-syntax-table)
+		     (nth 4 (parse-partial-sexp bod here 0)))))
+	 (modify-syntax-entry ?\n ">" c++-mode-syntax-table)
+	 in-c-comment-p)))))
 
 (defun c++-in-open-string-p ()
   "Return non-nil if in an open string as defined by mode's syntax."
