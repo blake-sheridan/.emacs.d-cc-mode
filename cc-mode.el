@@ -3294,7 +3294,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (setq foundp (vector (c-point 'boi) search-end))
 		  (cond
 		   ;; check for embedded keywords
-		   ((/= (char-syntax class) 32)
+		   ((let ((char (char-after (1- class))))
+		      (and char
+			   (memq (char-syntax char) '(?w ?_))))
 		    (goto-char match-end)
 		    (setq foundp nil))
 		   ;; make sure we're really looking at the start of a
