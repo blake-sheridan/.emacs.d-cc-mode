@@ -1327,8 +1327,7 @@ of the expression are preserved."
 	     ((looking-at c++-access-key)
 	      (setq this-indent (+ this-indent c++-access-specifier-offset)))
 	     ;; looking at a case, default, or other label
-	     ((or (looking-at "case[ \t]+.*:")
-		  (looking-at "default[ \t]*:")
+	     ((or (looking-at "\\(case[ \t]+.*\\|default[ \t]*\\):")
 		  (and (looking-at "[A-Za-z]")
 		       (save-excursion
 			 (forward-sexp 1)
