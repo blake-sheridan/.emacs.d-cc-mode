@@ -9,6 +9,7 @@
 ;; Last Modified:   $Date$
 ;; Keywords: C++ C editing major-mode
 
+;; Copyright (C) 1993, 1994 Barry A. Warsaw
 ;; Copyright (C) 1992, 1993, 1994 Free Software Foundation, Inc.
 
 ;; This file is part of GNU Emacs.
