@@ -627,6 +627,10 @@ backward-delete-char-untabify."
 		 (delete-region (point) here))
 	    (goto-char here)
 	    (set-marker here nil))
+	  ;; must do this before inserting brace since otherwise,
+	  ;; c++-beginning-of-defun will not be able to correctly find
+	  ;; the bod when c++-match-headers-strongly is nil.
+	  (c++-indent-line)
 	  (insert last-command-char)
 	  (let ((here (point-marker))
 		mbeg mend)
