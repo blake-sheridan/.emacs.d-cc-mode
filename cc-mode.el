@@ -301,14 +301,13 @@ To be completely safe, set this variable to:
     '(?\( ?\) ?\' ?\{ ?\} ?\[ ?\])
 
 This is the full list of characters which can potentially cause
-problems if they exist unbalanced within comments.
-
-Setting this variable to nil will defeat this feature, but be
-forewarned!  Un-escaped characters in comment regions will break many
+problems if they exist unbalanced within comments. Setting this
+variable to nil will defeat this feature, but be forewarned!  Such
+un-escaped characters in comment regions can potentially break many
 things such as some indenting and blinking of parenthesis.
 
 Note further that only the default set of characters will be escaped
-automatically as they are typed. But, entering c++-tame-comments
+automatically as they are typed. But, executing c++-tame-comments
 (\\[c++-tame-comments]) will escape all characters which are members
 of this set, and which are found in comments throughout the file.")
 
