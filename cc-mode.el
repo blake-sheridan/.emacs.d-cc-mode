@@ -1425,7 +1425,7 @@ c++-untame-characters."
 (defun c++-match-paren ()
   "Jumps to the paren matching the one under point, if there is one."
   (interactive)
-  (let ((parse-sexp-ignore-comments (memq 'v19 c++-emacs-features))
+  (let ((parse-sexp-ignore-comments (memq 'v19 c++-emacs-features)))
     (cond
      ((looking-at "[\(\[{]")
       (forward-sexp 1)
@@ -1552,7 +1552,7 @@ comments, and preprocessor directives. Search no farther back than
 optional LIM.  If LIM is ommitted, beginning-of-defun is used."
   (save-restriction
     (let ((lim (or lim (c++-point 'bod)))
-	  done boi char)
+	  donep boi char)
       (if (< lim (point))
 	  (unwind-protect
 	      (progn
@@ -1659,7 +1659,7 @@ used."
   (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-1)
   (fset 'c++-in-literal 'c++-in-literal-quick))
  ((memq 'v19 c++-emacs-features)
-  (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-1))
+  (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-1)
   (fset 'c++-in-literal 'c++-in-literal-quick))
  )
 
