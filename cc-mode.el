@@ -1891,6 +1891,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (let ((here (point-marker))
 	(c-echo-semantic-information-p nil))
     (beginning-of-defun)
+    ;; if defun-prompt-regexp is non-nil, b-o-d might not leave us at
+    ;; the open brace. I consider this an Emacs bug.
+    (and defun-prompt-regexp
+	 (looking-at defun-prompt-regexp)
+	 (goto-char (match-end 0)))
     ;; catch all errors in c-indent-exp so we can 1. give more
     ;; meaningful error message, and 2. restore point
     (unwind-protect
