@@ -1840,6 +1840,37 @@ search."
 	 (search-forward ";" end 'move))))))
 
 
+;;(defun c-beginning-of-defun (count)
+;;  "Move the the COUNTth `real' beginning-of-defun.
+;;This is defined as the first declaration line of the most enclosing
+;;top level construct; i.e. class/struct, function, enum, etc.  With
+;;negative COUNT, go forward."
+;;  (interactive "p")
+;;  )
+;;
+;;(defun c-beginning-of-defun-1 ()
+;;  ;; move to the real beginning of defun. `Real' being defined as the
+;;  ;; first C/C++ declaration line of the most enclosing top level construct.
+;;  (let* ((state (c-parse-state))
+;;	 (search-start (car state)))
+;;    ;; if the last thing is a cons then start searching from the end
+;;    ;; of the previous balanced sexp
+;;    (goto-char (or (car-safe search-start)
+;;		   (and (numberp search-start)
+;;			search-start)
+;;		   (point)))
+;;    (c-beginning-of-statement)
+;;    (if (bobp)
+;;	(c-forward-syntactic-ws))
+;;    ))
+;;
+;;(defun c-end-of-defun-1 ()
+;;  ;; move to the end of the defun.
+;;  (let* ((state (c-parse-state))
+;;	 (search-start (car state))
+;;	 )))
+;;
+
 (defun c-up-conditional (count)
   "Move back to the containing preprocessor conditional, leaving mark behind.
 A prefix argument acts as a repeat count.  With a negative argument,
