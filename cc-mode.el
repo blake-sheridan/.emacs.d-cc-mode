@@ -1003,9 +1003,9 @@ The expansion is entirely correct because it uses the C preprocessor."
 
 
 ;; main entry points for the modes
-;;;###autoload
 (defconst c-list-of-mode-names nil)
 
+;;;###autoload
 (defun c++-mode ()
   "Major mode for editing C++ code.
 To submit a problem report, enter `\\[c-submit-bug-report]' from a
