@@ -3043,7 +3043,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; Using BUFPOS buffer position, and WHICH (must be 'open or
   ;; 'close), hack the c-parse-state STATE and return the results.
   (if (eq which 'open)
-      (cons bufpos state)
+      (if (or (consp (car state))
+	      (/= bufpos (car state)))
+	  (cons bufpos state)
+	state)
     (if (not (eq which 'close))
 	(error "c-hack-state, bad argument: %s" which))
     ;; 'close brace
