@@ -5287,9 +5287,9 @@ command to conveniently insert and align the necessary backslashes."
       ))))
 
 
-;; menus for XEmacs 19
+;; menus for XEmacs
 (defun c-mode-menu ()
-  (cons (concat mode-name " Mode Commands") c-mode-menu))
+  (cons mode-name c-mode-menu))
 
 (defun c-popup-menu (e)
   "Pops up the C/C++/ObjC menu."
