@@ -2365,8 +2365,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   "Re-indents the current top-level function def, struct or class declaration."
   (interactive)
   (let ((here (point-marker))
-	(c-echo-syntactic-information-p nil))
-    (beginning-of-defun)
+	(c-echo-syntactic-information-p nil)
+	(brace (c-least-enclosing-brace (c-parse-state))))
+    (if brace
+	(goto-char brace)
+      (beginning-of-defun))
     ;; if defun-prompt-regexp is non-nil, b-o-d might not leave us at
     ;; the open brace. I consider this an Emacs bug.
     (and (boundp 'defun-prompt-regexp)
@@ -2903,7 +2906,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; try to increase performance by using this macro
   (` (setq syntax (cons (cons (, symbol) (, relpos)) syntax))))
 
-(defun c-enclosing-brace (state)
+(defun c-most-enclosing-brace (state)
   ;; return the bufpos of the most enclosing brace that hasn't been
   ;; narrowed out by any enclosing class, or nil if none was found
   (let (enclosingp)
@@ -2916,6 +2919,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (setq enclosingp nil))
 	(setq state nil)))
     enclosingp))
+
+(defun c-least-enclosing-brace (state)
+  ;; return the bufpos of the least (highest) enclosing brace that
+  ;; hasn't been narrowed out by any enclosing class, or nil if none
+  ;; was found.
+  (c-most-enclosing-brace (nreverse state)))
 
 (defun c-narrow-out-enclosing-class (state lim)
   ;; narrow the buffer so that the enclosing class is hidden
@@ -3459,7 +3468,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ;; CASE 14B: if there an enclosing brace that hasn't
 	     ;; been narrowed out by a class, then this is a
 	     ;; block-close
-	     ((c-enclosing-brace state)
+	     ((c-most-enclosing-brace state)
 	      (c-add-syntax 'block-close relpos))
 	     ;; CASE 14C: find out whether we're closing a top-level
 	     ;; class or a defun
@@ -3542,7 +3551,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (widen)
 		  (goto-char containing-sexp)
 		  (c-narrow-out-enclosing-class state containing-sexp)
-		  (not (c-enclosing-brace state))))
+		  (not (c-most-enclosing-brace state))))
 	      (goto-char containing-sexp)
 	      ;; if not at boi, then defun-opening braces are hung on
 	      ;; right side, so we need a different relpos
