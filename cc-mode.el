@@ -261,8 +261,8 @@ Here is the current list of valid syntactic element symbols:
  brace-list-close       -- close brace of an enum or static array list
  brace-list-intro       -- first line in an enum or static array list
  brace-list-entry       -- subsequent lines in an enum or static array list
- statement              -- a C/C++/ObjC statement
- statement-cont         -- a continuation of a C/C++/ObjC statement
+ statement              -- a C (or like) statement
+ statement-cont         -- a continuation of a C (or like) statement
  statement-block-intro  -- the first line in a new statement block
  statement-case-intro   -- the first line in a case `block'
  statement-case-open    -- the first line in a case block starting with brace
@@ -270,7 +270,7 @@ Here is the current list of valid syntactic element symbols:
  substatement-open      -- the brace that opens a substatement block
  case-label             -- a case or default label
  access-label           -- C++ private/protected/public access label
- label                  -- any non-special C/C++/ObjC label
+ label                  -- any non-special C (or like) label
  do-while-closure       -- the `while' that ends a do/while construct
  else-clause            -- the `else' of an if/else construct
  comment-intro          -- a line containing only a comment introduction
@@ -877,7 +877,7 @@ All other Emacsen use the `old-re' suite.")
   ;; (define-key c-mode-map "\e{" 'c-insert-braces)
   ;; Commented out electric square brackets because nobody likes them.
   ;; (define-key c-mode-map "[" 'c-insert-brackets)
-  (define-key c-mode-map "\e\C-h"    'c-mark-function)
+  (define-key c-mode-map "\C-c\C-m"  'c-mark-function)
   (define-key c-mode-map "\e\C-q"    'c-indent-exp)
   (define-key c-mode-map "\ea"       'c-beginning-of-statement)
   (define-key c-mode-map "\ee"       'c-end-of-statement)
@@ -2532,6 +2532,7 @@ Optional prefix ARG means justify paragraph as well."
 		      (fill-region-as-paragraph (point) (point-max))))))
 	    t)))))
 
+
 ;; better movement routines for ThisStyleOfVariablesCommonInCPlusPlus
 ;; originally contributed by Terry_Glanfield.Southern@rxuk.xerox.com
 (defun c-forward-into-nomenclature (&optional arg)
@@ -4594,10 +4595,16 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (run-hooks 'c-special-indent-hook)
     shift-amt))
 
-(defun c-show-syntactic-information ()
-  "Show syntactic information for current line."
-  (interactive)
-  (message "syntactic analysis: %s" (c-guess-basic-syntax))
+(defun c-show-syntactic-information (arg)
+  "Show syntactic information for current line.
+With universal argument, inserts the analysis as a comment on that line."
+  (interactive "P")
+  (let ((syntax (c-guess-basic-syntax)))
+    (if (not (consp arg))
+	(message "syntactic analysis: %s" (c-guess-basic-syntax))
+      (indent-for-comment)
+      (insert (format "%s" syntax))
+      ))
   (c-keep-region-active))
 
 
