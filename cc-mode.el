@@ -2078,11 +2078,13 @@ BOD is the beginning of the C++ definition."
 	   (goto-char indent-point)
 	   (skip-chars-forward " \t")
 	   (cond
-	    ;; CASE 3A: are we at the top-level wrt enclosing class defn?
-	    ((or (= (following-char) ?{)
-		 (progn (c++-backward-syntactic-ws parse-start)
-			(bobp)))
-	     top-open-paren)
+	    ;; CASE 3A.a: are we looking at the top-level opening brace?
+	    ((= (following-char) ?{) top-open-paren)
+	    ;; CASE 3A.b: if we are at the first non-comment in the
+	    ;; (possibly narrowed) buffer, we apply an indent of zero
+	    ((progn (c++-backward-syntactic-ws parse-start)
+		    (bobp))
+	     0)
 	    ;; CASE 3B: first arg decl or member init
 	    ((c++-in-function-p)
 	     (goto-char indent-point)
