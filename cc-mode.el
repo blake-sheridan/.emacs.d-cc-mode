@@ -1001,11 +1001,13 @@ point is inside a literal, nothing special happens."
       ;; do nothing special
       (self-insert-command (prefix-numeric-value arg))
     ;; place the pound character at the left edge
-    (let ((pos (- (point-max) (point))))
+    (let ((pos (- (point-max) (point)))
+	  (bolp (bolp)))
       (beginning-of-line)
       (delete-horizontal-space)
       (insert-char last-command-char 1)
-      (goto-char (- (point-max) pos))
+      (and (not bolp)
+	   (goto-char (- (point-max) pos)))
       )))
 
 (defun c-electric-brace (arg)
