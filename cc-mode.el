@@ -1415,7 +1415,8 @@ Key bindings:
  	c-baseclass-key nil
 	c-recognize-knr-p nil
  	c-access-key c-Java-access-key
-	defun-prompt-regexp c-Java-defun-prompt-regexp)
+	;defun-prompt-regexp c-Java-defun-prompt-regexp
+	)
   (c-set-style "java")
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'java-mode-hook))
