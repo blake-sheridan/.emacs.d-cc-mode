@@ -1365,6 +1365,7 @@ Send bug reports to c++-mode-help@anthem.nlm.nih.gov"
 		       'c-brace-imaginary-offset
 		       'c-argdecl-indent
 		       'c-label-offset
+		       'tab-width
 		       )))
     (set-buffer buffer)
     (emacs-lisp-mode)
