@@ -496,7 +496,10 @@ case, the VALUE is a list containing elements of the form:
 
 as described in `c-offsets-alist'.  These are passed directly to
 `c-set-offset' so there is no need to set every syntactic symbol in
-your style, only those that are different from the default.")
+your style, only those that are different from the default.
+
+Note that all styles inherit from the \"Default\" style, which is
+computed at the time the mode is loaded.")
 
 (defvar c-file-style nil
   "*Variable interface for setting style via File Local Variables.
