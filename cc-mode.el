@@ -2527,7 +2527,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		      ;; make sure there's no semi-colon or equal sign
 		      ;; between class and brace. Otherwise, we found
 		      ;; a forward declaration or a struct init.
-		      (skip-chars-forward "^;=," search-end)
+		      (skip-chars-forward "^;=,)" search-end)
 		      (if (/= (point) search-end)
 			  (setq foundp nil)
 			;; make sure we aren't looking at the `class'
