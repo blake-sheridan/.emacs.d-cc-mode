@@ -1969,7 +1969,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 		      ))))
 	    (save-restriction
 	      (widen)
-	      (goto-char (car inclass-p))
+	      (goto-char (cdr inclass-p))
 	      (cc-add-semantics 'class-close (cc-point 'boi))))
 	   ;; CASE 4G: we are at the topmost level, make sure we skip
 	   ;; back past any access specifiers
