@@ -1227,6 +1227,7 @@ c++-mode for a particular buffer."
      varlist)
     (insert "     )\n")
     (indent-region (point-min) (point-max) nil)
+    (goto-char (point-min))
     (switch-to-buffer-other-window buffer)
     (message "Please insert buffer %s into your mail message."
 	     c++-mode-state-buffer)))
