@@ -436,10 +436,16 @@ this variable to nil defeats backscan limits.")
 (make-variable-buffer-local 'c++-auto-newline)
 (make-variable-buffer-local 'c++-hungry-delete-key)
 
-(defconst c++-class-key "\\<\\(class\\|struct\\|union\\)\\>"
-  "Keywords which introduce a struct declaration in C++.")
 (defconst c++-access-key "\\<\\(public\\|protected\\|private\\)\\>:"
-  "Keywords which modify access protection.")
+  "Regexp which describes access specification keywords.")
+(defconst c++-class-key
+  "\\(template\\s *<[^>]*>\\s *\\)?\\<\\(class\\|struct\\|union\\)\\>"
+  "Regexp which describes a class declaration, including templates.")
+(defconst c++-inher-key
+  (concat "\\(\\<static\\>\\s +\\)?"
+	  c++-class-key
+	  "[ \t]+\\(\\w+[ \t]*:[ \t]*\\)?")
+  "Regexp which describes a class inheritance declaration.")
 
 
 ;; ======================================================================
@@ -1746,10 +1752,6 @@ BOD is the beginning of the C++ definition."
 	  (case-fold-search nil)
 	  state do-indentation literal
 	  containing-sexp streamop-pos char-before-ip
-	  (MI-regexp
-	   (concat "\\(\\<static\\>\\s +\\)?"
-		   c++-class-key
-		   "[ \t]+\\(\\w+[ \t]*:[ \t]*\\)?"))
 	  (inclass-shift 0) inclass-depth
 	  (bod (or bod (c++-point 'bod))))
       (if parse-start
@@ -1847,7 +1849,7 @@ BOD is the beginning of the C++ definition."
 			      ;; continuation line
 			      (progn
 				(beginning-of-line)
-				(not (looking-at MI-regexp)))
+				(not (looking-at c++-inher-key)))
 			      )))
 		   ;; check to see if we're looking at a member
 		   ;; init, or access specifier
@@ -1904,7 +1906,7 @@ BOD is the beginning of the C++ definition."
 			 ;; multiple inheritance continuation line,
 			 ;; but not a K&R C arg decl
 			 (if (and (not (eq major-mode 'c++-c-mode))
-				  (looking-at MI-regexp))
+				  (looking-at c++-inher-key))
 			     (if (= char-before-ip ?,)
 				 (progn (goto-char (match-end 0))
 					(current-column))
