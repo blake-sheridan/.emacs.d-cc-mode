@@ -1385,7 +1385,7 @@ Key bindings:
  	c-baseclass-key nil
 	c-recognize-knr-p nil
  	c-access-key c-Java-access-key)
-  (c-set-style "Java")
+  (c-set-style "java")
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'java-mode-hook))
 (setq c-list-of-mode-names (cons "Java" c-list-of-mode-names))
