@@ -63,6 +63,35 @@
 
 (require 'cc-mode)
 
+;; This is a faster version of c-in-literal.  It trades speed for one
+;; approximation, namely that within other literals, the `#' character
+;; cannot be the first non-whitespace on a line.
+(defun c-in-literal (&optional lim)
+  ;; first check the cache
+  (if (and (boundp 'c-in-literal-cache)
+	   c-in-literal-cache
+	   (= (point) (aref c-in-literal-cache 0)))
+      (aref c-in-literal-cache 1)
+    ;; quickly check for cpp macro. this breaks if the `#' character
+    ;; appears as the first non-whitespace on a line inside another
+    ;; literal.
+    (let* (state
+	   (char-at-boi (char-after (c-point 'boi)))
+	   (rtn (cond
+		 ((and char-at-boi (= char-at-boi ?#))
+		  'pound)
+		 ((nth 3 (setq state (save-excursion
+				       (parse-partial-sexp
+					(or lim (c-point 'bod))
+					(point)))))
+		  'string)
+		 ((nth 4 state) (if (nth 7 state) 'c++ 'c))
+		 (t nil))))
+      ;; cache this result if the cache is enabled
+      (and (boundp 'c-in-literal-cache)
+	   (setq c-in-literal-cache (vector (point) rtn)))
+      rtn)))
+
 (defun c-narrow-out-enclosing-class (dummy1 dummy2) nil)
 
 (defun c-search-uplist-for-classkey (dummy) nil)
