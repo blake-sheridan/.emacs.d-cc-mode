@@ -468,8 +468,14 @@ backward-delete-char-untabify."
 	  (c++-indent-line)
 	  (if (c++-auto-newline)
 	      (progn
-		;; (c++-auto-newline) may have done an auto-fill
-		(setq insertpos (- (point) 2))
+		;; c++-auto-newline may have done an auto-fill
+		(save-excursion
+		  (let ((here (make-marker)))
+		    (set-marker here (point))
+		    (goto-char (- (point) 2))
+		    (c++-indent-line)
+		    (setq insertpos (- (goto-char here) 2))
+		    (set-marker here nil)))
 		(c++-indent-line)))
 	  (save-excursion
 	    (if insertpos (goto-char (1+ insertpos)))
