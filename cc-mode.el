@@ -3818,48 +3818,57 @@ it trailing backslashes are removed."
 (defun c-submit-bug-report ()
   "Submit via mail a bug report on cc-mode."
   (interactive)
-  (and
-   (y-or-n-p "Do you want to submit a report on cc-mode? ")
-   (require 'reporter)
-   (reporter-submit-bug-report
-    c-mode-help-address
-    (concat "cc-mode " c-version " ("
-	    (cond ((eq major-mode 'c++-mode)  "C++")
-		  ((eq major-mode 'c-mode)    "C")
-		  ((eq major-mode 'objc-mode) "ObjC"))
-	    ")")
-    (let ((vars (list
-		 ;; report only the vars that affect indentation
-		 'c-emacs-features
-		 'c-basic-offset
-		 'c-offsets-alist
-		 'c-block-comments-indent-p
-		 'c-cleanup-list
-		 'c-comment-only-line-offset
-		 'c-backslash-column
-		 'c-delete-function
-		 'c-electric-pound-behavior
-		 'c-hanging-braces-alist
-		 'c-hanging-colons-alist
-		 'c-tab-always-indent
-		 'defun-prompt-regexp
-		 'tab-width
-		 )))
-      (if (not (boundp 'defun-prompt-regexp))
-	  (delq 'defun-prompt-regexp vars)
-	vars))
-    (function
-     (lambda ()
-       (insert
-	(if c-special-indent-hook
-	    (concat "\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
-		    "c-special-indent-hook is set to '"
-		    (format "%s" c-special-indent-hook)
-		    ".\nPerhaps this is your problem?\n"
-		    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n")
-	  "\n")
-	)))
-    )))
+  ;; load in reporter
+  (require 'reporter)
+  (let ((reporter-prompt-for-summary-p t)
+	;; we will ask for confirmation if the version of reporter
+	;; being used is pre-2.0, which doesn't support auto confirm
+	(reporter-confirm-p (boundp 'reporter-confirm-p))
+	(reporter-package-abbrev "cc-mode"))
+    (and
+     (or reporter-confirm-p
+	 (y-or-n-p "Do you want to submit a report on cc-mode? "))
+     (reporter-submit-bug-report
+      c-mode-help-address
+      (concat "cc-mode " c-version " ("
+	      (cond ((eq major-mode 'c++-mode)  "C++")
+		    ((eq major-mode 'c-mode)    "C")
+		    ((eq major-mode 'objc-mode) "ObjC"))
+	      ")")
+      (let ((vars (list
+		   ;; report only the vars that affect indentation
+		   'c-emacs-features
+		   'c-basic-offset
+		   'c-offsets-alist
+		   'c-block-comments-indent-p
+		   'c-cleanup-list
+		   'c-comment-only-line-offset
+		   'c-backslash-column
+		   'c-delete-function
+		   'c-electric-pound-behavior
+		   'c-hanging-braces-alist
+		   'c-hanging-colons-alist
+		   'c-tab-always-indent
+		   'defun-prompt-regexp
+		   'tab-width
+		   )))
+	(if (not (boundp 'defun-prompt-regexp))
+	    (delq 'defun-prompt-regexp vars)
+	  vars))
+      (function
+       (lambda ()
+	 (insert
+	  (if c-special-indent-hook
+	      (concat "\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+		      "c-special-indent-hook is set to '"
+		      (format "%s" c-special-indent-hook)
+		      ".\nPerhaps this is your problem?\n"
+		      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n")
+	    "\n")
+	  )))
+      nil
+      "Dear Barry,"
+      ))))
 
 
 ;; menus for Lucid
