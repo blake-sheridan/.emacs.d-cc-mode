@@ -2426,7 +2426,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 (defun c-parse-state ()
   ;; Finds and records all open parens between some important point
   ;; earlier in the file and point.
-  (let* (at-bob
+  (let* (at-bob placeholder
 	 (pos (save-excursion
 		;; go back 2 bods, but ignore any bogus positions
 		;; returned by beginning-of-defun (i.e. open paren in
@@ -2468,11 +2468,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		       ;; front of list
 		       (setq state (cons (1- pos) state))))
 		 ;; something bad happened. check to see if we crossed
-		 ;; an unbalanced close paren. if so, we didn't really
+		 ;; an unbalanced close brace. if so, we didn't really
 		 ;; find the right `important bufpos' so lets back up
 		 ;; and try again
 		 (if (and (not pos) (not at-bob)
-			  (c-safe (scan-lists last-pos 1 1)))
+			  (setq placeholder (c-safe (scan-lists last-pos 1 1)))
+			  (= (char-after placeholder) ?}))
 		     (save-excursion
 		       (let (donep)
 			 (goto-char last-bod)
