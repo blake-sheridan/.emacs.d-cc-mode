@@ -359,24 +359,27 @@ Emacs.")
   (define-key cc-mode-map ";"         'cc-electric-semi&comma)
   (define-key cc-mode-map ","         'cc-electric-semi&comma)
   (define-key cc-mode-map "#"         'cc-electric-pound)
-  (define-key cc-mode-map "\e\C-h"    'cc-mark-function)
-  (define-key cc-mode-map "\e\C-q"    'cc-indent-exp)
-  (define-key cc-mode-map "\t"        'cc-indent-command)
-  (define-key cc-mode-map "\C-c\C-\\" 'cc-macroize-region)
-  (define-key cc-mode-map "\C-c\C-c"  'cc-comment-region)
-  (define-key cc-mode-map "\C-c\C-u"  'cc-uncomment-region)
-  (define-key cc-mode-map "\C-c\C-x"  'cc-match-paren)
-  (define-key cc-mode-map "\e\C-x"    'cc-indent-defun)
   (define-key cc-mode-map "/"         'cc-electric-slash)
   (define-key cc-mode-map "*"         'cc-electric-star)
   (define-key cc-mode-map ":"         'cc-electric-colon)
-  (define-key cc-mode-map "\C-c\C-;"  'cc-scope-operator)
-  (define-key cc-mode-map "\C-c\C-s"  'cc-show-semantic-information)
-  (define-key cc-mode-map "\C-c\C-o"  'cc-change-semantic-symbol-offset)
+  (define-key cc-mode-map "\t"        'cc-indent-command)
   (define-key cc-mode-map "\177"      'cc-electric-delete)
-  (define-key cc-mode-map "\C-c\C-t"  'cc-toggle-auto-hungry-state)
-  (define-key cc-mode-map "\C-c\C-h"  'cc-toggle-hungry-state)
+  (define-key cc-mode-map "\e\C-h"    'cc-mark-function)
+  (define-key cc-mode-map "\e\C-q"    'cc-indent-exp)
+  (define-key cc-mode-map "\e\C-x"    'cc-indent-defun)
+  (define-key cc-mode-map "\C-c\C-\\" 'cc-macroize-region)
+  (define-key cc-mode-map "\C-c\C-;"  'cc-scope-operator)
   (define-key cc-mode-map "\C-c\C-a"  'cc-toggle-auto-state)
+  (define-key cc-mode-map "\C-c\C-b"  'cc-submit-bug-report)
+  (define-key cc-mode-map "\C-c\C-c"  'cc-comment-region)
+  (define-key cc-mode-map "\C-c\C-d"  'cc-down-block)
+  (define-key cc-mode-map "\C-c\C-h"  'cc-toggle-hungry-state)
+  (define-key cc-mode-map "\C-c\C-o"  'cc-change-semantic-symbol-offset)
+  (define-key cc-mode-map "\C-c\C-s"  'cc-show-semantic-information)
+  (define-key cc-mode-map "\C-c\C-t"  'cc-toggle-auto-hungry-state)
+  (define-key cc-mode-map "\C-c\C-u"  'cc-up-block)
+  (define-key cc-mode-map "\C-c\C-v"  'cc-version)
+  (define-key cc-mode-map "\C-c\C-x"  'cc-match-paren)
   (if (memq 'v18 cc-emacs-features)
       (progn
 	(define-key cc-mode-map "\C-c'"     'cc-tame-comments)
@@ -385,8 +388,6 @@ Emacs.")
 	(define-key cc-mode-map "]"         'cc-tame-insert)
 	(define-key cc-mode-map "("         'cc-tame-insert)
 	(define-key cc-mode-map ")"         'cc-tame-insert)))
-  (define-key cc-mode-map "\C-c\C-b"  'cc-submit-bug-report)
-  (define-key cc-mode-map "\C-c\C-v"  'cc-version)
   )
 
 (defvar cc-c++-mode-syntax-table nil
@@ -1108,6 +1109,28 @@ the value of `cc-cleanup-list'."
       (setq cc-offsets-alist (cons (cons symbol offset) cc-offsets-alist))
       (message "%s added to cc-offsets-alist" symbol)
       ))
+  (cc-keep-region-active))
+
+(defun cc-up-block (arg)
+  "Go up ARG enclosing block levels.
+With a negative ARG, go down ARG block levels."
+  (interactive "p")
+  (while (and (cc-safe (progn (up-list (- arg)) t))
+	      (or (and (< 0 arg)
+		       (/= (following-char) ?{))
+		  (and (> 0 arg)
+		       (/= (preceding-char) ?}))
+		  )))
+  (cc-keep-region-active))
+
+(defun cc-down-block (arg)
+  "Go down ARG enclosing block levels.
+With a negative ARG, go up ARG block levels."
+  (interactive "p")
+  (cc-beginning-of-block arg)
+  (if (< 0 arg)
+      (cc-safe (forward-sexp 1))
+    (cc-safe (backward-sexp 1)))
   (cc-keep-region-active))
 
 
@@ -2356,43 +2379,36 @@ it will remove trailing backslashes."
 	(setq line (1+ line)))))
   (cc-keep-region-active))
 
-(defun cc-comment-region (beg end)
-  "Comment out all lines in a region between mark and current point by
-inserting `comment-start' in front of each line."
-  (interactive "*r")
+(defun cc-comment-region (beg end arg)
+  "Comment out all lines in a region between mark and current point.
+This is done by inserting `comment-start' in front of each line.  With
+optional universal arg (\\[universal-argument]), uncomment the
+region."
+  (interactive "*r\nP")
   (save-excursion
     (save-restriction
       (narrow-to-region
-       (progn (goto-char beg) (beginning-of-line) (point))
-       (progn (goto-char end) (or (bolp) (forward-line 1)) (point)))
+       (progn (goto-char beg) (cc-point 'bol))
+       (progn (goto-char end) (cc-point 'bonl)))
       (goto-char (point-min))
-      (while (not (eobp))
-	(insert comment-start)
-	(forward-line 1))
-      (if (eq major-mode 'cc-c-mode)
-	  (insert comment-end))))
-  (cc-keep-region-active))
-
-(defun cc-uncomment-region (beg end)
-  "Uncomment all lines in region between mark and current point by deleting
-the leading `// ' from each line, if any."
-  (interactive "*r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region
-       (progn (goto-char beg) (beginning-of-line) (point))
-       (progn (goto-char end) (forward-line 1) (point)))
-      (goto-char (point-min))
-      (let ((comment-regexp
-	     (if (eq major-mode 'cc-c-mode)
-		 (concat "\\s *\\(" (regexp-quote comment-start)
-			 "\\|"      (regexp-quote comment-end)
-			 "\\)")
-	       (concat "\\s *" (regexp-quote comment-start)))))
-	(while (not (eobp))
-	  (if (looking-at comment-regexp)
-	      (delete-region (match-beginning 0) (match-end 0)))
-	  (forward-line 1)))))
+      (if (not arg)
+	  (progn
+	    (while (not (eobp))
+	      (insert comment-start)
+	      (forward-line 1))
+	    (if (eq major-mode 'cc-c-mode)
+		(insert comment-end)))
+	(let ((comment-regexp
+	       (if (eq major-mode 'cc-c-mode)
+		   (concat "\\s *\\(" (regexp-quote comment-start)
+			   "\\|"      (regexp-quote comment-end)
+			   "\\)")
+		 (concat "\\s *" (regexp-quote comment-start)))))
+	  (while (not (eobp))
+	    (if (looking-at comment-regexp)
+		(delete-region (match-beginning 0) (match-end 0)))
+	    (forward-line 1)))
+	)))
   (cc-keep-region-active))
 
 
