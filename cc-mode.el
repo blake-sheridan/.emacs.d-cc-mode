@@ -1248,8 +1248,9 @@ the \"real\" top level.  Optional BOD is the beginning of defun."
 		      (or (c++-in-literal bod)
 			  (c++-in-parens-p bod)
 			  ;; see if class key is inside a template spec
-			  (skip-chars-backward " \t")
-			  (memq (preceding-char) '(?, ?<))))))
+			  (and (looking-at c++-class-key)
+			       (progn (skip-chars-backward " \t\n")
+				      (memq (preceding-char) '(?, ?<))))))))
 	(if (memq (following-char) '(?} ?\;))
 	    nil
 	  (setq state (c++-parse-state containing-sexp))
