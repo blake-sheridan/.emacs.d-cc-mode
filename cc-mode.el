@@ -2270,6 +2270,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 ))
       t)))
 
+(defun c-skip-conditional ()
+  ;; skip forward over conditional at point, including any predicate
+  ;; statements in parentheses. No error checking is performed.
+  (forward-sexp
+   ;; else if()
+   (if (looking-at "\\<else\\>[ \t]+\\<if\\>")
+       3
+     ;; do and else aren't followed by parens
+     (if (looking-at "\\<\\(do\\|else\\)\\>")
+	 1 2))))
+
 (defun c-search-uplist-for-classkey (&optional search-end)
   ;; search upwards for a classkey, but only as far as we need to.
   ;; this should properly find the inner class in a nested class
@@ -2704,14 +2715,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ((save-excursion
 	      (goto-char placeholder)
 	      (and (looking-at c-conditional-key)
-		   (c-safe (progn (forward-sexp
-				   ;; else if()
-				   (if (looking-at "\\<else\\>[ \t]+\\<if\\>")
-				       3
-				     ;; do and else aren't followed by parens
-				     (if (looking-at "\\<\\(do\\|else\\)\\>")
-					 1 2)))
-				  t))
+		   (c-safe (progn (c-skip-conditional) t))
 		   (progn (c-forward-syntactic-ws)
 			  (>= (point) indent-point))))
 	    (goto-char placeholder)
@@ -2766,7 +2770,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     (save-excursion
 	       (goto-char placeholder)
 	       (and (looking-at c-conditional-key)
-		    (c-safe (progn (forward-sexp 2) t))
+		    (c-safe (progn (c-skip-conditional) t))
 		    (c-forward-syntactic-ws))
 	       (point)))
 	    (c-add-semantics 'statement-cont (point)))
