@@ -127,6 +127,11 @@ of preprocessor commands.")
 When non-nil, arglists continued on subsequent lines will always
 indent c++-empty-arglist-indent spaces, otherwise, they will indent to
 just under previous line's argument indentation.")
+(defvar c++-class-member-indent c-indent-level
+  "*Extra indentation given to each member of a class, relative to the
+enclosing class's indentation.  Note that if you change c-indent-level
+in your c++-mode-hook, you will probably want to set this variable to
+the same value.")
 (defvar c++-block-close-brace-offset 0
   "*Extra indentation given to close braces which close a block. This
 does not affect braces which close a top-level construct (e.g. function).")
@@ -704,7 +709,7 @@ you want to add a comment to the end of a line."
 	 (let ((c++-auto-newline nil))
 	   (c++-electric-terminator arg)))
 	((and (memq (c++-in-literal) '(c))
-	      (= (point) (c++-point-boi)))
+	      (= (point) (c++-point 'boi)))
 	 (self-insert-command (prefix-numeric-value arg))
 	 (c++-indent-line))
 	(t
@@ -1124,14 +1129,16 @@ containing class definition (useful for inline functions)."
 	    paren-depth (nth 0 state))
       (if (or (not wrt)
 	      (null containing-sexp))
-	  (null containing-sexp)
+	  (if wrt 0 (null containing-sexp))
 	;; calculate depth wrt containing (possibly nested) classes
 	(goto-char containing-sexp)
 	(while (and (setq foundp (re-search-backward
 				  "\\<\\(class\\|struct\\)\\>" (point-min) t))
 		    (c++-in-literal)))
+	(setq state (c++-parse-state containing-sexp))
 	(and foundp
-	     (nth 2 (c++-parse-state containing-sexp))
+	     (not (nth 1 state))
+	     (nth 2 state)
 	     paren-depth))
       )))
 
@@ -1295,7 +1302,7 @@ BOD is the beginning of the C++ definition."
 	  (case-fold-search nil)
 	  state do-indentation literal
 	  containing-sexp streamop-pos
-	  (inclass-shift 0)
+	  (inclass-shift 0) inclass-depth
 	  (bod (or bod (c++-point 'bod))))
       (if parse-start
 	  (goto-char parse-start)
@@ -1332,7 +1339,7 @@ BOD is the beginning of the C++ definition."
 			 (or (zerop (current-column))
 			     (= (current-column) comment-column))))
 	     (current-column))
-	    ((c++-at-top-level-p t)
+	    ((setq inclass-depth (c++-at-top-level-p t))
 	     ;; Line is at top level.  May be comment-only line, data
 	     ;; or function definition, or may be function argument
 	     ;; declaration or member initialization.  Indent like the
@@ -1355,8 +1362,7 @@ BOD is the beginning of the C++ definition."
 	      ;; add an offset if we are inside a class defun body,
 	      ;; i.e. we are at the top level, but only wrt a
 	      ;; containing class
-	      (setq inclass-shift
-		    (if (null containing-sexp) 0 c-indent-level))
+	      (setq inclass-shift (* c++-class-member-indent inclass-depth))
 	      (progn
 		(goto-char indent-point)
 		(skip-chars-forward " \t")
@@ -1399,7 +1405,7 @@ BOD is the beginning of the C++ definition."
 			      0
 			    ;; member init, so add offset, but
 			    ;; subtract inclass-shift
-			    (- c++-member-init-indent inclass-shift))
+			    (- c++-member-init-indent c++-class-member-indent))
 			(if (or (= (preceding-char) ?})
 				(= (preceding-char) ?\)))
 			    0
@@ -1415,7 +1421,8 @@ BOD is the beginning of the C++ definition."
 				  (progn
 				    (forward-char 1)
 				    (skip-chars-forward " \t")
-				    (- (current-column) inclass-shift)))
+				    (- (current-column)
+				       c++-class-member-indent)))
 			      ;; else first check to see if its a
 			      ;; multiple inheritance continuation line
 			      (if (looking-at
@@ -1431,12 +1438,13 @@ BOD is the beginning of the C++ definition."
 				;; we might be looking at the opening
 				;; brace of a class defun
 				(if (= (following-char) ?\{)
-				    (- c-indent-level inclass-shift)
+				    (- c-indent-level c++-class-member-indent)
 				  (if (eolp)
 				      ;; looking at a blank line, indent
 				      ;; next line to zero
 				      0
-				    (- (current-indentation) inclass-shift)
+				    (- (current-indentation)
+				       c++-class-member-indent)
 				    )))))))
 		      ))))))
 	    ((/= (char-after containing-sexp) ?{)
