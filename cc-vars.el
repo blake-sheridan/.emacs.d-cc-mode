@@ -28,7 +28,7 @@
 ;; Boston, MA 02111-1307, USA.
 
 (eval-when-compile
-  (require 'cc-make))
+  (require 'cc-defs))
 
 (require 'custom)
 
@@ -470,7 +470,7 @@ supported list, along with the values for this variable:
  Emacs 19:                   (1-bit)
 
 Infodock (based on XEmacs) has an additional symbol on this list:
-'infodock.")
+`infodock'.")
 
 
 

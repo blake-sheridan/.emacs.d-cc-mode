@@ -28,8 +28,9 @@
 ;; Boston, MA 02111-1307, USA.
 
 
+;; explicit compile-time dependencies
 (eval-when-compile
-  (require 'cc-make))
+  (require 'cc-defs))
 
 
 (defconst c-style-alist
