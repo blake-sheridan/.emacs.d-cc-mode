@@ -1466,7 +1466,8 @@ search."
 	(first t))
     (condition-case ()
 	(progn
-	  (while (and (not (bobp))
+	  (while (and (progn (c-backward-syntactic-ws) t)
+		      (not (bobp))
 		      (progn
 			(backward-sexp 1)
 			(or first
