@@ -3583,9 +3583,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 ;; CASE 12: A case or default label
 	 ((looking-at c-switch-label-key)
 	  (goto-char containing-sexp)
-	  ;; for a case label, we set relpos the first non-whitespace
-	  ;; char on the line containing the switch opening brace. this
-	  ;; should handle hanging switch opening braces correctly.
+	  ;; check for hanging braces
+	  (if (/= (point) (c-point 'boi))
+	      (forward-sexp -1))
 	  (c-add-syntax 'case-label (c-point 'boi)))
 	 ;; CASE 13: any other label
 	 ((looking-at c-label-key)
