@@ -2064,10 +2064,7 @@ search."
 	  (beginning-of-line))
 	 ;; CASE 2: some other kind of literal?
 	 ((c-in-literal))
-	 ;; CASE 3: is this the first time we're checking?
-	 (firstp (setq firstp nil
-		       last-begin (point)))
-	 ;; CASE 4: are we looking at a conditional keyword?
+	 ;; CASE 3: are we looking at a conditional keyword?
 	 ((or (looking-at c-conditional-key)
 	      (and (= (following-char) ?\()
 		   (let ((here (point))
@@ -2085,6 +2082,9 @@ search."
 	      (forward-sexp -1))
 	  (setq last-begin (point)
 		donep t))
+	 ;; CASE 4: is this the first time we're checking?
+	 (firstp (setq firstp nil
+		       last-begin (point)))
 	 ;; CASE 5: have we crossed a statement barrier?
 	 ((let ((lim (point))
 		crossedp)
