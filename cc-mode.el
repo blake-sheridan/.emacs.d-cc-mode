@@ -788,7 +788,9 @@ backward-delete-char-untabify."
 	(last-command-char last-command-char)
 	(bod (c++-point 'bod)))
     (if (and (not arg)
-	     (eolp)
+	     (save-excursion
+	       (skip-chars-forward " \t")
+	       (eolp))
 	     (or (save-excursion
 		   (skip-chars-backward " \t")
 		   (bolp))
