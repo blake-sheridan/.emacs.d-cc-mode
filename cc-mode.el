@@ -1387,7 +1387,8 @@ of the expression are preserved."
 	      (setq this-indent
 		    (+ this-indent c-brace-offset
 		       (if (c++-at-top-level-p t (car contain-stack))
-			   0 c-indent-level))))
+			   c-continued-brace-offset
+			 c-indent-level))))
 	     ;; check for continued statements
 	     ((save-excursion
 		(c++-backward-syntactic-ws (car contain-stack))
