@@ -723,13 +723,21 @@ Returns nil if line starts inside a string, t if in a comment."
 	     ;; Line is at top level.  May be comment-only line, data
 	     ;; or function definition, or may be function argument
 	     ;; declaration or member initialization.  Indent like the
-	     ;; previous top level line unless (1) the previous line
-	     ;; ends in a closeparen without semicolon, in which case
-	     ;; this line is the first argument declaration or member
-	     ;; initialization, or (2) the previous line begins with a
-	     ;; colon, in which case this is the second line of member
-	     ;; inits.  It is assumed that arg decls and member inits
-	     ;; are not mixed.
+	     ;; previous top level line unless:
+	     ;;
+	     ;; 1. the previous line ends in a closeparen without
+	     ;; semicolon, in which case this line is the first
+	     ;; argument declaration or member initialization, or
+	     ;;
+	     ;; 2. the previous line ends with a closeparen
+	     ;; (closebrace), optional spaces, and a semicolon, in
+	     ;; which case this line follows a multiline function
+	     ;; declaration (class definition), or
+	     ;;
+	     ;; 3. the previous line begins with a colon, in which
+	     ;; case this is the second line of member inits.  It is
+	     ;; assumed that arg decls and member inits are not mixed.
+	     ;;
 	     (goto-char indent-point)
 	     (skip-chars-forward " \t")
 	     (if (looking-at "/[/*]")
@@ -747,8 +755,11 @@ Returns nil if line starts inside a string, t if in a comment."
 			   c++-member-init-indent
 			 c-argdecl-indent))
 		   (if (= (preceding-char) ?\;)
-		       (backward-char 1))
-		   (if (= (preceding-char) ?})
+		       (progn
+			 (backward-char 1)
+			 (skip-chars-backward " \t")))
+		   (if (or (= (preceding-char) ?})
+			   (= (preceding-char) ?\)))
 		       0
 		     (beginning-of-line) ; continued arg decls or member inits
 		     (skip-chars-forward " \t")
@@ -816,7 +827,7 @@ Returns nil if line starts inside a string, t if in a comment."
                           c-continued-statement-offset 0)
                       ;; j.peck  [8/13/91]
 		      ;; j.peck hack replaced this line:
-		      ;; (+ c-continued-statement-offset (current-column)
+		      ;; (+ c-continued-statement-offset (current-column) ...)
 		      ;; Add continued-brace-offset? [weikart]
 		      (if (save-excursion (goto-char indent-point)
 					  (skip-chars-forward " \t")
