@@ -2748,7 +2748,7 @@ comment."
 			    (setq saved (point))
 			    t))
 	     (progn (c-backward-syntactic-ws lim)
-		    (memq (preceding-char) '(?\; ?{ ?})))
+		    (memq (preceding-char) '(?\; ?{ ?} ?:)))
 	     )
 	(setq last-begin saved)
       (goto-char last-begin)
