@@ -2391,6 +2391,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
        ;; this will pick up enum lists
        (progn (goto-char containing-sexp)
 	      (c-beginning-of-statement)
+	      ;; c-b-o-s could have left us at point-min
+	      (and (bobp)
+		   (c-forward-syntactic-ws))
 	      (setq bufpos (point))
 	      (and (< bufpos containing-sexp)
 		   (looking-at "\\(typedef[ \t]+\\)?\\<enum\\>")))
@@ -2510,6 +2513,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ;; CASE 4A.2: brace list open
 	     ((save-excursion
 		(c-beginning-of-statement nil lim)
+		;; c-b-o-s could have left us at point-min
+		(and (bobp)
+		     (c-forward-syntactic-ws indent-point))
 		(setq placeholder (point))
 		(or (looking-at "\\<enum\\>")
 		    (= char-before-ip ?=)))
