@@ -2550,6 +2550,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(goto-char indent-point)
 	(skip-chars-forward " \t")
 
+	;; are we in a literal?
+	(setq literal (c-in-literal lim))
+
 	;; now figure out semantic qualities of the current line
 	(cond
 	 ;; CASE 1: in a string.
