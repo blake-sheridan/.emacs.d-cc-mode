@@ -605,11 +605,16 @@ backward-delete-char-untabify."
 				     (not (c++-at-top-level-p t)))))
 		       (setq c++-auto-newline nil))
 		   (if (c++-auto-newline)
-		       ;; this may have auto-filled so we need to indent
-		       ;; the previous line
-		       (save-excursion
-			 (forward-line -1)
-			 (c++-indent-line)))
+		       ;; this may have auto-filled so we need to
+		       ;; indent the previous line. we also need to
+		       ;; indent the currently line, or
+		       ;; c++-beginning-of-defun will not be able to
+		       ;; correctly find the bod when
+		       ;; c++-match-headers-strongly is nil.
+		       (progn (c++-indent-line)
+			      (save-excursion
+				(forward-line -1)
+				(c++-indent-line))))
 		   t)))
 	(progn
 	  (if (and (memq last-command-char c++-untame-characters)
@@ -627,10 +632,6 @@ backward-delete-char-untabify."
 		 (delete-region (point) here))
 	    (goto-char here)
 	    (set-marker here nil))
-	  ;; must do this before inserting brace since otherwise,
-	  ;; c++-beginning-of-defun will not be able to correctly find
-	  ;; the bod when c++-match-headers-strongly is nil.
-	  (c++-indent-line)
 	  (insert last-command-char)
 	  (let ((here (point-marker))
 		mbeg mend)
