@@ -1365,7 +1365,7 @@ Key bindings:
   ;; Emacs 19.30 and beyond only, AFAIK
   (if (boundp 'fill-paragraph-function)
       (progn
-	(make-local-variable 'fill-paragraph-functoin)
+	(make-local-variable 'fill-paragraph-function)
 	(setq fill-paragraph-function 'c-fill-paragraph)))
   ;; now set their values
   (setq paragraph-start (if (memq 'new-re c-emacs-features)
