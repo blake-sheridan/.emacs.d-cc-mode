@@ -2449,7 +2449,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 ((looking-at "else\\b[^_]")
 	  (setq if-level (1+ if-level)))
 	 ((looking-at "if\\b[^_]")
-	  (setq if-level (1- if-level)))
+	  ;; check for else if... skip over
+	  (let ((here (point)))
+	    (c-safe (forward-sexp -1))
+	    (if (looking-at "\\<else\\>[ \t]+\\<if\\>")
+		nil
+	      (setq if-level (1- if-level))
+	      (goto-char here))))
 	 ((< (point) lim)
 	  (setq if-level 0)
 	  (goto-char lim))
