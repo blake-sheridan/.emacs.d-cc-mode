@@ -1604,7 +1604,9 @@ the brace is inserted inside a literal."
 		 ;; if there is whitespace before point, then preserve
 		 ;; at least one space.
 		 (delete-indentation)
-		 (and preserve-p (just-one-space))))
+		 (just-one-space)
+		 (if (not preserve-p)
+		     (delete-char -1))))
 	  ;; since we're hanging the brace, we need to recalculate
 	  ;; syntax.  Update the state to accurately reflect the
 	  ;; beginning of the line.  We punt if we cross any open or
