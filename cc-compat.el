@@ -66,29 +66,24 @@ This is in addition to c-continued-statement-offset.")
 
 ;; these offsets are taken by brute force testing c-mode.el, since
 ;; there's no logic to what it does.
-(let* ((offsets
-	'((defun-block-intro     . cc-block-intro-offset)
-	  (statement-block-intro . cc-block-intro-offset)
-	  (defun-open            . 0)
-	  (class-open            . 0)
-	  (inline-open           . c-brace-offset)
-	  (block-open            . c-brace-offset)
-	  (block-close           . cc-block-close-offset)
-	  (brace-list-open       . c-brace-offset)
-	  (substatement-open     . cc-substatement-open-offset)
-	  (substatement          . c-continued-statement-offset)
-	  (knr-argdecl-intro     . c-argdecl-indent)
-	  (case-label            . c-label-offset)
-	  (access-label          . c-label-offset)
-	  (label                 . c-label-offset)
-	  )))
-  (if (assoc "BOCM" c-style-alist)
-      (setcdr (assoc "BOCM" c-style-alist)
-	      (list (cons 'c-offsets-alist offsets)))
-    (setq c-style-alist
-	  (cons (list "BOCM" (cons 'c-offsets-alist offsets))
-		c-style-alist)))
-  )
+(let* ((offsets	'(c-offsets-alist .
+		    ((defun-block-intro     . cc-block-intro-offset)
+		     (statement-block-intro . cc-block-intro-offset)
+		     (defun-open            . 0)
+		     (class-open            . 0)
+		     (inline-open           . c-brace-offset)
+		     (block-open            . c-brace-offset)
+		     (block-close           . cc-block-close-offset)
+		     (brace-list-open       . c-brace-offset)
+		     (substatement-open     . cc-substatement-open-offset)
+		     (substatement          . c-continued-statement-offset)
+		     (knr-argdecl-intro     . c-argdecl-indent)
+		     (case-label            . c-label-offset)
+		     (access-label          . c-label-offset)
+		     (label                 . c-label-offset)
+		     ))))
+  (c-add-style "BOCM" offsets))
+
 
 (defun cc-block-intro-offset (langelem)
   ;; taken directly from calculate-c-indent confusion
