@@ -2205,6 +2205,63 @@ of the expression are preserved."
     (run-hooks 'cc-special-indent-hook)
     shift-amt))
 
+(defun cc-lineup-arglist (langelem)
+  ;; lineup the current arglist line with the arglist appearing just
+  ;; after the containing paren which starts the arglist.
+  (save-excursion
+    (let ((containing-sexp (cdr langelem))
+	  cs-curcol)
+    (goto-char containing-sexp)
+    (setq cs-curcol (current-column))
+    (or (eolp)
+	(progn
+	  (forward-char 1)
+	  (cc-forward-syntactic-ws (cc-point 'eol))
+	  ))
+    (if (eolp)
+	2
+      (- (current-column) cs-curcol)
+      ))))
+
+(defun cc-lineup-streamop (langelem)
+  ;; lineup stream operators
+  (save-excursion
+    (let ((containing-sexp (cdr langelem))
+	  cs-curcol)
+      (goto-char containing-sexp)
+      (setq cs-curcol (current-column))
+      (skip-chars-forward "^><\n")
+      (- (current-column) cs-curcol))))
+
+(defun cc-lineup-multi-inher (langelem)
+  ;; line up multiple inheritance lines
+  (save-excursion
+    (let (cs-curcol
+	  (eol (cc-point 'eol))
+	  (here (point)))
+      (goto-char (cdr langelem))
+      (setq cs-curcol (current-column))
+      (skip-chars-forward "^:" eol)
+      (skip-chars-forward " \t:" eol)
+      (if (eolp)
+	  (cc-forward-syntactic-ws here))
+      (- (current-column) cs-curcol)
+      )))
+
+(defun cc-indent-for-comment (langelem)
+  ;; support old behavior for comment indentation. we look at
+  ;; cc-comment-only-line-offset to decide how to indent comment
+  ;; only-lines
+  (save-excursion
+    (back-to-indentation)
+    (if (not (bolp))
+	(or (car-safe cc-comment-only-line-offset)
+	    cc-comment-only-line-offset)
+      (or (cdr-safe cc-comment-only-line-offset)
+	  (car-safe cc-comment-only-line-offset)
+	  -1000				;jam it against the left side
+	  ))))
+
 
 ;; commands for "macroizations" -- making C++ parameterized types via
 ;; macros. Also commands for commentifying regions
