@@ -3909,7 +3909,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; CASE 15F: first statement in a block
 	   (t (goto-char containing-sexp)
 	      (if (/= (point) (c-point 'boi))
-		  (c-beginning-of-statement-1 lim))
+		  (c-beginning-of-statement-1
+		   (if (= (point) lim)
+		       (c-safe-position state) lim)))
 	      (c-add-syntax 'statement-block-intro (c-point 'boi))
 	      (if (= char-after-ip ?{)
 		  (c-add-syntax 'block-open)))
