@@ -293,6 +293,12 @@ non-column-zero anchored comment-only lines, and ANCHORED-OFFSET is
 the amount of offset to give column-zero anchored comment-only lines.
 Just an integer as value is equivalent to (<val> . -1000).")
 
+(defvar c-indent-comments-syntactically-p nil
+  "*Specifies how comment-only lines should be indented.
+When this variable is non-nil, comment-only lines are indented
+according to syntactic analysis via `c-offsets-alist', even when
+\\[indent-for-comment] is used.")
+
 (defvar c-block-comments-indent-p nil
   "*Specifies how to re-indent C style block comments.
 
@@ -1310,8 +1316,30 @@ it finds in `c-file-offsets'."
 	 ;; CASE 3: when comment-column is nil, calculate the offset
 	 ;; according to c-offsets-alist.  E.g. identical to hitting
 	 ;; TAB.
-	 ((not comment-column)
-	  (apply '+ (mapcar 'c-get-offset (c-guess-basic-syntax))))
+	 ((and c-indent-comments-syntactically-p
+	       (save-excursion
+		 (skip-chars-forward " \t")
+		 (or (looking-at comment-start)
+		     (eolp))))
+	  (let ((syntax (c-guess-basic-syntax)))
+	    ;; BOGOSITY ALERT: if we're looking at the eol, its
+	    ;; because indent-for-comment hasn't put the comment-start
+	    ;; in the buffer yet.  this will screw up the syntactic
+	    ;; analysis so we kludge in the necessary info.  Another
+	    ;; kludge is that if we're at the bol, then we really want
+	    ;; to ignore any anchoring as specified by
+	    ;; c-comment-only-line-offset since it doesn't apply here.
+	    (if (save-excursion
+		  (beginning-of-line)
+		  (skip-chars-forward " \t")
+		  (eolp))
+		(c-add-syntax 'comment-intro))
+	    (let ((c-comment-only-line-offset
+		   (if (consp c-comment-only-line-offset)
+		       c-comment-only-line-offset
+		     (cons c-comment-only-line-offset
+			   c-comment-only-line-offset))))
+	      (apply '+ (mapcar 'c-get-offset syntax)))))
 	 ;; CASE 4: use comment-column if previous line is a
 	 ;; comment-only line indented to the left of comment-column
 	 ((save-excursion
