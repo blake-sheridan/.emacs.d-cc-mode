@@ -2901,8 +2901,8 @@ of the expression are preserved.
 
   [*] The amount and kind of whitespace inserted is controlled by the
   variable `c-insert-tab-function', which is called to do the actual
-  insertion of whitespace.  Normally function in this variable just
-  inserts a tab character, or the equivalent number of spaces,
+  insertion of whitespace.  Normally the function in this variable
+  just inserts a tab character, or the equivalent number of spaces,
   depending on the variable `indent-tabs-mode'."
 
   (interactive "P")
