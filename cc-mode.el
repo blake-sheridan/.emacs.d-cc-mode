@@ -2563,6 +2563,12 @@ Optional prefix ARG means justify paragraph as well."
 			    (progn
 			      (beginning-of-line)
 			      (skip-chars-forward " \t*" (c-point 'eol))
+			      ;; kludge alert, watch out for */, in
+			      ;; which case fill-prefix should *not*
+			      ;; be "*"!
+			      (if (and (= (following-char) ?/)
+				       (= (preceding-char) ?*))
+				  (forward-char -1))
 			      (point)))
 
 			 ;; If the comment is only one line followed
