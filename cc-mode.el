@@ -4885,13 +4885,17 @@ indentation amount."
     (while syntax
       (setq langelem (car (car syntax))
 	    syntax (cdr syntax))
-      (if (memq langelem non-top-levels)
-	  (save-excursion
-	    (setq syntax nil)
-	    (back-to-indentation)
-	    (if (zerop (current-column))
-		(insert (make-string c-label-minimum-indentation 32))))
-	))))
+      ;; don't adjust comment-only lines
+      (cond ((eq langelem 'comment-intro)
+	     (setq syntax nil))
+	    ((memq langelem non-top-levels)
+	     (save-excursion
+	       (setq syntax nil)
+	       (back-to-indentation)
+	       (if (zerop (current-column))
+		   (insert (make-string c-label-minimum-indentation 32)))
+	       ))
+	    ))))
 
 
 ;;; This page handles insertion and removal of backslashes for C macros.
