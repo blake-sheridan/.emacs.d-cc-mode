@@ -1209,6 +1209,8 @@ used."
 	       ;; looking at the opening of a double quote string
 	       ((string= "\"" match)
 		(if (not (save-restriction
+			   ;; this seems to be necessary since the
+			   ;; re-search-forward will not work without it
 			   (narrow-to-region (point) here)
 			   (re-search-forward
 			    ;; this regexp matches a double quote
@@ -1218,7 +1220,15 @@ used."
 		    'string))
 	       ;; looking at the opening of a single quote string
 	       ((string= "'" match)
-		(if (not (re-search-forward "[^\\]'" here 'move)) 'string))
+		(if (not (save-restriction
+			   ;; see comments from above
+			   (narrow-to-region (point) here)
+			   (re-search-forward
+			    ;; this matches a single quote which is
+			    ;; preceeded by zero or two backslashes.
+			    "\\([^\\]\\|^\\)\\(\\\\\\\\\\)?'"
+			    here 'move)))
+		    'string))
 	       ((string-match "[ \t]*#" match)
 		(if (<= here (progn (end-of-line) (point))) 'pound))
 	       (t nil)))
