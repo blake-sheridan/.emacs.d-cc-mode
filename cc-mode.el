@@ -433,7 +433,6 @@ backward-delete-char-untabify."
 	    (set-marker here (point))
 	    (if (and c++-cleanup-}-else-{-p
 		     (= last-command-char ?\{)
-		     (progn (debug) t)
 		     (let ((status (re-search-backward "}[ \t\n]*else[ \t\n]*{"
 						       nil t)))
 		       (setq mbeg (match-beginning 0)
