@@ -1290,8 +1290,12 @@ of the expression are preserved."
 	    ;; check for continued statements
 	    (if (save-excursion
 		  (c++-backward-syntactic-ws (car contain-stack))
-		  (not (memq (preceding-char)
-			     '(nil ?\000 ?\, ?\; ?\} ?\: ?\{))))
+		  (and (not (memq (preceding-char)
+				  '(nil ?\000 ?\, ?\; ?\} ?\: ?\{)))
+		       (progn
+			 (beginning-of-line)
+			 (skip-chars-forward " \t")
+			 (not (looking-at c++-class-key)))))
 		(setq this-indent (+ this-indent c-continued-statement-offset))
 	      )
 	    ;; check for stream operator
