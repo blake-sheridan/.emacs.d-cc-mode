@@ -2438,7 +2438,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 				(backward-sexp 1)
 				t))
 		 (= (point) containing-sexp))
-	    (c-beginning-of-statement)
 	    (c-add-semantics 'brace-list-close (c-point 'boi)))
 	   ;; CASE 7C: this is just a later brace-list-entry
 	   (t
