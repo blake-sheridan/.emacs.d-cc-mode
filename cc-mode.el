@@ -1635,7 +1635,7 @@ BOD is the beginning of the C++ definition."
 			    (save-excursion
 			      (forward-line 1)
 			      (skip-chars-forward " \t")
-			      (forward-char 1)
+			      (or (eobp) (forward-char 1))
 			      (and (= (preceding-char) ?:)
 				   (/= (following-char) ?:)))
 			    (save-excursion
