@@ -3567,8 +3567,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (beginning-of-line)
 	      (c-backward-syntactic-ws lim))
 	    (cond
-	     ;; CASE 5D.1: hanging member init colon
-	     ((= (preceding-char) ?:)
+	     ;; CASE 5D.1: hanging member init colon, but watch out
+	     ;; for bogus matches on access specifiers inside classes.
+	     ((and (= (preceding-char) ?:)
+		   (save-excursion
+		     (forward-word -1)
+		     (not (looking-at c-access-key))))
 	      (goto-char indent-point)
 	      (c-backward-syntactic-ws lim)
 	      (c-safe (backward-sexp 1))
@@ -3594,6 +3598,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ;; CASE 5D.5: perhaps a top-level statement-cont
 	     (t
 	      (c-beginning-of-statement-1 lim)
+	      ;; skip over any access-specifiers
+	      (if inclass-p
+		  (while (looking-at c-access-key)
+		    (forward-line 1)))
 	      (c-add-syntax 'statement-cont (c-point 'boi)))
 	     ))
 	   ;; CASE 5E: we are looking at a access specifier
