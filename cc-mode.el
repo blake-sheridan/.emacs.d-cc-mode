@@ -1022,11 +1022,6 @@ message.
 
 To see what version of cc-mode you are running, enter `\\[c-version]'.
 
-Note that the details of configuring c++-mode have been moved to the
-accompanying texinfo manual (which is not yet completed -- volunteers
-are welcome).  Until then, please read the README file that came with
-the cc-mode distribution.
-
 The hook variable `c++-mode-hook' is run with no args, if that
 variable is bound and has a non-nil value.  Also the common hook
 c-mode-common-hook is run first, by this defun, `c-mode', and `objc-mode'.
@@ -1061,11 +1056,6 @@ information already added.  You just need to add a description of the
 problem, including a reproducable test case and send the message.
 
 To see what version of cc-mode you are running, enter `\\[c-version]'.
-
-Note that the details of configuring c-mode have been moved to the
-accompanying texinfo manual (which is not yet completed -- volunteers
-are welcome).  Until then, please read the README file that came with
-the cc-mode distribution.
 
 The hook variable `c-mode-hook' is run with no args, if that value is
 bound and has a non-nil value.  Also the common hook
@@ -1102,11 +1092,6 @@ of the problem, including a reproducable test case and send the
 message.
 
 To see what version of cc-mode you are running, enter `\\[c-version]'.
-
-Note that the details of configuring objc-mode have been moved to the
-accompanying texinfo manual (which is not yet completed -- volunteers
-are welcome).  Until then, please read the README file that came with
-the cc-mode distribution.
 
 The hook variable `objc-mode-hook' is run with no args, if that value
 is bound and has a non-nil value.  Also the common hook
