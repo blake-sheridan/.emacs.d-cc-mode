@@ -9,7 +9,7 @@
 ;; Created: a long, long, time ago. adapted from the original c-mode.el
 ;; Version:         $Revision$
 ;; Last Modified:   $Date$
-;; Keywords: C++ C Objective-C
+;; Keywords: c languages oop
 ;; NOTE: Read the commentary below for the right way to submit bug reports!
 
 ;; This file is part of GNU Emacs.
