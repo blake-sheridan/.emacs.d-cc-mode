@@ -2176,7 +2176,7 @@ BOD is the beginning of the C++ definition."
 	    (if (save-excursion
 		  (goto-char indent-point)
 		  (skip-chars-forward " \t\n")
-		  (looking-at "case[ \t]+.*:"))
+		  (looking-at "\\(case[ \t]+.*\\|default[ \t]*\\):"))
 		(progn
 		  (goto-char containing-sexp)
 		  (back-to-indentation)
