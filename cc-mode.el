@@ -1172,6 +1172,7 @@ The expansion is entirely correct because it uses the C preprocessor."
 ;; main entry points for the modes
 (defconst c-list-of-mode-names nil)
 
+;;;###autoload
 (defun c-mode ()
   "Major mode for editing K&R and ANSI C code.
 To submit a problem report, enter `\\[c-submit-bug-report]' from a
@@ -1210,6 +1211,7 @@ Key bindings:
   (run-hooks 'c-mode-hook))
 (setq c-list-of-mode-names (cons "C" c-list-of-mode-names))
 
+;;;###autoload
 (defun c++-mode ()
   "Major mode for editing C++ code.
 To submit a problem report, enter `\\[c-submit-bug-report]' from a
@@ -1248,6 +1250,7 @@ Key bindings:
   (run-hooks 'c++-mode-hook))
 (setq c-list-of-mode-names (cons "C++" c-list-of-mode-names))
 
+;;;###autoload
 (defun objc-mode ()
   "Major mode for editing Objective C code.
 To submit a problem report, enter `\\[c-submit-bug-report]' from an
@@ -1287,6 +1290,7 @@ Key bindings:
   (run-hooks 'objc-mode-hook))
 (setq c-list-of-mode-names (cons "ObjC" c-list-of-mode-names))
 
+;;;###autoload
 (defun java-mode ()
   "Major mode for editing Java code.
 To submit a problem report, enter `\\[c-submit-bug-report]' from an
