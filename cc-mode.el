@@ -77,6 +77,9 @@
   (modify-syntax-entry ?\n ">" c++-mode-syntax-table))
 ;;  (modify-syntax-entry ?\' "." c++-mode-syntax-table))
 
+(defvar c++-block-close-brace-offset 0
+  "*Extra indentation given to close braces which close a block. This
+does not affect braces which close a top-level construct (e.g. function).")
 (defvar c++-continued-member-init-offset nil
   "*Extra indent for continuation lines of member inits; NIL means to align
 with previous initializations rather than with the colon on the first line.")
@@ -181,6 +184,9 @@ c++-<thing> are unique for this mode.
     Extra indentation for line that is a label, or case or ``default:'', or
     ``public:'' or ``private:'', or ``protected:''.
 
+ c++-block-close-brace-offset
+    Extra indentation give to braces which close a block. This does
+    not affect braces which close top-level constructs (e.g. functions).
  c++-continued-member-init-offset
     Extra indentation for continuation lines of member initializations; nil
     means to align with previous initializations rather than with the colon.
@@ -623,7 +629,12 @@ Return the amount the indentation changed by."
 		 ((looking-at "friend\[ \t]class[ \t]")
 		  (setq indent (+ indent c++-friend-offset)))
 		 ((= (following-char) ?})
-		  (setq indent (- indent c-indent-level)))
+		  (setq indent (+ (- indent c-indent-level)
+				  (if (save-excursion
+					(forward-char 1)
+					(c++-at-top-level-p))
+				      (- c++-block-close-brace-offset)
+				    c++-block-close-brace-offset))))
 		 ((= (following-char) ?{)
 		  (setq indent (+ indent c-brace-offset))))))
     (skip-chars-forward " \t")
