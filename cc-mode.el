@@ -803,7 +803,7 @@ point is inside a literal, nothing special happens."
 	  arg
 	  (not (memq 'alignleft cc-electric-pound-behavior)))
       ;; do nothing special
-      (self-insert-command arg)
+      (self-insert-command (prefix-numeric-value arg))
     ;; place the pound character at the left edge
     (let ((pos (- (point-max) (point))))
       (beginning-of-line)
