@@ -879,7 +879,7 @@ All other Emacsen use the `old-re' suite.")
 	   ;; button is hit.  In Lucid Emacs 19.10 and beyond this is
 	   ;; done automatically if we put the menu on mode-popup-menu
 	   ;; variable, see c-common-init. RMS decided that Emacs 19
-	   ;; should use C-Mouse-3.
+	   ;; should use C-Mouse-3 and this just works by default.
 	   (boundp 'current-menubar)
 	   (not (boundp 'mode-popup-menu)))
       (define-key c-mode-map 'button3 'c-popup-menu)))
