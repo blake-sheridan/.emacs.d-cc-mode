@@ -1287,9 +1287,6 @@ of the expression are preserved."
 		(setq this-indent (- this-indent c-indent-level)))
 	    (if (= (following-char) ?{)
 		(setq this-indent (+ this-indent c-brace-offset)))
-	    ;; check for stream operator
-	    (if (looking-at "\\(<<\\|>>\\)")
-		(setq this-indent (c++-calculate-indent)))
 	    ;; check for continued statements
 	    (if (save-excursion
 		  (c++-backward-syntactic-ws (car contain-stack))
@@ -1297,6 +1294,9 @@ of the expression are preserved."
 			     '(nil ?\000 ?\, ?\; ?\} ?\: ?\{))))
 		(setq this-indent (+ this-indent c-continued-statement-offset))
 	      )
+	    ;; check for stream operator
+	    (if (looking-at "\\(<<\\|>>\\)")
+		(setq this-indent (c++-calculate-indent)))
 	    ;; Put chosen indentation into effect.
 	    (or (= (current-column) this-indent)
 		(= (following-char) ?\#)
