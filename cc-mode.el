@@ -1117,16 +1117,21 @@ of the expression are preserved."
 	  (if (> end beg)
 	      (indent-code-rigidly beg end shift-amt "#")))
       (cond
-       ((eq c++-tab-always-indent nil)
+       ;; CASE 1: indent when at column zero or in lines indentation,
+       ;; otherwise insert a tab
+       ((not c++-tab-always-indent)
 	(if (and (save-excursion
 		   (skip-chars-backward " \t")
 		   (bolp))
 		 (or (looking-at "[ \t]*$")
-		     (/= (point) (c++-point 'boi))))
+		     (/= (point) (c++-point 'boi))
+		     (bolp)))
 	    (c++-indent-line bod)
 	  (insert-tab)))
+       ;; CASE 2: just indent the line
        ((eq c++-tab-always-indent t)
 	(c++-indent-line bod))
+       ;; CASE 3: if in a literal, insert a tab, but always indent the line
        ((or (memq (c++-in-literal bod) '(c c++ string))
 	    (save-excursion
 	      (skip-chars-backward " \t")
@@ -1139,6 +1144,7 @@ of the expression are preserved."
 	    (back-to-indentation)
 	    (setq indent-p (and (> here boi) (= (point) boi))))
 	  (if indent-p (insert-tab))))
+       ;; CASE 4: bogus, just indent the line
        (t (c++-indent-line bod))))))
 
 (defun c++-indent-exp ()
