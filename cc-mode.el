@@ -2099,7 +2099,9 @@ BOD is the beginning of the C++ definition."
 	       ;; may be first line after a hanging member init colon.
 	       ;; check to be sure its not a scope operator meaning we
 	       ;; are inside a member def
-	       (or (= (preceding-char) ?:)
+	       (or (and
+		    (= (preceding-char) ?:)
+		    (/= (char-after (1- (point))) ?:))
 		   (save-excursion
 		     (forward-line 1)
 		     (skip-chars-forward " \t")
