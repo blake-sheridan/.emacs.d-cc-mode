@@ -99,6 +99,10 @@
 ;; Without their patience, testing, insight, code contributions, and
 ;; encouragement cc-mode.el would be a far inferior package.
 
+;; Anonymous ftp URL:
+;;
+;;    ftp://ftp.python.org/pub/emacs/cc-mode.tar.gz
+
 ;; LCD Archive Entry:
 ;; cc-mode.el|Barry A. Warsaw|cc-mode-help@merlin.cnri.reston.va.us
 ;; |Major mode for editing C++, Objective-C, and ANSI/K&R C code
