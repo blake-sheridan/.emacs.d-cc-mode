@@ -4,7 +4,7 @@
 
 ;; Author:        1994-1995 Barry A. Warsaw
 ;; Maintainer:    cc-mode-help@merlin.cnri.reston.va.us
-;; Created:       August 1994
+;; Created:       August 1994, split from cc-mode.el
 ;; Version:       $Revision$
 ;; Last Modified: $Date$
 ;; Keywords: c languages oop
