@@ -416,20 +416,21 @@ message."
   (set (make-local-variable 'comment-start-skip) "/\\*+ *\\|// *")
   (set (make-local-variable 'comment-indent-hook) 'c++-comment-indent)
   ;; hack auto-hungry designators into mode-line-format
-  (setq mode-line-format
-	(let ((modeline nil))
-	  (mapcar
-	   (function
-	    (lambda (element)
-	      (setq modeline
-		    (append modeline
-			    (if (eq element 'mode-name)
-				'(mode-name (c++-hungry-delete-key
-					     (c++-auto-newline "/ah" "/h")
-					     (c++-auto-newline "/a")))
-			      (list element))))))
-	   mode-line-format)
-	  modeline))
+  (if (listp mode-line-format)
+      (setq mode-line-format
+	    (let ((modeline nil))
+	      (mapcar
+	       (function
+		(lambda (element)
+		  (setq modeline
+			(append modeline
+				(if (eq element 'mode-name)
+				    '(mode-name (c++-hungry-delete-key
+						 (c++-auto-newline "/ah" "/h")
+						 (c++-auto-newline "/a")))
+				  (list element))))))
+	       mode-line-format)
+	      modeline)))
   (run-hooks 'c++-mode-hook)
   (c++-set-auto-hungry-state
    (memq c++-auto-hungry-initial-state '(auto-only   auto-hungry t))
