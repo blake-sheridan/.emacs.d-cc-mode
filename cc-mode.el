@@ -2903,18 +2903,19 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; lineup the current arglist line with the arglist appearing just
   ;; after the containing paren which starts the arglist.
   (save-excursion
-    (let* ((containing-sexp (save-excursion
-			      ;; arglist-cont-nonempty gives relpos ==
-			      ;; to boi of containing-sexp paren. This
-			      ;; is good when offset is +, but bad
-			      ;; when it is c-lineup-arglist, so we
-			      ;; have to special case a kludge here.
-			      (if (eq (car langelem) 'arglist-cont-nonempty)
-				  (progn
-				    (backward-up-list 1)
-				    (skip-chars-forward " \t" (c-point 'eol)))
-				(goto-char (cdr langelem)))
-			      (point)))
+    (let* ((containing-sexp
+	    (save-excursion
+	      ;; arglist-cont-nonempty gives relpos ==
+	      ;; to boi of containing-sexp paren. This
+	      ;; is good when offset is +, but bad
+	      ;; when it is c-lineup-arglist, so we
+	      ;; have to special case a kludge here.
+	      (if (memq (car langelem) '(arglist-intro arglist-cont-nonempty))
+		  (progn
+		    (backward-up-list 1)
+		    (skip-chars-forward " \t" (c-point 'eol)))
+		(goto-char (cdr langelem)))
+	      (point)))
 	   (cs-curcol (save-excursion
 			(goto-char (cdr langelem))
 			(current-column))))
@@ -2932,9 +2933,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (progn (forward-char 1)
 		   (c-forward-syntactic-ws (c-point 'eol))
 		   ))
-	(if (eolp) 2
-	  (- (current-column) cs-curcol)
-	  )))))
+	;;(if (eolp) 2
+	(- (current-column) cs-curcol)
+	;;  )))))
+	))))
 
 (defun c-lineup-streamop (langelem)
   ;; lineup stream operators
