@@ -1037,6 +1037,7 @@ Key bindings:
   (c-common-init)
   (setq comment-start "// "
 	comment-end ""
+	comment-multi-line nil
 	c-conditional-key c-C++-conditional-key
 	c-comment-start-regexp c-C++-comment-start-regexp
 	c-class-key c-C++-class-key
@@ -1117,6 +1118,7 @@ Key bindings:
   (c-common-init)
   (setq comment-start "// "
 	comment-end   ""
+	comment-multi-line nil
 	c-conditional-key c-C-conditional-key
 	c-comment-start-regexp c-C++-comment-start-regexp
  	c-class-key c-ObjC-class-key
