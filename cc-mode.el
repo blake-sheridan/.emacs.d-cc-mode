@@ -773,7 +773,8 @@ behavior that users are familiar with.")
    "\\(template\\s *<[^>]*>\\s *\\)?"
    ;; I'd like to add \\= in the first grouping below, but 1. its not
    ;; defined in v18, and 2. doesn't seem to work in v19 anyway.
-   "\\([^<a-zA-Z0-9_]\\|\\`\\)[ \t]*class\\|struct\\|union")
+   "\\([^<a-zA-Z0-9_]\\|\\`\\)[ \t]*"
+   "\\(class\\|struct\\|union\\)\\([ \t\n]+\\|\\'\\)")
   "Regexp describing a class declaration, including templates.")
 (defconst c-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
@@ -1819,6 +1820,7 @@ search."
 		(goto-char last-begin))
 	      ;; skip over any unary operators, or other special
 	      ;; characters appearing at front of identifier
+	      (c-backward-syntactic-ws)
 	      (skip-chars-backward "-+!*&:.~")
 	      (setq last-begin (point))
 	      (setq donep t)))
