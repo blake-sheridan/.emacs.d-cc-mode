@@ -174,6 +174,17 @@ Nil is synonymous for 'none and t is synonymous for 'auto-hungry.")
 (defconst c++-mode-help-address "c++-mode-help@anthem.nlm.nih.gov"
   "Address accepting submission of bug reports.")
 
+(defvar c++-tame-comments-p t
+  "*Utilize a backslashing workaround of an emacs scan-lists bug.
+If non-nil, any of the following characters typed in a comment region
+will be prepended with a backslash: ' ( ) { } [ ]
+
+Setting this variable to nil will defeat this feature, but be
+forewarned!  Un-escaped characters in comment regions will break many
+things such as some indenting and blinking of parenthesis.
+
+See also the function c++-tame-comments \"\\[c++-tame-comments]\".")
+
 (defun c++-mode ()
   "Major mode for editing C++ code.  $Revision$
 Do a \"\\[describe-function] c++-dump-state\" for information on
@@ -264,6 +275,10 @@ from their c-mode cousins.
     Address to send bug report via email.
  c++-default-macroize-column
     Column to insert backslashes when macroizing a region.
+ c++-tame-comments-p
+    When non-nil, inserts backslash escapes before certain untamed
+    characters in comment regions. It is recommended that you keep the
+    default setting to workaround a nasty emacs bug.
 
 Auto-newlining is no longer an all or nothing proposition. To be
 specific I don't believe it is possible to implement a perfect
@@ -437,9 +452,12 @@ Optional argument has the following meanings when supplied:
 Because of a syntax bug in emacs' scan-lists function, characters with
 string or parenthesis syntax must be escaped with a backslash or lots
 of things get messed up. Unfortunately, setting
-parse-sexp-ignore-comments to non-nil does not fix the problem."
+parse-sexp-ignore-comments to non-nil does not fix the problem.
+
+To turn this feature off, set c++-tame-comments-p to nil."
   (interactive "p")
-  (if (c++-in-comment-p)
+  (if (and c++-tame-comments-p
+	   (c++-in-comment-p))
       (insert "\\"))
   (self-insert-command arg))
 
@@ -488,7 +506,8 @@ backward-delete-char-untabify."
 		     (c++-indent-line))
 		   t)))
 	(progn
-	  (if (c++-in-comment-p)
+	  (if (and c++-tame-comments-p
+		   (c++-in-comment-p))
 	      (insert "\\"))
 	  (insert last-command-char)
 	  (let ((here (make-marker)) mbeg mend)
@@ -1543,6 +1562,7 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 		       'c++-match-header-strongly
 		       'c++-defun-header-strong-struct-equivs
 		       'c++-tab-always-indent
+		       'c++-tame-comments-p
 		       'c-indent-level
 		       'c-continued-statement-offset
 		       'c-continued-brace-offset
