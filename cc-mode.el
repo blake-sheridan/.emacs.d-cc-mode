@@ -1307,12 +1307,14 @@ function definition.")
   (let ((restore (point)))
     (c++-end-of-defun 1)
     (beginning-of-line 1)
-    (let ((end (point)))
+    (let ((end (make-marker)))
+      (set-marker end (point))
       (c++-beginning-of-defun 1)
-      (while (< (point) end)
+      (while (and (< (point) end))
 	(c++-indent-line)
 	(forward-line 1)
-	(beginning-of-line 1)))
+	(beginning-of-line 1))
+      (set-marker end nil))
     (goto-char restore)))
 
 
