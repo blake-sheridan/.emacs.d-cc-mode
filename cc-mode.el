@@ -2686,7 +2686,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			  ;; current line and extends past it
 			  (goto-char sexpend)
 			  (setq sexpend (point-marker))
-			  (backward-sexp 1)
+			  (c-safe (backward-sexp 1))
 			  (setq sexpbeg (point)))))
 		  ;; check to see if the next line starts a
 		  ;; comment-only line
