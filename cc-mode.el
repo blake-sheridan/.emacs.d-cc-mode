@@ -296,7 +296,7 @@ Can contain an integer or a cons cell of the form:
 Where NON-ANCHORED-OFFSET is the amount of offset given to
 non-column-zero anchored comment-only lines, and ANCHORED-OFFSET is
 the amount of offset to give column-zero anchored comment-only lines.
-Just an integer as value is equivalent to (<val> . 0)")
+Just an integer as value is equivalent to (<val> . -1000).")
 
 (defvar c-block-comments-indent-p nil
   "*Specifies how to re-indent C style block comments.
@@ -419,7 +419,7 @@ useful for Emacs 19.")
 (defvar c-style-alist
   '(("GNU"
      (c-basic-offset . 2)
-     (c-comment-only-line-offset . 0)
+     (c-comment-only-line-offset . (0 . 0))
      (c-offsets-alist . ((statement-block-intro . +)
 			 (knr-argdecl-intro . 5)
 			 (substatement-open . +)
