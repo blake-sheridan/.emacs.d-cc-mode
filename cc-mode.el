@@ -927,6 +927,12 @@ backward-delete-char-untabify."
 	  (if (and (memq last-command-char c++-untame-characters)
 		   (memq (c++-in-literal bod) '(c c++)))
 	      (insert "\\"))
+	  ;; we need to work around a bogus feature of emacs where an
+	  ;; open brace at bolp means a beginning-of-defun.  but it
+	  ;; really might not.
+	  (and (= last-command-char ?{)
+	       (bolp)
+	       (c++-indent-line))
 	  (insert last-command-char)
 	  ;; try to clean up empty defun braces if conditions apply
 	  (let ((here (point-marker)))
