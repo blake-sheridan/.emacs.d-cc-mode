@@ -1773,6 +1773,36 @@ defaults to `point-max'."
       (setq state (parse-partial-sexp (point) limit 0)))
     state))
 
+(defun c++-search-uplist-for-classkey ()
+  ;; find a classkey in the enclosing block before point. if found,
+  ;; leave point at classkey and return t, otherwise return nil
+  (let ((bosexp (c++-point 'boe))
+	(eosexp (c++-point 'eoe))
+	donep foundp)
+    (while (not donep)
+      (goto-char eosexp)
+      (if (and (re-search-backward c++-class-key bosexp t)
+	       (not (c++-in-literal)))
+	  (setq donep t
+		foundp t)
+	(setq eosexp bosexp
+	      bosexp (c++-point 'boe))
+	(if (= eosexp bosexp)
+	    (setq donep t))
+	))
+      foundp))
+
+(defun c++-narrow-out-enclosing-class ()
+  ;; narrow out the enclosing class from the class opening brace to
+  ;; point. assumes there is an enclosing class
+  (let ((end (point))
+	(start (progn
+		 (if (not (c++-search-uplist-for-classkey))
+		     (error "No enclosing class!"))
+		 (down-list 1)
+		 (1+ (point)))))
+    (narrow-to-region start end)))
+
 (defun c++-at-top-level-p (wrt &optional bod)
   "Return t if point is not inside a containing C++ expression, nil
 if it is embedded in an expression.  When WRT is non-nil, returns nil
@@ -2566,6 +2596,8 @@ POSITION can be one of the following symbols:
   `eol' -- end of line
   `bod' -- beginning of defun
   `boi' -- back to indentation
+  `boe' -- beginning enclosing block
+  `eoe' -- end of enclosing block (before point)
 This function does not modify point or mark."
   (let ((here (point)) bufpos)
     (cond
@@ -2573,6 +2605,21 @@ This function does not modify point or mark."
      ((eq position 'eol) (end-of-line))
      ((eq position 'bod) (beginning-of-defun))
      ((eq position 'boi) (back-to-indentation))
+     ((eq position 'boe) (condition-case nil
+			     (up-list -2)
+			   (error
+			    (goto-char here)
+			    (if (condition-case nil
+				    (up-list -1)
+				  (error t))
+				(beginning-of-defun)
+			      (condition-case nil
+				  (down-list -1)
+				(error (beginning-of-defun))
+				)))))
+     ((eq position 'eoe) (condition-case nil
+			     (up-list -1)
+			   (error (goto-char here))))
      )
     (setq bufpos (point))
     (goto-char here)
