@@ -1802,44 +1802,65 @@ search."
   (c-keep-region-active))
 
 (defun c-beginning-of-statement-1 ()
-  (let ((last-begin (point))
-	in-literal
-	(first t))
-    (condition-case ()
-	(progn
-	  (while (and (not (bobp))
-		      (progn
-			(backward-sexp 1)
-			(or first
-			    (not (re-search-forward "[;{}]" last-begin t))
-			    ))
-		      (not (or (setq in-literal (c-in-literal))
-			       (looking-at c-conditional-key)))
-		      )
-	    (if (and (not in-literal)
-		     (not (looking-at c-switch-label-key))
-		     (not (looking-at c-label-key)))
-		(setq last-begin (point)
-		      first nil)))
-	  (cond
-	   ;; CASE 1: we're in the middle of an else-if clause
-	   ((save-excursion
-	      (c-safe (forward-sexp -1))
-	      (looking-at "\\<else\\>[ \t]+\\<if\\>"))
-	    (forward-sexp -1))
-	   ;; CASE 2: we're looking at any other conditional clause
-	   ((looking-at c-conditional-key))
-	   ;; CASE 3: anything else
-	   (t (goto-char last-begin))))
-      ;; error for condition-case
-      (error (if first
-		 (backward-up-list 1)
-	       (goto-char last-begin)
-	       ;; skip over any unary operators, or other special
-	       ;; characters appearing at front of identifier 
-	       (skip-chars-backward "-+!*&:.~")
-	       ))
-      )))
+  ;; move to the start of the current statement, or the previous
+  ;; statement if already at the beginning of one.
+  (let ((firstp t)
+	donep literal-cache
+	(last-begin (point)))
+    (while (not donep)
+      ;; stop at beginning of buffer
+      (if (bobp) (setq donep t)
+	;; go backwards one balanced expression, but be careful of
+	;; unbalanced paren being reached
+	(if (not (c-safe (progn (backward-sexp 1) t)))
+	    (progn
+	      (if firstp
+		  (backward-up-list 1)
+		(goto-char last-begin))
+	      ;; skip over any unary operators, or other special
+	      ;; characters appearing at front of identifier
+	      (skip-chars-backward "-+!*&:.~")
+	      (setq last-begin (point))
+	      (setq donep t)))
+
+	;; see if we're in a literal. if not, then this bufpos may be
+	;; a candidate for stopping
+	(cond
+	 ;; CASE 0: did we hit the error condition above?
+	 (donep)
+	 ;; CASE 1: are we in a literal?
+	 ((eq (setq literal-cache (c-in-literal)) 'pound)
+	  (beginning-of-line))
+	 ;; CASE 2: some other kind of literal?
+	 (literal-cache)
+	 ;; CASE 3: is this the first time we're checking?
+	 (firstp (setq firstp nil
+		       last-begin (point)))
+	 ;; CASE 4: are we looking at a conditional keyword?
+	 ((looking-at c-conditional-key)
+	  ;; are we in the middle of an else-if clause?
+	  (if (save-excursion
+		(c-safe (forward-sexp -1))
+		(looking-at "\\<else\\>[ \t]+\\<if\\>"))
+	      (forward-sexp -1))
+	  (setq last-begin (point)
+		donep t))
+	 ;; CASE 5: have we crossed a statement barrier?
+	 ((let (crossedp (here (point)))
+	    (save-excursion
+	      (while (and (not crossedp)
+			  (< (point) last-begin))
+		(skip-chars-forward "^;{}" last-begin)
+		(if (and (memq (following-char) '(?\; ?{ ?}))
+			 (not (c-in-literal)))
+		    (setq crossedp t
+			  donep t)
+		  )))
+	    crossedp))
+	 ;; CASE 6: nothing special
+	 (t (setq last-begin (point)))
+	 )))
+    (goto-char last-begin)))
 
 (defun c-end-of-statement-1 ()
   (condition-case ()
