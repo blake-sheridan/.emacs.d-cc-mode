@@ -906,9 +906,12 @@ If `c++-hungry-delete-key' is nil, just call `backward-delete-char-untabify'."
   (if (memq (c++-in-literal) '(c c++ string))
       (self-insert-command arg)
     (let ((here (point-marker))
+	  (char-at-boi (char-after (c++-point 'boi)))
 	  (bobp (bobp))
 	  (bolp (bolp)))
-      (if (memq 'alignleft c++-electric-pound-behavior)
+      (if (and (memq 'alignleft c++-electric-pound-behavior)
+	       char-at-boi
+	       (/= char-at-boi ?#))
 	  (progn (beginning-of-line)
 		 (delete-horizontal-space)))
       (if bobp
