@@ -745,8 +745,11 @@ supported list, along with the values for this variable:
   (define-key c-mode-map "\e\C-q"    'c-indent-exp)
   (define-key c-mode-map "\ea"       'c-beginning-of-statement)
   (define-key c-mode-map "\ee"       'c-end-of-statement)
-  ;; I'd rather use an adaptive fill program instead of this.
-  (define-key c-mode-map "\eq"       'c-fill-paragraph)
+  ;; Emacs 19.30 introduces fill-paragraph-function, but it's not in
+  ;; every version of Emacs cc-mode supports.
+  (if (not (boundp 'fill-paragraph-function))
+      ;; I'd rather use an adaptive fill program instead of this.
+      (define-key c-mode-map "\eq"       'c-fill-paragraph))
   (define-key c-mode-map "\C-c\C-n"  'c-forward-conditional)
   (define-key c-mode-map "\C-c\C-p"  'c-backward-conditional)
   (define-key c-mode-map "\C-c\C-u"  'c-up-conditional)
@@ -1136,6 +1139,11 @@ Key bindings:
   (make-local-variable 'outline-regexp)
   (make-local-variable 'outline-level)
   (make-local-variable 'adaptive-fill-regexp)
+  ;; Emacs 19.30 and beyond only, AFAIK
+  (if (boundp 'fill-paragraph-function)
+      (progn
+	(make-local-variable 'fill-paragraph-functoin)
+	(setq fill-paragraph-function 'c-fill-paragraph)))
   ;; now set their values
   (setq paragraph-start (concat "^$\\|" page-delimiter)
 	paragraph-separate paragraph-start
@@ -2084,7 +2092,7 @@ Optional prefix ARG means justify paragraph as well."
 				    (forward-line 1))
 				  (point)))
 	      (fill-paragraph arg)
-	      )))
+	      t)))
       ;; else C style comments
       (if (or first-line
 	      ;; t if we enter a comment between start of function and
@@ -2201,9 +2209,8 @@ Optional prefix ARG means justify paragraph as well."
 		    ;(delete-indentation)))))
 		    (let ((fill-column (+ fill-column 9999)))
 		      (forward-line -1)
-		      (fill-region-as-paragraph (point) (point-max)))))))
-	;; Outside of comments: do ordinary filling.
-	(fill-paragraph arg)))))
+		      (fill-region-as-paragraph (point) (point-max))))))
+	    t)))))
 
 ;; better movement routines for ThisStyleOfVariablesCommonInCPlusPlus
 ;; originally contributed by Terry_Glanfield.Southern@rxuk.xerox.com
