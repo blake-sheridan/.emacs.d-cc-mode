@@ -2961,7 +2961,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		      ;; try to see if we found the `class' keyword
 		      ;; inside a template arg list
 		      (save-excursion
-			(skip-chars-backward "^<" search-start)
+			(skip-chars-backward "^<>" search-start)
 			(if (= (preceding-char) ?<)
 			    (setq skipchars (concat skipchars ">"))))
 		      (skip-chars-forward skipchars search-end)
