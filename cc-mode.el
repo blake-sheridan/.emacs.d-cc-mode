@@ -802,15 +802,14 @@ you want to add a comment to the end of a line."
 (defun c++-electric-star (arg)
   "Works with c++-electric-slash to auto indent C style comment lines."
   (interactive "P")
-  (cond ((= (preceding-char) ?/)
-	 (let ((c++-auto-newline nil))
-	   (c++-electric-terminator arg)))
-	((and (memq (c++-in-literal) '(c))
-	      (= (point) (c++-point 'boi)))
-	 (self-insert-command (prefix-numeric-value arg))
-	 (c++-indent-line))
-	(t
-	 (self-insert-command (prefix-numeric-value arg)))))
+  (if (= (preceding-char) ?/)
+      (let ((c++-auto-newline nil))
+	(c++-electric-terminator arg))
+    (self-insert-command (prefix-numeric-value arg))
+    (if (and (memq (c++-in-literal) '(c))
+	     (or (= (point) (c++-point 'boi))
+		 (= (preceding-char) ?*)))
+	(c++-indent-line))))
 
 (defun c++-electric-semi (arg)
   "Insert character and correct line's indentation."
