@@ -1960,46 +1960,48 @@ of the expression are preserved."
 Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (interactive "P")
   (let ((here (point))
-	(bod (c-point 'bod))
-	(c-echo-semantic-information-p nil) ;keep quiet for speed
-	(start (progn
-		 ;; try to be smarter about finding the range of lines
-		 ;; to indent
-		 (skip-chars-forward " \t")
-		 (if (memq (following-char) '(?\( ?\[ ?\{))
-		     (point)
-		   (let ((state (parse-partial-sexp (point) (c-point 'eol))))
-		     (and (nth 1 state)
-			  (goto-char (nth 1 state))
-			  (memq (following-char) '(?\( ?\[ ?\{))
-			  (point))))))
-	;; find balanced expression end
-	(end (and (c-safe (progn (forward-sexp 1) t))
-		  (point-marker))))
-    ;; sanity check
+	end)
     (unwind-protect
-	(progn
+	(let ((bod (c-point 'bod))
+	      (c-echo-semantic-information-p nil) ;keep quiet for speed
+	      (start (progn
+		       ;; try to be smarter about finding the range of
+		       ;; lines to indent. skip all following
+		       ;; whitespace. failing that, try to find any
+		       ;; opening brace on the current line
+		       (skip-chars-forward " \t\n")
+		       (if (memq (following-char) '(?\( ?\[ ?\{))
+			   (point)
+			 (let ((state (parse-partial-sexp (point)
+							  (c-point 'eol))))
+			   (and (nth 1 state)
+				(goto-char (nth 1 state))
+				(memq (following-char) '(?\( ?\[ ?\{))
+				(point)))))))
+	  ;; find balanced expression end
+	  (setq end (and (c-safe (progn (forward-sexp 1) t))
+			 (point-marker)))
+	  ;; sanity check
 	  (and (not start)
 	       (not shutup-p)
 	       (error "Cannot find start of balanced expression to indent."))
 	  (and (not end)
 	       (not shutup-p)
-	       (error "Cannot find end of balanced expression to indent.")))
-      (goto-char here))
-    (or shutup-p
-	(message "indenting expression... (this may take a while)"))
-    (goto-char start)
-    (beginning-of-line)
-    (unwind-protect
-	(while (< (point) end)
-	  (if (not (looking-at "[ \t]*$"))
-	      (c-indent-via-language-element bod))
-	  (forward-line 1))
+	       (error "Cannot find end of balanced expression to indent."))
+	  (or shutup-p
+	      (message "indenting expression... (this may take a while)"))
+	  (goto-char start)
+	  (beginning-of-line)
+	  (while (< (point) end)
+	    (if (not (looking-at "[ \t]*$"))
+		(c-indent-via-language-element bod))
+	    (forward-line 1)))
       ;; make sure marker is deleted
-      (set-marker end nil))
-    (or shutup-p
-	(message "indenting expression... done."))
-    (goto-char here)))
+      (and end
+	   (set-marker end nil))
+      (or shutup-p
+	  (message "indenting expression... done."))
+      (goto-char here))))
 
 (defun c-indent-defun ()
   "Re-indents the current top-level function def, struct or class declaration."
