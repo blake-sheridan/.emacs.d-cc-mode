@@ -2139,9 +2139,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (backward-sexp 1)
 	    (cond
 	     ((memq (c-in-literal lim) '(c c++)))
-	     ((looking-at "while\\b")
+	     ((looking-at "while\\b[^_]")
 	      (setq do-level (1+ do-level)))
-	     ((looking-at "do\\b")
+	     ((looking-at "do\\b[^_]")
 	      (setq do-level (1- do-level)))
 	     ((< (point) lim)
 	      (setq do-level 0)
@@ -2158,7 +2158,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   (let ((if-level 1)
 	(case-fold-search nil)
 	(lim (or lim (c-point 'bod)))
-	(at-if (looking-at "if\\b")))
+	(at-if (looking-at "if\\b[^_]")))
     (catch 'orphan-if
       (while (and (not (bobp))
 		  (not (zerop if-level)))
@@ -2170,9 +2170,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	       (throw 'orphan-if nil)
 	     (error "Orphaned `else' clause encountered."))))
 	(cond
-	 ((looking-at "else\\b")
+	 ((looking-at "else\\b[^_]")
 	  (setq if-level (1+ if-level)))
-	 ((looking-at "if\\b")
+	 ((looking-at "if\\b[^_]")
 	  (setq if-level (1- if-level)))
 	 ((< (point) lim)
 	  (setq if-level 0)
@@ -2677,11 +2677,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 ((progn
 	    (goto-char indent-point)
 	    (skip-chars-forward " \t")
-	    (and (looking-at "while\\b")
+	    (and (looking-at "while\\b[^_]")
 		 (save-excursion
 		   (c-backward-to-start-of-do containing-sexp)
 		   (setq placeholder (point))
-		   (looking-at "do\\b"))
+		   (looking-at "do\\b[^_]"))
 		 ))
 	  (c-add-semantics 'do-while-closure placeholder))
 	 ;; CASE 11: A case or default label
