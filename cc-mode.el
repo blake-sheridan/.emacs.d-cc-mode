@@ -193,7 +193,6 @@ FSF 19 (patched):        (8-bit v19)")
   (define-key c++-mode-map "\e\C-h"    'mark-c-function)
   (define-key c++-mode-map "\e\C-q"    'c++-indent-exp)
   (define-key c++-mode-map "\t"        'c++-indent-command)
-  (define-key c++-mode-map "\C-c\C-i"  'c++-insert-header)
   (define-key c++-mode-map "\C-c\C-\\" 'c++-macroize-region)
   (define-key c++-mode-map "\C-c\C-c"  'c++-comment-region)
   (define-key c++-mode-map "\C-c\C-u"  'c++-uncomment-region)
@@ -1438,16 +1437,6 @@ of the expression are preserved."
 		    (progn (indent-for-comment)
 			   (beginning-of-line))))
 	    ))))))
-
-(defun c++-insert-header ()
-  "Insert header denoting C++ code at top of buffer."
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (insert "// "
-	    "This may look like C code, but it is really "
-	    "-*- C++ -*-"
-	    "\n\n")))
 
 (defun c++-tame-comments ()
   "Backslashifies all untamed in comment regions found in the buffer.
