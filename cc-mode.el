@@ -866,10 +866,6 @@ Infodock (based on XEmacs) has an additional symbol on this list:
 	(define-key map [menu-bar] (make-sparse-keymap))
 	(define-key map [menu-bar c] (cons name (make-sparse-keymap name)))
 
-	(define-key map [menu-bar c compile]
-	  '("Compile" . compile)) 
-	(define-key map [menu-bar c separator1]
-	  '("----")) 
 	(define-key map [menu-bar c comment-region]
 	  '("Comment Out Region" . comment-region))
 	(define-key map [menu-bar c c-macro-expand]
