@@ -64,7 +64,6 @@
   (define-key c++-mode-map ";"         'c++-electric-semi)
   (define-key c++-mode-map "\e\C-h"    'mark-c-function)
   (define-key c++-mode-map "\e\C-q"    'c++-indent-exp)
-  (define-key c++-mode-map "\177"      'backward-delete-char-untabify)
   (define-key c++-mode-map "\t"        'c++-indent-command)
   (define-key c++-mode-map "\C-c\C-i"  'c++-insert-header)
   (define-key c++-mode-map "\C-c\C-\\" 'c++-macroize-region)
