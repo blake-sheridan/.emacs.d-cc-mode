@@ -197,7 +197,8 @@ FSF 19 (patched):        (8-bit v19)")
   (define-key c++-mode-map "\C-m"      'newline-and-indent)
   (define-key c++-mode-map "{"         'c++-electric-brace)
   (define-key c++-mode-map "}"         'c++-electric-brace)
-  (define-key c++-mode-map ";"         'c++-electric-semi)
+  (define-key c++-mode-map ";"         'c++-electric-semi&comma)
+  (define-key c++-mode-map ","         'c++-electric-semi&comma)
   (define-key c++-mode-map "#"         'c++-electric-pound)
   (define-key c++-mode-map "\e\C-h"    'mark-c-function)
   (define-key c++-mode-map "\e\C-q"    'c++-indent-exp)
@@ -363,7 +364,9 @@ Current legal values are:
                          placing them on the same line.
  `defun-close-semi'   -- cleans up the terminating semi-colon on class
                          definitions and functions by placing the semi
-                         on the same line as the closing brace.")
+                         on the same line as the closing brace.
+ `list-close-comma    -- cleans up commas following braces in array
+                         and aggregate initializers.")
 (defvar c++-hanging-braces t
   "*Controls the insertion of newlines before open (left) braces.
 This variable only has effect when auto-newline is on, as evidenced by
@@ -613,7 +616,8 @@ from their c-mode cousins.
  c++-cleanup-list
     A list of construct \"clean ups\" which c++-mode will perform when
     auto-newline feature is on.  Current legal values are:
-    `brace-else-brace', `empty-defun-braces', `defun-close-semi'.
+    `brace-else-brace', `empty-defun-braces', `defun-close-semi',
+    `list-close-comma'.
  c++-comment-only-line-offset
     Extra indentation for a line containing only a C or C++ style
     comment.  Can be an integer or list, specifying the various styles
@@ -1041,21 +1045,27 @@ we're on a comment-only line, otherwise use `indent-for-comment' (\\[indent-for-
 	  (goto-char here)
 	  (c++-indent-line)))))
 
-(defun c++-electric-semi (arg)
+(defun c++-electric-semi&comma (arg)
   "Insert character and correct line's indentation."
   (interactive "P")
   (if (c++-in-literal)
       (self-insert-command (prefix-numeric-value arg))
-    (let ((here (point-marker)))
-      (if (and (memq 'defun-close-semi c++-cleanup-list)
+    (let ((here (point-marker))
+	  (lcc last-command-char))
+      (if (and (or (and (= lcc ?,)
+			(memq 'list-close-comma c++-cleanup-list))
+		   (and (= lcc ?\;)
+			(memq 'defun-close-semi c++-cleanup-list)))
 	       c++-auto-newline
 	       (progn
 		 (skip-chars-backward " \t\n")
 		 (= (preceding-char) ?})))
 	  (delete-region here (point)))
       (goto-char here)
-      (set-marker here nil))
-    (c++-electric-terminator arg)))
+      (set-marker here nil)
+      (if (= lcc ?,)
+	  (self-insert-command (prefix-numeric-value arg))
+	(c++-electric-terminator arg)))))
 
 (defun c++-electric-colon (arg)
   "Electrify colon.
