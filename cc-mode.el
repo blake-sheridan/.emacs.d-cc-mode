@@ -1438,6 +1438,12 @@ nil, or point is inside a literal then the function in the variable
 	(funcall c-delete-function 1)
 	))))
 
+;; for delsel
+(put 'c-electric-delete 'delete-selection 'supersede)
+;; for pending-del, even though XEmacs' version ships with this already
+(put 'c-electric-delete 'pending-delete 'supersede)
+
+
 (defun c-electric-pound (arg)
   "Electric pound (`#') insertion.
 Inserts a `#' character specially depending on the variable
