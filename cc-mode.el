@@ -210,8 +210,6 @@ styles in a single mode.")
     ()
   (setq c++-mode-syntax-table (make-syntax-table))
   (modify-syntax-entry ?\\ "\\"    c++-mode-syntax-table)
-  (modify-syntax-entry ?/  ". 124" c++-mode-syntax-table)
-  (modify-syntax-entry ?*  ". 23b" c++-mode-syntax-table)
   (modify-syntax-entry ?+  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?-  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?=  "."     c++-mode-syntax-table)
@@ -221,17 +219,26 @@ styles in a single mode.")
   (modify-syntax-entry ?&  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?|  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?\' "\""    c++-mode-syntax-table)
-  (modify-syntax-entry ?\n ">"     c++-mode-syntax-table)
+  ;; comment syntax
   (if c++-emacs-is-really-fixed-p
-      (modify-syntax-entry ?# "<"  c++-mode-syntax-table))
-  )
+      ;; these entries will only work with the latest patches to lemacs
+      (progn
+	;;(modify-syntax-entry ?# "< b"     c++-mode-syntax-table)
+	(modify-syntax-entry ?/  ". 1456" c++-mode-syntax-table)
+	(modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
+	(modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
+	)
+    ;; though its not optimal, these will work for older, broken
+    ;; emacses. some strange behavior may be encountered. PATCH YOUR EMACS!
+    (modify-syntax-entry ?/  ". 124" c++-mode-syntax-table)
+    (modify-syntax-entry ?*  ". 23"  c++-mode-syntax-table)
+    (modify-syntax-entry ?\n ">"     c++-mode-syntax-table)
+    ))
 
 (if c++-c-mode-syntax-table
     ()
   (setq c++-c-mode-syntax-table (make-syntax-table))
   (modify-syntax-entry ?\\ "\\"    c++-c-mode-syntax-table)
-  (modify-syntax-entry ?/  ". 14"  c++-c-mode-syntax-table)
-  (modify-syntax-entry ?*  ". 23"  c++-c-mode-syntax-table)
   (modify-syntax-entry ?+  "."     c++-c-mode-syntax-table)
   (modify-syntax-entry ?-  "."     c++-c-mode-syntax-table)
   (modify-syntax-entry ?=  "."     c++-c-mode-syntax-table)
@@ -241,9 +248,20 @@ styles in a single mode.")
   (modify-syntax-entry ?&  "."     c++-c-mode-syntax-table)
   (modify-syntax-entry ?|  "."     c++-c-mode-syntax-table)
   (modify-syntax-entry ?\' "\""    c++-c-mode-syntax-table)
+  ;; comment syntax
   (if c++-emacs-is-really-fixed-p
-      (modify-syntax-entry ?# "<"  c++-mode-syntax-table))
-  )
+      ;; these entries will only work with the latest patches to lemacs
+      (progn
+	;;(modify-syntax-entry ?# "< b"     c++-mode-syntax-table)
+	;;(modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
+	(modify-syntax-entry ?/  ". 14" c++-mode-syntax-table)
+	(modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
+	)
+    ;; though its not optimal, these will work for older, broken
+    ;; emacses. some strange behavior may be encountered. PATCH YOUR EMACS!
+    (modify-syntax-entry ?/  ". 14"  c++-mode-syntax-table)
+    (modify-syntax-entry ?*  ". 23"  c++-mode-syntax-table)
+    ))
 
 (defvar c++-tab-always-indent
   (if (boundp 'c-tab-always-indent) c-tab-always-indent t)
