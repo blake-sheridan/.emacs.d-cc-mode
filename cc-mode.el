@@ -2123,14 +2123,16 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	     ((= char-before-ip ?,)
 	      (cc-add-semantics 'statement-cont (cc-point 'boi)))
 	     ;; CASE 13.D: a question/colon construct?  But make sure
-	     ;; what came before was not a label!
+	     ;; what came before was not a label, and what comes after
+	     ;; is not a globally scoped function call!
 	     ((or (and (memq char-before-ip '(?: ??))
 		       (save-excursion
 			 (goto-char indent-point)
 			 (cc-backward-syntactic-ws lim)
 			 (back-to-indentation)
 			 (not (looking-at cc-label-key))))
-		  (memq char-after-ip '(?: ??)))
+		  (and (memq char-after-ip '(?: ??))
+		       (not (looking-at "[ \t]*::"))))
 	      (cc-add-semantics 'statement-cont (cc-point 'boi)))
 	     ;; CASE 13.E: any old statement
 	     ((< (point) indent-point)
