@@ -844,9 +844,9 @@ the brace is inserted inside a literal."
 	 (literal (cc-in-literal bod))
 	 ;; we want to inhibit blinking the paren since this will be
 	 ;; most disruptive. we'll blink it ourselves later on
-	 (old-blink-paren (if (memq 'v18 cc-emacs-features)
-			      blink-paren-hook
-			    blink-paren-function))
+	 (old-blink-paren (if (boundp 'blink-paren-function)
+			      blink-paren-function
+			    blink-paren-hook))
 	 blink-paren-function		; emacs19
 	 blink-paren-hook		; emacs18
 	 semantics newlines)
@@ -926,9 +926,9 @@ the brace is inserted inside a literal."
 	   old-blink-paren
 	   (save-excursion
 	     (cc-backward-syntactic-ws bod)
-	     (if (memq 'v18 cc-emacs-features)
-		 (run-hooks old-blink-paren)
-	       (funcall old-blink-paren))))
+	     (if (boundp 'blink-paren-function)
+		 (funcall old-blink-paren)
+	       (run-hooks old-blink-paren))))
       )))
       
 (defun cc-electric-slash (arg)
