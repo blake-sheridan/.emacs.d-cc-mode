@@ -963,6 +963,9 @@ behavior that users are familiar with.")
 (defconst c-C++-conditional-key
   "\\b\\(for\\|if\\|do\\|else\\|while\\|switch\\|try\\|catch\\)\\b[^_]"
   "Regexp describing a conditional control for C++.")
+(defconst c-C++-friend-key
+  "friend[ \t]+\\|template[ \t]*<.+>[ \t]*friend[ \t]+"
+  "Regexp describing friend declarations in C++ classes.")
 
 (defconst c-ObjC-method-key
   (concat
@@ -4067,9 +4070,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	;; are we looking at a comment only line?
 	(if (looking-at c-comment-start-regexp)
 	    (c-add-syntax 'comment-intro))
-	;; we might want to give additional offset to friends (in C++)
+	;; we might want to give additional offset to friends (in C++).
 	(if (and (eq major-mode 'c++-mode)
-		 (looking-at "friend[ \t]+"))
+		 (looking-at c-C++-friend-key))
 	    (c-add-syntax 'friend))
 	;; return the syntax
 	syntax))))
