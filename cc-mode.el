@@ -1208,6 +1208,9 @@ of the expression are preserved."
 		(setq this-indent (- this-indent c-indent-level)))
 	    (if (= (following-char) ?{)
 		(setq this-indent (+ this-indent c-brace-offset)))
+	    ;; check for stream operator
+	    (if (looking-at "\\(<<\\|>>\\)")
+		(setq this-indent (c++-calculate-indent)))
 	    ;; Put chosen indentation into effect.
 	    (or (= (current-column) this-indent)
 		(= (following-char) ?\#)
