@@ -1526,17 +1526,16 @@ for C code in GNU programs.
 
 @item
 @cindex BSD style
-@code{bsd} -- @strong{<TBD> Anybody know anything about the history of
-this style?}
+@code{bsd} -- Also known as ``Allman style'' after Eric Allman.
+
+@item
+@cindex Whitesmith style
+@code{whitesmith} -- Popularized by the examples that came with
+Whitesmiths C, an early commercial C compiler.
 
 @item
 @cindex Stroustrup style
 @code{stroustrup} -- The classic Stroustrup style for C++ code.
-
-@item
-@cindex Whitesmith style
-@code{whitesmith} -- @strong{<TBD> Anybody know anything about the history of
-this style?}
 
 @item
 @cindex Ellemtel style
