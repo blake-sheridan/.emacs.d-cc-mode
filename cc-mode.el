@@ -380,18 +380,11 @@ brace line.")
 (defvar c-hanging-colons-alist nil
   "*Controls the insertion of newlines before and after certain colons.
 This variable contains an association list with elements of the
-following form: (SYNTACTIC-SYMBOL . (NL-LIST)).
+following form: (SYNTACTIC-SYMBOL . ACTION).
 
-SYNTACTIC-SYMBOL can be any of: member-init-intro, inher-intro,
-case-label, label, and access-label. See `c-offsets-alist' for
-details.
-
-NL-LIST can contain any combination of the symbols `before' or
-`after'. It also be nil.  When a colon is inserted, the language
-element that it defines is looked up in this list, and if found, the
-NL-LIST is used to determine where newlines are inserted.  If the
-language element for the colon is not found in this list, the default
-behavior is to not insert any newlines.")
+See the variable `c-hanging-braces-alist' for the semantics of this
+variable.  Note however that making ACTION a function symbol is
+currently not supported for this variable.")
 
 (defvar c-hanging-comment-ender-p t
   "*If nil, `c-fill-paragraph' leaves C block comment enders on their own line.
