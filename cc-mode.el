@@ -3728,7 +3728,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-add-syntax 'statement-cont (point)))
 	     )))
 	 ;; CASE 10: an else clause?
-	 ((looking-at "\\<else\\>")
+	 ((looking-at "\\<else\\>[^_]")
 	  (c-backward-to-start-of-if containing-sexp)
 	  (c-add-syntax 'else-clause (c-point 'boi)))
 	 ;; CASE 11: Statement. But what kind?  Lets see if its a
