@@ -32,14 +32,15 @@
 
 ;; This package provides modes in GNU Emacs for editing C, C++, and
 ;; Objective-C code. It is intended to be a replacement for c-mode.el
-;; (a.k.a. BOCM -- Boring Old C-Mode), and c++-mode.el, both of which
-;; are ancestors of this file.  A number of important improvements
-;; have been made, briefly: complete K&R C, ANSI C, `ARM' C++, and
-;; Objective-C support with consistent indentation across all modes,
-;; more intuitive indentation controlling variables, compatibility
-;; across all known Emacsen, nice new features, and tons of bug fixes.
-;; This package is called "cc-mode" to distinguish it from its
-;; ancestors, but there really is no top-level cc-mode.
+;; (a.k.a. BOCM -- Boring Old C-Mode), and c++-mode.el (a.k.a
+;; cplus-md.el and cplus-md1.el), both of which are ancestors of this
+;; file.  A number of important improvements have been made, briefly:
+;; complete K&R C, ANSI C, `ARM' C++, and Objective-C support with
+;; consistent indentation across all modes, more intuitive indentation
+;; controlling variables, compatibility across all known Emacsen, nice
+;; new features, and tons of bug fixes.  This package is called
+;; "cc-mode" to distinguish it from its ancestors, but there really is
+;; no top-level cc-mode.
 
 ;; Details on how to use cc-mode will eventually be contained in an
 ;; accompanying texinfo manual.  Volunteers to help finish this manual
@@ -577,7 +578,7 @@ as designated in the variable `c-file-style'.")
 ;; Shut the byte-compiler up. Requires Emacs 19 or JWZ's improved
 ;; byte-compiler. Otherwise, comment this line out and ignore
 ;; any warnings.
-;(byte-compiler-options (warnings nil))
+(byte-compiler-options (warnings nil))
 
 ;; figure out what features this Emacs has
 (defconst c-emacs-features
@@ -4370,9 +4371,8 @@ it trailing backslashes are removed."
   (c-keep-region-active))
 
 ;; get reporter-submit-bug-report when byte-compiling
-(and (fboundp 'eval-when-compile)
-     (eval-when-compile
-      (require 'reporter)))
+(eval-when-compile
+  (require 'reporter))
 
 (defun c-submit-bug-report ()
   "Submit via mail a bug report on cc-mode."
