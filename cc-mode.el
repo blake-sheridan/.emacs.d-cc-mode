@@ -581,7 +581,7 @@ backward-delete-char-untabify."
       (set-marker here (point))
       (if (memq 'alignleft c++-electric-pound-behavior)
 	  (beginning-of-line))
-      (self-insert-command arg)
+      (insert-before-markers (make-string arg last-command-char))
       (if (not bolp)
 	  (goto-char here))
       (set-marker here nil))))
