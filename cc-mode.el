@@ -289,9 +289,9 @@ FSF 19 (patched):        (8-bit v19)")
   "*Controls the operation of the TAB key.
 If t (the default), always just indent the current line.  If nil,
 indent the current line only if point is at the left margin or in the
-line's indentation; otherwise insert a tab.  If not-nil-or-t, then tab
-is inserted only within literals (comments and strings) and inside
-preprocessor directives, but line is always reindented.")
+line's indentation; otherwise insert a tab.  If other than nil or t,
+then tab is inserted only within literals (comments and strings) and
+inside preprocessor directives, but line is always reindented.")
 (defvar c++-always-arglist-indent-p nil
   "*Control indentation of continued arglists.
 When non-nil, arglists continued on subsequent lines will always
@@ -573,9 +573,10 @@ from their c-mode cousins.
  c++-friend-offset
     Offset of C++ friend class declarations relative to member declarations.
  c++-hanging-braces
-    Controls open brace hanging behavior when using auto-newline feature.
-    nil says no braces hang, t says all open braces hang.  non-nil-or-t
-    means top-level open braces don't hang, all others do.
+    Controls open brace hanging behavior when using auto-newline
+    feature.  nil says no braces hang, t says all open braces hang.
+    Any value other than nil or t means top-level open braces don't
+    hang, all others do.
  c++-hanging-member-init-colon
     Defines how colons which introduce member initialization lists are
     formatted.  t means no newlines are inserted either before or after
@@ -1163,9 +1164,9 @@ initialization list."
 
 If `c++-tab-always-indent' is t, always just indent the current line.
 If nil, indent the current line only if point is at the left margin or
-in the line's indentation; otherwise insert a tab.  If not-nil-or-t,
-then tab is inserted only within literals (comments and strings) and
-inside preprocessor directives, but line is always reindented.
+in the line's indentation; otherwise insert a tab.  If other than nil
+or t, then tab is inserted only within literals (comments and strings)
+and inside preprocessor directives, but line is always reindented.
 
 A numeric argument, regardless of its value, means indent rigidly all
 the lines of the expression starting after point so that this line
