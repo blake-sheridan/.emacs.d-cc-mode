@@ -29,7 +29,7 @@
 
 
 (eval-when-compile
-  (require 'cc-defs))
+  (require 'cc-make))
 
 ;; KLUDGE ALERT: c-maybe-labelp is used to pass information between
 ;; c-crosses-statement-barrier-p and c-beginning-of-statement-1.  A
@@ -1319,23 +1319,14 @@
 	    (cond
 	     ;; CASE 5D.1: hanging member init colon, but watch out
 	     ;; for bogus matches on access specifiers inside classes.
-	     ((and (save-excursion
-		     ;; There might be member inits on the first line too.
-		     (end-of-line)
-		     (while (and (> (point) lim)
-				 (eq (char-before) ?,)
-				 (= (c-backward-token-1 2 t lim) 0)
-				 (eq (char-after) ?\()
-				 (= (c-backward-token-1 1 t lim) 0))
-		       (c-backward-syntactic-ws lim))
-		     (setq placeholder (point))
-		     (eq (char-before) ?:))
+	     ((and (eq (char-before) ?:)
 		   (save-excursion
-		     (back-to-indentation)
+		     (forward-word -1)
 		     (not (looking-at c-access-key))))
-	      (goto-char placeholder)
-	      (c-forward-syntactic-ws)
-	      (c-add-syntax 'member-init-cont (point))
+	      (goto-char indent-point)
+	      (c-backward-syntactic-ws lim)
+	      (c-safe (backward-sexp 1))
+	      (c-add-syntax 'member-init-cont (c-point 'boi))
 	      ;; we do not need to add class offset since relative
 	      ;; point is the member init above us
 	      )
