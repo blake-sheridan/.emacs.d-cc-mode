@@ -2154,7 +2154,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
       ;; now we need to look at any special additional indentations
       (goto-char indent-point)
       ;; look for a comment only line
-      (if (looking-at "\\s *\\(//\\|/\\*\\)")
+      (if (looking-at "[ \t]*\\(//\\|/\\*\\)")
 	  (cc-add-semantics 'comment-intro))
       ;; return the semantics
       semantics)))
