@@ -1778,6 +1778,7 @@ defaults to `point-max'."
   ;; leave point at classkey and return t, otherwise return nil
   (let ((bosexp (c++-point 'boe))
 	(eosexp (c++-point 'eoe))
+	(here (point))
 	donep foundp)
     (while (not donep)
       (goto-char eosexp)
@@ -1790,7 +1791,9 @@ defaults to `point-max'."
 	(if (= eosexp bosexp)
 	    (setq donep t))
 	))
-      foundp))
+    (or foundp
+	(progn (goto-char here) nil)
+	)))
 
 (defun c++-narrow-out-enclosing-class ()
   ;; narrow out the enclosing class from the class opening brace to
