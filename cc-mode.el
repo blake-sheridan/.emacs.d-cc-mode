@@ -2656,6 +2656,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (if brace
 	(goto-char brace)
       (beginning-of-defun))
+    ;; if we're sitting at b-o-b, it might be becase there was no
+    ;; least enclosing brace and we were sitting on the defun's open
+    ;; brace.
+    (if (and (bobp) (not (= (following-char) ?\{)))
+	(goto-char here))
     ;; if defun-prompt-regexp is non-nil, b-o-d might not leave us at
     ;; the open brace. I consider this an Emacs bug.
     (and (boundp 'defun-prompt-regexp)
