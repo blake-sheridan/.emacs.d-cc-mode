@@ -4937,8 +4937,9 @@ With universal argument, inserts the analysis as a comment on that line."
 		  ;; we now have to figure out where this comment begins.
 		  (goto-char here)
 		  (back-to-indentation)
-		  (if (re-search-forward "[*]+/" (c-point 'eol) t)
-		      (forward-comment -1)
+		  (if (looking-at "[*]+/")
+		      (progn (goto-char (match-end 0))
+			     (forward-comment -1))
 		    (goto-char (cdr langelem))
 		    (back-to-indentation))))
 	    (- (current-column) cs-curcol))
