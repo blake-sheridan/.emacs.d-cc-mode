@@ -1884,12 +1884,18 @@ the current line is to be regarded as part of a block comment."
 ;; defuns to look backwards for things
 ;; ======================================================================
 
+(defvar c++-backscan-limit 2000
+  "*Limit in characters for looking back while skipping syntactic ws.")
+
 (defun c++-backward-over-syntactic-ws (&optional lim)
   "Skip backwards over syntactic whitespace.
 Syntactic whitespace is defined as lexical whitespace, C and C++ style
 comments, and preprocessor directives. Search no farther back than
 optional LIM.  If LIM is ommitted, point-min is used."
-  (let (literal stop skip (lim (or lim (point-min))))
+  (let ((lim (or lim (point-min)))
+	literal stop skip)
+    (if (> (- (point) lim) c++-backscan-limit)
+	(setq lim (- (point) c++-backscan-limit)))
     (while (not stop)
       (skip-chars-backward " \t\n\r\f" lim)
       (setq literal (c++-in-literal lim))
@@ -1915,7 +1921,15 @@ optional LIM.  If LIM is ommitted, point-min is used."
 	     (setq stop (<= (point) lim)))
 	    ((and (= (preceding-char) ?/)
 		  (= (char-after (- (point) 2)) ?*))
-	     (forward-char -2))
+	     (forward-char -2)
+	     (setq skip t)
+	     (while skip
+	       (skip-chars-backward "^*" lim)
+	       (skip-chars-backward "*" lim)
+	       (setq skip (not (and (= (following-char) ?*)
+				    (= (preceding-char) ?/))))
+	       )
+	     (forward-char -1))
 	    (t (setq stop t))
 	    ))))
 
@@ -1924,8 +1938,10 @@ optional LIM.  If LIM is ommitted, point-min is used."
 ;;Syntactic whitespace is defined as lexical whitespace, C and C++ style
 ;;comments, and preprocessor directives. Search no farther back than
 ;;optional LIM.  If LIM is ommitted, point-min is used."
-;;  (let (literal stop)
-;;    (setq lim (or lim (point-min)))
+;;  (let ((lim (or lim (point-min)))
+;;	literal stop)
+;;    (if (> (- (point) lim) c++-backscan-limit)
+;;	(setq lim (- (point) c++-backscan-limit)))
 ;;    (while (not stop)
 ;;      (skip-chars-backward " \t\n\r\f" lim)
 ;;      (setq literal (c++-in-literal))
