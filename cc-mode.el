@@ -1893,7 +1893,10 @@ search."
 			  donep t)
 		  (forward-char 1))))
 	    crossedp))
-	 ;; CASE 6: nothing special
+	 ;; CASE 6: ignore labels
+	 ((or (looking-at c-access-key)
+	      (looking-at c-label-key)))
+	 ;; CASE 7: nothing special
 	 (t (setq last-begin (point)))
 	 )))
     (goto-char last-begin)))
