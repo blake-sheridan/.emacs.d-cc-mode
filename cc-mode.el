@@ -679,11 +679,14 @@ supported list, along with the values for this variable:
   "Internal state of hungry delete key feature.")
 (defvar c-auto-newline nil
   "Internal state of auto newline feature.")
+(defvar c-auto-hungry-string nil
+  "Internal auto-newline/hungry-delete designation string for mode line.")
 (defvar c-semantics nil
   "Variable containing semantics list during indentation.")
 
 (make-variable-buffer-local 'c-auto-newline)
 (make-variable-buffer-local 'c-hungry-delete-key)
+(make-variable-buffer-local 'c-auto-hungry-string)
 
 ;; cmacexp is lame because it uses no preprocessor symbols.
 ;; It isn't very extensible either -- hardcodes /lib/cpp.
@@ -833,18 +836,11 @@ Key bindings:
 	   (progn
 	     (set-buffer-menubar default-menubar)
 	     (add-menu nil "C/C++" c-mode-menu))))
-  ;; put auto-hungry designators into mode-line-format, but do it
-  ;; only once
-  (and (listp mode-line-format)
-       (memq major-mode '(c++-mode c-mode))
-       (not (get 'mode-line-format 'c-hacked-mode-line))
-       (let ((name (memq 'mode-name mode-line-format))
-	     (hack '((c-hungry-delete-key
-		      (c-auto-newline "/ah" "/h")
-		      (c-auto-newline "/a")))))
-	 (setcdr name (append hack (cdr name)))
-	 (put 'mode-line-format 'c-hacked-mode-line t)
-	 ))
+  ;; put auto-hungry designators onto minor-mode-alist, but only once
+  (or (assq 'c-auto-hungry-string minor-mode-alist)
+      (setq minor-mode-alist
+	    (cons '(c-auto-hungry-string c-auto-hungry-string)
+		  minor-mode-alist)))
   (run-hooks 'c-mode-common-hook))
 
 
@@ -973,6 +969,11 @@ Key bindings:
       )))
 
 (defun c-update-modeline ()
+  ;; set the c-auto-hungry-string for the correct designation on the modeline
+  (setq c-auto-hungry-string
+	(if c-auto-newline
+	    (if c-hungry-delete "/ah" "/a")
+	  (if c-hungry-delete "/h" nil)))
   ;; updates the modeline for all Emacsen
   (if (memq 'v19 c-emacs-features)
       (force-mode-line-update)
