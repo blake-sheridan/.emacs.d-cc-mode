@@ -650,10 +650,12 @@ supported list, along with the values for this variable:
  	;; the menubar requires less memory than a special click.
 	)
     ;; in Lucid 19, we want the menu to popup when the 3rd button is
-    ;; hit
+    ;; hit.  In 19.10 and beyond this is done automatically if we put
+    ;; the menu on mode-popup-menu variable, see c-common-init
     (if (memq 'Lucid c-emacs-features)
-	(define-key c-mode-map 'button3 'c-popup-menu)))
-  )
+	(if (not (boundp 'mode-popup-menu))
+	    (define-key c-mode-map 'button3 'c-popup-menu)))
+    ))
 
 (defvar c++-mode-map ()
   "Keymap used in c++-mode buffers.")
@@ -881,14 +883,17 @@ Key bindings:
 	   (setq comment-indent-function 'c-comment-indent))
     (make-local-variable 'comment-indent-hook)
     (setq comment-indent-hook 'c-comment-indent))
-  ;; put C menu into menubar for Lucid 19. I think this happens
-  ;; automatically for FSF Emacs 19.
+  ;; put C menu into menubar and on popup menu for Lucid 19. I think
+  ;; this happens automatically for FSF Emacs 19.
   (if (and (memq 'Lucid c-emacs-features)
 	   current-menubar
 	   (not (assoc mode-name current-menubar)))
       (progn
 	(set-buffer-menubar (copy-sequence current-menubar))
 	(add-menu nil mode-name c-mode-menu)))
+  (if (and (memq 'Lucid c-emacs-features)
+	   (boundp 'mode-popup-menu))
+      (setq mode-popup-menu c-mode-menu))
   ;; put auto-hungry designators onto minor-mode-alist, but only once
   (or (assq 'c-auto-hungry-string minor-mode-alist)
       (setq minor-mode-alist
