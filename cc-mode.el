@@ -4773,10 +4773,12 @@ definition and conveniently use this command."
 
 (defun c-delete-backslash ()
   (end-of-line)
-  (forward-char -1)
-  (if (looking-at "\\\\")
-      (delete-region (1+ (point))
-                     (progn (skip-chars-backward " \t") (point)))))
+  (or (bolp)
+      (progn
+ 	(forward-char -1)
+ 	(if (looking-at "\\\\")
+ 	    (delete-region (1+ (point))
+ 			   (progn (skip-chars-backward " \t") (point)))))))
 
 
 ;; defuns for submitting bug reports
