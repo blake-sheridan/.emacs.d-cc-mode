@@ -223,7 +223,7 @@ styles in a single mode.")
   (if c++-emacs-is-really-fixed-p
       ;; these entries will only work with the latest patches to lemacs
       (progn
-	;;(modify-syntax-entry ?# "< b"     c++-mode-syntax-table)
+	(modify-syntax-entry ?# "< b"     c++-mode-syntax-table)
 	(modify-syntax-entry ?/  ". 1456" c++-mode-syntax-table)
 	(modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
 	(modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
@@ -252,8 +252,8 @@ styles in a single mode.")
   (if c++-emacs-is-really-fixed-p
       ;; these entries will only work with the latest patches to lemacs
       (progn
-	;;(modify-syntax-entry ?# "< b"     c++-mode-syntax-table)
-	;;(modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
+	(modify-syntax-entry ?# "< b"     c++-mode-syntax-table)
+	(modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
 	(modify-syntax-entry ?/  ". 14" c++-mode-syntax-table)
 	(modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
 	)
