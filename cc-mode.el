@@ -1590,13 +1590,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	  (setq stop t)
 	;; catch multi-line function calls
 	(or (cc-safe (progn (forward-sexp -1) t))
-	    (goto-char lim))
+	    (forward-char -1))
 	(setq here (point))
 	(if (looking-at "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>")
 	    (setq stop t)
 	  (cc-backward-syntactic-ws lim)
 	  )))
-    (if (< (point) lim)
+    (if (<= (point) lim)
 	(goto-char lim)
       (goto-char here)
       (back-to-indentation))
@@ -1975,14 +1975,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	   ;; but the preceding argument is on the same line as the
 	   ;; opening paren.  This case includes multi-line
 	   ;; mathematical paren groupings
-	   ((or (= (cc-point 'bol)
-		   (save-excursion
-		     (goto-char containing-sexp)
-		     (cc-point 'bol)))
-		(= containing-sexp
-		   (save-excursion
-		     (cc-beginning-of-statement containing-sexp)
-		     (point))))
+	   ((and (save-excursion
+		   (goto-char (1+ containing-sexp))
+		   (skip-chars-forward " \t")
+		   (not (eolp)))
+		 (save-excursion
+		   (cc-beginning-of-statement)
+		   (<= (point) containing-sexp)))
 	    (cc-add-semantics 'arglist-cont-nonempty containing-sexp))
 	   ;; CASE 5D: two possibilities here. First, its possible
 	   ;; that the arglist we're in is really a forloop expression
@@ -1993,9 +1992,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	    (cc-add-semantics 'statement-cont (point)))
 	   ;; CASE 5E: we are looking at just a normal arglist
 	   ;; continuation line
-	   (t
-	    (cc-beginning-of-statement containing-sexp)
-	    (cc-add-semantics 'arglist-cont (cc-point 'boi)))
+	   (t (cc-add-semantics 'arglist-cont (cc-point 'boi)))
 	   ))
 	 ;; CASE 6: func-local multi-inheritance line
 	 ((save-excursion
