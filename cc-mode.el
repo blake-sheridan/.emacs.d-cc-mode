@@ -887,26 +887,39 @@ Will also cleanup double colon scope operators."
       (setq semantics (progn
 			(self-insert-command (prefix-numeric-value arg))
 			(cc-guess-basic-semantics bod))
-	    newlines (assq (car (or (assq 'member-init-intro semantics)
-				    (assq 'inher-intro semantics)
-				    (assq 'case-label semantics)
-				    (assq 'label semantics)
-				    (assq 'access-key semantics)))
-			   cc-hanging-colons-alist))
+      ;; some language elements can only be determined by checking the
+      ;; following line.  Lets first look for ones that can be found
+      ;; when looking on the line with the colon
+	    newlines (or
+		      (let ((langelem (or (assq 'case-label semantics)
+					  (assq 'label semantics)
+					  (assq 'access-key semantics))))
+			(and langelem
+			     (assq (car langelem) cc-hanging-colons-alist)))
+		      (prog2
+			(insert "\n")
+			(let* ((semantics (cc-guess-basic-semantics bod))
+			       (langelem
+				(or (assq 'member-init-intro semantics)
+				    (assq 'inher-intro semantics))))
+			  (and langelem
+			       (assq (car langelem) cc-hanging-colons-alist)))
+			(delete-char -1))
+		      ))
+      ;; indent the current line
+      (cc-indent-via-language-element bod semantics)
       ;; does a newline go before the colon?
       (if (memq 'before newlines)
 	  (let ((pos (- (point-max) (point))))
 	    (forward-char -1)
 	    (newline)
-	    (cc-indent-via-language-element bod semantics)
+	    (cc-indent-via-language-element bod)
 	    (goto-char (- (point-max) pos))))
-      ;; now adjust the line's indentation
-      (cc-indent-via-language-element bod semantics)
       ;; does a newline go after the colon?
       (if (memq 'after (cdr-safe newlines))
 	  (progn
 	    (newline)
-	    (cc-indent-via-language-element)))
+	    (cc-indent-via-language-element bod)))
       ;; we may have to clean up double colons
       (let ((pos (- (point-max) (point)))
 	    (here (point)))
