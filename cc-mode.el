@@ -2285,7 +2285,7 @@ BOD is the beginning of the C++ definition."
 			    (looking-at
 			     (concat
 			      "#\\|/\\*\\|//"
-			      "\\|\\(case[ \t]+.*\\|default[ \t]*\\)"
+			      "\\|\\(case[ \t]+.*\\|default[ \t]*\\):"
 			      "\\|[a-zA-Z0-9_$]*:[^:]"
 			      "\\|friend[ \t]"
 			      c++-class-key
