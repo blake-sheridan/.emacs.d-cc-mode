@@ -2746,7 +2746,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (c-beginning-of-statement)
 		   (skip-chars-backward " \t(")
 		   (<= (point) containing-sexp)))
-	    (c-add-semantics 'arglist-cont-nonempty containing-sexp))
+	    (goto-char containing-sexp)
+	    (c-add-semantics 'arglist-cont-nonempty (c-point 'boi)))
 	   ;; CASE 5E: we are looking at just a normal arglist
 	   ;; continuation line
 	   (t (c-beginning-of-statement 1 containing-sexp)
@@ -3067,9 +3068,21 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; lineup the current arglist line with the arglist appearing just
   ;; after the containing paren which starts the arglist.
   (save-excursion
-    (let* ((containing-sexp (cdr langelem))
-	   (cs-curcol (save-excursion (goto-char containing-sexp)
-				      (current-column))))
+    (let* ((containing-sexp (save-excursion
+			      (goto-char (cdr langelem))
+			      ;; arglist-cont-nonempty gives relpos ==
+			      ;; to boi of containing-sexp paren. This
+			      ;; is good when offset is +, but bad
+			      ;; when it is c-lineup-arglist, so we
+			      ;; have to special case a kludge here.
+			      (if (eq (car langelem) 'arglist-cont-nonempty)
+				  (progn
+				    (end-of-line)
+				    (backward-up-list 1)))
+			      (point)))
+	   (cs-curcol (save-excursion
+			(goto-char (cdr langelem))
+			(current-column))))
       (if (save-excursion
 	    (beginning-of-line)
 	    (looking-at "[ \t]*)"))
