@@ -2907,8 +2907,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     ;; appears as the first non-whitespace on a line inside another
     ;; literal.
     (let* (state
+	   (char-at-boi (char-after (c-point 'boi)))
 	   (rtn (cond
-		 ((= (char-after (c-point 'boi)) ?#)
+		 ((and char-at-boi (= char-at-boi ?#))
 		  'pound)
 		 ((nth 3 (setq state (save-excursion
 				       (parse-partial-sexp
