@@ -142,7 +142,7 @@ reported and the syntactic symbol is ignored.")
 (defvar c-basic-offset 4
   "*Amount of basic offset used by + and - symbols in `c-offsets-alist'.")
 
-(defvar c-offsets-alist
+(defconst c-offsets-alist
   '((string                . -1000)
     (c                     . c-lineup-C-comments)
     (defun-open            . 0)
