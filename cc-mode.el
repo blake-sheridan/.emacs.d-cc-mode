@@ -1232,37 +1232,38 @@ non-whitespace characters on the line following the semicolon."
 	(c-insert-and-tame arg)
       ;; do some special stuff with the character
       (self-insert-command (prefix-numeric-value arg))
-      (let ((pos (- (point-max) (point))))
-	;; possibly do some clean ups
-	(if (and c-auto-newline
-		 (or (and
-		      (= last-command-char ?,)
-		      (memq 'list-close-comma c-cleanup-list))
-		     (and
-		      (= last-command-char ?\;)
-		      (memq 'defun-close-semi c-cleanup-list)))
-		 (progn
-		   (forward-char -1)
-		   (skip-chars-backward " \t\n")
-		   (= (preceding-char) ?}))
-		 ;; make sure matching open brace isn't in a comment
-		 (not (c-in-literal)))
-	    (delete-region (point) here))
-	(goto-char (- (point-max) pos)))
-      ;; re-indent line
-      (c-indent-via-language-element bod)
-      ;; newline only after semicolon, but only if that semicolon is
-      ;; not inside a parenthesis list (e.g. a for loop statement)
-      (and c-auto-newline
-	   (= last-command-char ?\;)
-	   (condition-case nil
-	       (save-excursion
-		 (up-list -1)
-		 (/= (following-char) ?\())
-	     (error t))
-	   (progn (newline) t)
-	   (c-indent-via-language-element bod))
-      )))
+      ;; do all cleanups, reindentations, and newline insertions, but
+      ;; only if c-auto-newline is turned on
+      (if (not c-auto-newline) nil
+	;; clean ups
+	(let ((pos (- (point-max) (point))))
+	  (if (and (or (and
+			(= last-command-char ?,)
+			(memq 'list-close-comma c-cleanup-list))
+		       (and
+			(= last-command-char ?\;)
+			(memq 'defun-close-semi c-cleanup-list)))
+		   (progn
+		     (forward-char -1)
+		     (skip-chars-backward " \t\n")
+		     (= (preceding-char) ?}))
+		   ;; make sure matching open brace isn't in a comment
+		   (not (c-in-literal)))
+	      (delete-region (point) here))
+	  (goto-char (- (point-max) pos)))
+	;; re-indent line
+	(c-indent-via-language-element bod)
+	;; newline only after semicolon, but only if that semicolon is
+	;; not inside a parenthesis list (e.g. a for loop statement)
+	(and (= last-command-char ?\;)
+	     (condition-case nil
+		 (save-excursion
+		   (up-list -1)
+		   (/= (following-char) ?\())
+	       (error t))
+	     (progn (newline) t)
+	     (c-indent-via-language-element bod))
+	))))
 
 (defun c-scope-operator ()
   "Insert a double colon scope operator at point.
