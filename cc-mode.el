@@ -193,8 +193,6 @@ FSF 19 (patched):        (8-bit v19)")
 (if c++-mode-map
     ()
   (setq c++-mode-map (make-sparse-keymap))
-  (define-key c++-mode-map "\C-j"      'reindent-then-newline-and-indent)
-  (define-key c++-mode-map "\C-m"      'newline-and-indent)
   (define-key c++-mode-map "{"         'c++-electric-brace)
   (define-key c++-mode-map "}"         'c++-electric-brace)
   (define-key c++-mode-map ";"         'c++-electric-semi&comma)
