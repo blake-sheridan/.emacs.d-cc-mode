@@ -1432,8 +1432,8 @@ of the expression are preserved."
 			   (if (c++-at-top-level-p t (car contain-stack))
 			       (cdr c-brace-offset)
 			     (car c-brace-offset))
-			 c-brace-offset)
-		       c-indent-level)))
+			 c-brace-offset))
+		    ))
 	     ;; check for continued statements
 	     ((save-excursion
 		(c++-backward-syntactic-ws (car contain-stack))
