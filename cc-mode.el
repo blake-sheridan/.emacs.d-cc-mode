@@ -1741,10 +1741,17 @@ BOD is the beginning of the C++ definition."
 						      (< bod (point)))
 					    (forward-line -1)
 					    (skip-chars-forward " \t")))
+				      ;; check to be sure that we're
+				      ;; not on the first line of the
+				      ;; member init list
+				      (if (= (following-char) ?:)
+					  (progn
+					    (forward-char 1)
+					    (skip-chars-forward " \t")))
 				      ;; subtract inclass-shift since
 				      ;; its already incorporated by
-				      ;; default in current-indentation
-				      (- (current-indentation) inclass-shift)
+				      ;; default in current-column
+				      (- (current-column) inclass-shift)
 				      )))))))))
 		    )))))
 	    ((/= (char-after containing-sexp) ?{)
