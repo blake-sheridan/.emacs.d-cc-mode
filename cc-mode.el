@@ -4595,29 +4595,28 @@ it trailing backslashes are removed."
 ;; variables first to the "CC-MODE" style before instituting the new
 ;; style.  Only do this once!
 (or (assoc "CC-MODE" c-style-alist)
-    (c-add-style "CC-MODE"
-		 (mapcar
-		  (function
-		   (lambda (var)
-		     (cons var (symbol-value var))))
-		  '(c-backslash-column
-		    c-basic-offset
-		    c-block-comments-indent-p
-		    c-cleanup-list
-		    c-comment-only-line-offset
-		    c-echo-syntactic-information-p
-		    c-electric-pound-behavior
-		    c-hanging-braces-alist
-		    c-hanging-colons-alist
-		    c-hanging-comment-ender-p
-		    c-offsets-alist
-		    c-recognize-knr-p
-		    c-strict-syntax-p
-		    c-tab-always-indent
-		    c-inhibit-startup-warnings-p
-		    ))))
-
-(or (featurep 'cc-mode)
+    (progn
+      (c-add-style "CC-MODE"
+		   (mapcar
+		    (function
+		     (lambda (var)
+		       (cons var (symbol-value var))))
+		    '(c-backslash-column
+		      c-basic-offset
+		      c-block-comments-indent-p
+		      c-cleanup-list
+		      c-comment-only-line-offset
+		      c-echo-syntactic-information-p
+		      c-electric-pound-behavior
+		      c-hanging-braces-alist
+		      c-hanging-colons-alist
+		      c-hanging-comment-ender-p
+		      c-offsets-alist
+		      c-recognize-knr-p
+		      c-strict-syntax-p
+		      c-tab-always-indent
+		      c-inhibit-startup-warnings-p
+		      ))))
     ;; the default style is now GNU.  This can be overridden in
     ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
     (c-set-style "GNU"))
