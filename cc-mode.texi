@@ -1820,6 +1820,14 @@ argument on the previous line.
 open parenthesis followed by a newline.
 
 @item
+@findex c-lineup-arglist-close-under-paren
+@findex lineup-arglist-close-under-paren (c-)
+@code{c-lineup-arglist-close-under-paren} -- set your
+@code{arglist-close} syntactic symbol to this line-up function so that
+parentheses that close argument lists will line up under the parenthesis
+that opened the argument list.
+
+@item
 @findex c-lineup-streamop
 @findex lineup-streamop (c-)
 @code{c-lineup-streamop} -- lines up C++ stream operators
