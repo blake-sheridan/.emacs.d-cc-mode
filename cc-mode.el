@@ -1128,7 +1128,7 @@ The expansion is entirely correct because it uses the C preprocessor."
   "\\(\\(case[( \t]+\\S .*\\)\\|default[ \t]*\\):"
   "Regexp describing a switch's case or default label")
 (defconst c-C++-access-key
-  (concat c-protection-key ":")
+  (concat c-protection-key "[ \t]*:")
   "Regexp describing C++ access specification keywords.")
 (defconst c-label-key
   (concat c-symbol-key ":\\([^:]\\|$\\)")
