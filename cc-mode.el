@@ -1150,6 +1150,7 @@ of the expression are preserved."
 	restart outer-loop-done inner-loop-done state ostate
 	this-indent last-sexp last-depth
 	at-else at-brace
+	(parse-sexp-ignore-comments t)
 	(opoint (point))
 	(next-depth 0))
     (save-excursion
@@ -1177,8 +1178,7 @@ of the expression are preserved."
 	  ;;nil nil state))
 	  (let ((start (point))
 		(line-end (progn (end-of-line) (point)))
-		(end (progn (forward-char) (point)))
-		(parse-sexp-ignore-comments))
+		(end (progn (forward-char) (point))))
 	    (setq state (parse-partial-sexp start end nil nil state))
 	    (goto-char line-end))
 	  (setq next-depth (car state))
