@@ -639,6 +639,7 @@ The expansion is entirely correct because it uses the C preprocessor."
   "Regexp describing a conditional control.")
 
 ;; main entry points for the modes
+;;;###autoload
 (defun c++-mode ()
   "Major mode for editing C++ code.
 CC-MODE REVISION: $Revision$
@@ -672,6 +673,7 @@ Key bindings:
    (memq c-auto-hungry-initial-state '(auto-only   auto-hungry t))
    (memq c-auto-hungry-initial-state '(hungry-only auto-hungry t))))
 
+;;;###autoload
 (defun c-mode ()
   "Major mode for editing K&R and ANSI C code.
 CC-MODE REVISION: $Revision$
