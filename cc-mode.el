@@ -296,7 +296,7 @@ To be completely safe, set this variable to:
 This variable has no effect under Emacs 19. For details on why this is
 necessary in GNU Emacs 18, please refer to the cc-mode texinfo manual.")
 
-;; TBD: c-mode defins c-backslash-column as 48
+;; c-mode defines c-backslash-column as 48.
 (defvar c-default-macroize-column 78
   "*Column to insert backslashes when macroizing a region.")
 (defvar c-special-indent-hook nil
@@ -462,14 +462,13 @@ Emacs.")
   (define-key c-mode-map ":"         'c-electric-colon)
   (define-key c-mode-map "\e\C-h"    'c-mark-function)
   (define-key c-mode-map "\e\C-q"    'c-indent-exp)
-  ;; TBD: implement these commands first
-  ;(define-key c-mode-map "\ea"        'c-beginning-of-statement)
-  ;(define-key c-mode-map "\ee"        'c-end-of-statement)
-  ; use filladapt instead of this cruft, which isn't implemented
+  (define-key c-mode-map "\ea"       'c-beginning-of-statement)
+  (define-key c-mode-map "\ee"       'c-end-of-statement)
+  ; use filladapt instead of this cruft
   ;(define-key c-mode-map "\eq"        'c-fill-paragraph)
-  ;(define-key c-mode-map "\C-c\C-n"   'c-forward-conditional)
-  ;(define-key c-mode-map "\C-c\C-p"   'c-backward-conditional)
-  ;(define-key c-mode-map "\C-c\C-u"   'c-up-conditional)
+  (define-key c-mode-map "\C-c\C-n"  'c-forward-conditional)
+  (define-key c-mode-map "\C-c\C-p"  'c-backward-conditional)
+  (define-key c-mode-map "\C-c\C-u"  'c-up-conditional)
   (define-key c-mode-map "\t"        'c-indent-command)
   (define-key c-mode-map "\177"      'c-electric-delete)
   ;; these are new keybindings, with no counterpart to BOCM
@@ -487,7 +486,7 @@ Emacs.")
   (define-key c-mode-map "\C-c\C-s"  'c-show-semantic-information)
   (define-key c-mode-map "\C-c\C-t"  'c-toggle-auto-hungry-state)
   ;; TBD: this keybinding will conflict with c-up-conditional
-  (define-key c-mode-map "\C-c\C-u"  'c-up-block)
+  ;(define-key c-mode-map "\C-c\C-u"  'c-up-block)
   (define-key c-mode-map "\C-c\C-v"  'c-version)
   (define-key c-mode-map "\C-c\C-x"  'c-match-paren)
   ;; old Emacsen need to tame certain characters
@@ -1334,8 +1333,146 @@ GNU, K&R, BSD and Whitesmith."
 	  )))
      vars)))
 
-;; TBD: c-mode's c-(beginning|end)-of-statement
-;; TBD: c-mode's c-(up|backward|forward)-conditional
+
+;; TBD: clean these up.  why do we need two beginning-of-statements???
+(defun bocm-beginning-of-statement (count)
+  "Go to the beginning of the innermost C statement.
+With prefix arg, go back N - 1 statements.  If already at the beginning of a
+statement then go to the beginning of the preceding one.
+If within a string or comment, or next to a comment (only whitespace between),
+move by sentences instead of statements."
+  (interactive "p")
+  (let ((here (point)) state)
+    (save-excursion
+      (beginning-of-defun)
+      (setq state (parse-partial-sexp (point) here nil nil)))
+    (if (or (nth 3 state) (nth 4 state)
+	    (looking-at (concat "[ \t]*" comment-start-skip))
+	    (save-excursion (skip-chars-backward " \t")
+			    (goto-char (- (point) 2))
+			    (looking-at "\\*/")))
+	(forward-sentence (- count))
+      (while (> count 0)
+	(c-beginning-of-statement-1)
+	(setq count (1- count)))
+      (while (< count 0)
+	(c-end-of-statement-1)
+	(setq count (1+ count))))))
+
+(defun bocm-end-of-statement (count)
+  "Go to the end of the innermost C statement.
+With prefix arg, go forward N - 1 statements.
+Move forward to end of the next statement if already at end.
+If within a string or comment, move by sentences instead of statements."
+  (interactive "p")
+  (c-beginning-of-statement (- count)))
+
+(defun bocm-beginning-of-statement-1 ()
+  (let ((last-begin (point))
+	(first t))
+    (condition-case ()
+	(progn
+	  (while (and (not (bobp))
+		      (progn
+			(backward-sexp 1)
+			(or first
+			    (not (re-search-forward "[;{}]" last-begin t)))))
+	    (setq last-begin (point) first nil))
+	  (goto-char last-begin))
+      (error (if first (backward-up-list 1) (goto-char last-begin))))))
+
+(defun bocm-end-of-statement-1 ()
+  (condition-case ()
+      (progn
+	(while (and (not (eobp))
+		    (let ((beg (point)))
+		      (forward-sexp 1)
+		      (let ((end (point)))
+			(save-excursion
+			  (goto-char beg)
+			  (not (re-search-forward "[;{}]" end t)))))))
+	(re-search-backward "[;}]")
+	(forward-char 1))
+    (error 
+     (let ((beg (point)))
+       (backward-up-list -1)
+       (let ((end (point)))
+	 (goto-char beg)
+	 (search-forward ";" end 'move))))))
+
+
+(defun c-up-conditional (count)
+  "Move back to the containing preprocessor conditional, leaving mark behind.
+A prefix argument acts as a repeat count.  With a negative argument,
+move forward to the end of the containing preprocessor conditional.
+When going backwards, `#elif' is treated like `#else' followed by
+`#if'.  When going forwards, `#elif' is ignored."
+  (interactive "p")
+  (c-forward-conditional (- count) t))
+
+(defun c-backward-conditional (count &optional up-flag)
+  "Move back across a preprocessor conditional, leaving mark behind.
+A prefix argument acts as a repeat count.  With a negative argument,
+move forward across a preprocessor conditional."
+  (interactive "p")
+  (c-forward-conditional (- count) up-flag))
+
+(defun c-forward-conditional (count &optional up-flag)
+  "Move forward across a preprocessor conditional, leaving mark behind.
+A prefix argument acts as a repeat count.  With a negative argument,
+move backward across a preprocessor conditional."
+  (interactive "p")
+  (let* ((forward (> count 0))
+	 (increment (if forward -1 1))
+	 (search-function (if forward 're-search-forward 're-search-backward))
+	 (opoint (point))
+	 (new))
+    (save-excursion
+      (while (/= count 0)
+	(let ((depth (if up-flag 0 -1)) found)
+	  (save-excursion
+	    ;; Find the "next" significant line in the proper direction.
+	    (while (and (not found)
+			;; Rather than searching for a # sign that
+			;; comes at the beginning of a line aside from
+			;; whitespace, search first for a string
+			;; starting with # sign.  Then verify what
+			;; precedes it.  This is faster on account of
+			;; the fastmap feature of the regexp matcher.
+			(funcall search-function
+				 "#[ \t]*\\(if\\|elif\\|endif\\)"
+				 nil t))
+	      (beginning-of-line)
+	      ;; Now verify it is really a preproc line.
+	      (if (looking-at "^[ \t]*#[ \t]*\\(if\\|elif\\|endif\\)")
+		  (let ((prev depth))
+		    ;; Update depth according to what we found.
+		    (beginning-of-line)
+		    (cond ((looking-at "[ \t]*#[ \t]*endif")
+			   (setq depth (+ depth increment)))
+			  ((looking-at "[ \t]*#[ \t]*elif")
+			   (if (and forward (= depth 0))
+			       (setq found (point))))
+			  (t (setq depth (- depth increment))))
+		    ;; If we are trying to move across, and we find an
+		    ;; end before we find a beginning, get an error.
+		    (if (and (< prev 0) (< depth prev))
+			(error (if forward
+				   "No following conditional at this level"
+				 "No previous conditional at this level")))
+		    ;; When searching forward, start from next line so
+		    ;; that we don't find the same line again.
+		    (if forward (forward-line 1))
+		    ;; If this line exits a level of conditional, exit
+		    ;; inner loop.
+		    (if (< depth 0)
+			(setq found (point)))))))
+	  (or found
+	      (error "No containing preprocessor conditional"))
+	  (goto-char (setq new found)))
+	(setq count (+ count increment))))
+    (push-mark)
+    (goto-char new)))
 
 
 ;; Workarounds for GNU Emacs 18 scanning deficiencies
@@ -2594,7 +2731,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(kill-line)))))
       ))
 
-;; TBD: Is c-mode's c-backslash-region smarter, more useful?
 (defun c-macroize-region (beg end arg)
   "Insert backslashes at end of every line in region.
 Useful for defining cpp macros.  If called with a prefix argument,
@@ -2713,6 +2849,7 @@ region."
 (fset 'mark-c-function       'c-mark-function)
 (fset 'indent-c-exp          'c-indent-exp)
 (fset 'set-c-style           'c-set-style)
+(fset 'c-backslash-region    'c-macroize-region)
 
 (provide 'c-mode)
 ;;; c-mode.el ends here
