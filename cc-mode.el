@@ -1583,7 +1583,11 @@ optional LIM.  If LIM is omitted, `beginning-of-defun' is used."
 	  (unwind-protect
 	      (progn
 		(narrow-to-region lim (point))
-		(modify-syntax-entry ?# "< b" c++-mode-syntax-table)
+		;; cpp statements are comments for our purposes here
+		(if (eq major-mode 'c++-mode)
+		    (modify-syntax-entry ?# "< b" c++-mode-syntax-table)
+		  (modify-syntax-entry ?\n "> b" c++-c-mode-syntax-table)
+		  (modify-syntax-entry ?#  "< b" c++-c-mode-syntax-table))
 		(while (not donep)
 		  ;; if you're not running a patched lemacs, the new byte
 		  ;; compiler will complain about this function. ignore that
@@ -1597,7 +1601,11 @@ optional LIM.  If LIM is omitted, `beginning-of-defun' is used."
 			     (setq donep (<= (point) lim)))
 		    (setq donep t))
 		  ))
-	    (modify-syntax-entry ?# "." c++-mode-syntax-table)))
+	    ;; cpp statements are not comments anywhere else
+	    (if (eq major-mode 'c++-mode)
+		(modify-syntax-entry ?# "." c++-mode-syntax-table)
+	      (modify-syntax-entry ?\n " " c++-c-mode-syntax-table)
+	      (modify-syntax-entry ?#  "." c++-c-mode-syntax-table))))
       )))
 
 ;; This is the way it should be done for all post 19.7 Lemacsen and
@@ -1614,11 +1622,19 @@ optional LIM.  If LIM is omitted, `beginning-of-defun' is used."
 	  (unwind-protect
 	      (progn
 		(narrow-to-region lim (point))
-		(modify-syntax-entry ?# "< b" c++-mode-syntax-table)
+		;; cpp statements are comments for our purposes here
+		(if (eq major-mode 'c++-mode)
+		    (modify-syntax-entry ?# "< b" c++-mode-syntax-table)
+		  (modify-syntax-entry ?\n "> b" c++-c-mode-syntax-table)
+		  (modify-syntax-entry ?#  "< b" c++-c-mode-syntax-table))
 		(while (/= here (point))
 		  (setq here (point))
 		  (forward-comment -1)))
-	    (modify-syntax-entry ?# "." c++-mode-syntax-table)))
+	    ;; cpp statements are not comments everywhere else
+	    (if (eq major-mode 'c++-mode)
+		(modify-syntax-entry ?# "." c++-mode-syntax-table)
+	      (modify-syntax-entry ?\n " " c++-c-mode-syntax-table)
+	      (modify-syntax-entry ?#  "." c++-c-mode-syntax-table))))
       )))
 
 ;; This is the slow and ugly way, but its the best we can do in
