@@ -1912,7 +1912,7 @@ for details of setting up styles."
   (interactive (list (completing-read "Indentation style? "
                                       c-style-alist nil t)))
   (let ((vars (cdr (assoc stylename c-style-alist)))
-	(default (assoc "Default" c-style-alist)))
+	(default (cdr (assoc "Default" c-style-alist))))
     (or vars (error "Invalid indentation style `%s'" stylename))
     (or default (error "No \"Default\" style found!"))
     ;; first reset the style to Default to give every style a common
