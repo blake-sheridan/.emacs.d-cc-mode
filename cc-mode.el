@@ -3828,23 +3828,26 @@ it trailing backslashes are removed."
 		  ((eq major-mode 'c-mode)    "C")
 		  ((eq major-mode 'objc-mode) "ObjC"))
 	    ")")
-    (list
-     ;; report only the vars that affect indentation
-     'c-emacs-features
-     'c-basic-offset
-     'c-offsets-alist
-     'c-block-comments-indent-p
-     'c-cleanup-list
-     'c-comment-only-line-offset
-     'c-backslash-column
-     'c-delete-function
-     'c-electric-pound-behavior
-     'c-hanging-braces-alist
-     'c-hanging-colons-alist
-     'c-tab-always-indent
-     'defun-prompt-regexp
-     'tab-width
-     )
+    (let ((vars (list
+		 ;; report only the vars that affect indentation
+		 'c-emacs-features
+		 'c-basic-offset
+		 'c-offsets-alist
+		 'c-block-comments-indent-p
+		 'c-cleanup-list
+		 'c-comment-only-line-offset
+		 'c-backslash-column
+		 'c-delete-function
+		 'c-electric-pound-behavior
+		 'c-hanging-braces-alist
+		 'c-hanging-colons-alist
+		 'c-tab-always-indent
+		 'defun-prompt-regexp
+		 'tab-width
+		 )))
+      (if (not (boundp 'defun-prompt-regexp))
+	  (delq 'defun-prompt-regexp vars)
+	vars))
     (function
      (lambda ()
        (insert
