@@ -2350,7 +2350,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (<= 0 (nth 6 state))
 		   (<= 0 (nth 0 state)))
 		  (progn
-		    (goto-char foundp)
+		    (goto-char (1+ foundp))
 		    (setq donep t
 			  foundp (cons (1- cop) (c-point 'boi)))
 		    )
