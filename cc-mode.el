@@ -3069,10 +3069,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(progn
 	  (forward-char -1)
 	  (if (looking-at "\\\\")
-	      (let ((kill-lines-magic nil))
+	      (progn
 		(skip-chars-backward " \t")
-		(kill-line)))))
-      ))
+		(delete-region (point) (c-point 'eol))))
+	  ))))
 
 (defun c-backslash-region (beg end arg)
   "Insert backslashes at end of every line in region.
