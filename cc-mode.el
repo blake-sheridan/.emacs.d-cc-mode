@@ -1465,9 +1465,14 @@ search."
 		      (progn
 			(backward-sexp 1)
 			(or first
-			    (not (re-search-forward "[;{}]" last-begin t)))))
-	    (setq last-begin (point) first nil))
-	  (goto-char last-begin))
+			    (not (re-search-forward "[;{}]" last-begin t))
+			    ))
+		      (not (looking-at c-conditional-key))
+		      )
+	    (setq last-begin (point)
+		  first nil))
+	  (if (not (looking-at c-conditional-key))
+	      (goto-char last-begin)))
       ;; error for condition-case
       (error (if first
 		 (backward-up-list 1)
