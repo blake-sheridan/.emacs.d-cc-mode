@@ -1755,7 +1755,7 @@ BOD is the beginning of the C++ definition."
 	  (case-fold-search nil)
 	  state do-indentation literal
 	  containing-sexp streamop-pos char-before-ip
-	  (inclass-shift 0) inclass-depth
+	  (inclass-shift 0) inclass-depth inclass-unshift
 	  (bod (or bod (c++-point 'bod))))
       (if parse-start
 	  (goto-char parse-start)
@@ -1808,7 +1808,9 @@ BOD is the beginning of the C++ definition."
 	 ;; add an offset if we are inside a class defun body,
 	 ;; i.e. we are at the top level, but only wrt a
 	 ;; containing class
-	 (setq inclass-shift (* c-indent-level inclass-depth))
+	 (let ((shift/level (+ c-indent-level c-brace-imaginary-offset)))
+	   (setq inclass-shift (* shift/level inclass-depth)
+		 inclass-unshift (* shift/level (max 0 (1- inclass-depth)))))
 	 (progn
 	   (goto-char indent-point)
 	   (skip-chars-forward " \t")
@@ -1865,8 +1867,7 @@ BOD is the beginning of the C++ definition."
 		       (progn (goto-char (or containing-sexp bod))
 			      (- (current-indentation)
 				 ;; remove some nested inclass indentation
-				 (* (max 0 (1- inclass-depth)) c-indent-level)
-				 ))
+				 inclass-unshift))
 		     ;; member init, so add offset. add additional
 		     ;; offset if looking at line with just a member
 		     ;; init colon
@@ -1883,7 +1884,7 @@ BOD is the beginning of the C++ definition."
 		     (progn (goto-char (or containing-sexp bod))
 			    (- (current-indentation)
 			       ;; remove some nested inclass indentation
-			       (* (max 0 (1- inclass-depth)) c-indent-level)))
+			       inclass-unshift))
 		   ;; cont arg decls or member inits
 		   (beginning-of-line)
 		   ;; we might be inside a K&R C arg decl
@@ -1922,8 +1923,7 @@ BOD is the beginning of the C++ definition."
 			       ;; be zero
 			       (- (current-indentation)
 				  ;; remove some nested inclass indentation
-				  (* (max 0 (1- inclass-depth)) c-indent-level)
-				  )
+				  inclass-unshift)
 			     (if (eolp)
 				 ;; looking at a blank line, indent
 				 ;; next line to zero
