@@ -152,6 +152,7 @@ reported and the syntactic symbol is ignored.")
     ;;(statement-cont        . c-lineup-math)
     (statement-block-intro . +)
     (statement-case-intro  . +)
+    (statement-case-open   . +)
     (substatement          . +)
     (substatement-open     . +)
     (case-label            . 0)
@@ -243,6 +244,7 @@ Here is the current list of valid syntactic element symbols:
  statement-cont         -- a continuation of a C/C++ statement
  statement-block-intro  -- the first line in a new statement block
  statement-case-intro   -- the first line in a case `block'
+ statement-case-open    -- the first line in a case block starting with brace
  substatement           -- the first line after an if/while/for/do/else
  substatement-open      -- the brace that opens a substatement block
  case-label             -- a case or default label
@@ -345,9 +347,9 @@ following form: (SYNTACTIC-SYMBOL . (NL-LIST)).
 
 SYNTACTIC-SYMBOL can be any of: defun-open, defun-close, class-open,
 class-close, inline-open, inline-close, block-open, block-close,
-substatement-open, brace-list-open, brace-list-close,
-brace-list-intro, or brace-list-entry. See `c-offsets-alist' for
-details.
+substatement-open, statement-case-open, brace-list-open,
+brace-list-close, brace-list-intro, or brace-list-entry. See
+`c-offsets-alist' for details.
 
 NL-LIST can contain any combination of the symbols `before' or
 `after'. It also be nil.  When a brace is inserted, the syntactic
@@ -1389,6 +1391,7 @@ the brace is inserted inside a literal."
 					 (assq 'block-open syntax)
 					 (assq 'block-close syntax)
 					 (assq 'substatement-open syntax)
+					 (assq 'statement-case-open syntax)
 					 ))
 				c-hanging-braces-alist)
 			  '(ignore before after))))
@@ -3472,7 +3475,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		     (back-to-indentation)
 		     (setq placeholder (point))
 		     (looking-at c-switch-label-key)))
-	      (c-add-syntax 'statement-case-intro placeholder))
+	      (goto-char indent-point)
+	      (skip-chars-forward " \t")
+	      (if (= (following-char) ?{)
+		  (c-add-syntax 'statement-case-open placeholder)
+		(c-add-syntax 'statement-case-intro placeholder)))
 	     ;; CASE 15B: continued statement
 	     ((= char-before-ip ?,)
 	      (c-add-syntax 'statement-cont (c-point 'boi)))
