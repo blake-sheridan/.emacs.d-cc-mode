@@ -421,8 +421,14 @@ This hook gets called after a line is indented by the mode.")
 (defvar c-electric-pound-behavior nil
   "*List of behaviors for electric pound insertion.
 Only currently supported behavior is `alignleft'.")
+
 (defvar c-label-minimum-indentation 1
-  "*Minimum indentation for labels and case tags in `gnu' style.")
+  "*Minimum indentation for lines inside of top-level constructs.
+This variable typically only affects code using the `gnu' style, which
+mandates a minimum of one space in front of every line inside
+top-level constructs.  Specifically, the function
+`c-gnu-impose-minimum' on your `c-special-indent-hook' is what
+enforces this.")
 
 (defvar c-progress-interval 5
   "*Interval used to update progress status during long re-indentation.
