@@ -3043,6 +3043,8 @@ region."
 (fset 'indent-c-exp          'c-indent-exp)
 (fset 'set-c-style           'c-set-style)
 (fset 'c-backslash-region    'c-macroize-region)
+;; lemacs 19.9 + font-lock + cc-mode - c++-mode lossage
+(fset 'c++-beginning-of-defun 'beginning-of-defun)
 
 (provide 'cc-mode)
 ;;; cc-mode.el ends here
