@@ -91,8 +91,8 @@
 ;; As of release 19.4, Lucid Emacs is distributed with the fixes in
 ;; place, and c++-mode will automatically take advantage of them so
 ;; none of the above applies to you.  Similar patches will be part of
-;; GNU Emacs 19.  Some patches for GNU Emacs 18 have been released on
-;; the beta site, but they are unsupported.  Email for more
+;; FSF GNU Emacs 19.  Some patches for GNU Emacs 18 have been released
+;; on the beta site, but they are unsupported.  Email for more
 ;; information.
 
 ;; Beta Testers Mailing List
@@ -154,9 +154,9 @@
     (if (= 8 (length (parse-partial-sexp (point) (point))))
 	;; we know we're using v19 style dual-comment specifications.
 	;; All Lemacsen use 8-bit modify-syntax-entry flags, as do all
-	;; patched GNU19, GNU18, Epoch4's.  Only vanilla GNU19.7-8
-	;; uses 1-bit flag.  Lets be as smart as we can about figuring
-	;; this out.
+	;; patched FSF19, GNU18, Epoch4's.  Only vanilla FSF19 uses
+	;; 1-bit flag.  Lets be as smart as we can about figuring this
+	;; out.
 	(let ((table (copy-syntax-table)))
 	  (modify-syntax-entry ?a ". 12345678" table)
 	  (if (= (logand (lsh (aref table ?a) -16) 255) 255)
@@ -178,10 +178,10 @@ known list, along with the values for this variable:
 Vanilla GNU 18/Epoch 4:  (no-dual-comments v18)
 GNU 18/Epoch 4 (patch1): (8-bit old-v19)
 GNU 18/Epoch 4 (patch2): (8-bit v19)
-Lemacs 19.4 - 19.6:      (8-bit old-v19)
-Lemacs 19.7 and over:    (8-bit v19)
-GNU 19:                  (1-bit v19)
-GNU 19 (patched):        (8-bit v19)")
+Lemacs 19.4 - 19.7:      (8-bit old-v19)
+Lemacs 19.8 and over:    (8-bit v19)
+FSF 19:                  (1-bit v19)
+FSF 19 (patched):        (8-bit v19)")
 
 (defvar c++-mode-abbrev-table nil
   "Abbrev table in use in c++-mode buffers.")
@@ -260,7 +260,7 @@ GNU 19 (patched):        (8-bit v19)")
     (modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
     (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table))
    ((memq '1-bit c++-emacs-features)
-    ;; GNU19 has sub-optimal, but workable implementation
+    ;; FSF19 has sub-optimal, but workable implementation
     ;; Some strange behavior may be encountered.  LOBBY FSF!
     (modify-syntax-entry ?/  ". 124" c++-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23b" c++-mode-syntax-table)
@@ -1535,10 +1535,9 @@ optional LIM.  If LIM is ommitted, `beginning-of-defun' is used."
 	      ;; none of the above
 	      (setq stop t))))))))
 
-;; This defun works well for Lemacs 19.4 through 19.6, which
-;; implemented a first shot at doing this via a C built-in
-;; backward-syntactic-ws.  This has been obsoleted in future Lemacsen
-;; and in GNU19
+;; This defun works well for Lemacs 19.4-7, which implemented a first
+;; shot at doing this via a C built-in backward-syntactic-ws.  This
+;; has been obsoleted in future Lemacsen and in FSF19
 (defun c++-fast-backward-syntactic-ws-1 (&optional lim)
   "Skip backwards over syntactic whitespace.
 Syntactic whitespace is defined as lexical whitespace, C and C++ style
@@ -1569,8 +1568,8 @@ optional LIM.  If LIM is ommitted, `beginning-of-defun' is used."
 	    (modify-syntax-entry ?# "." c++-mode-syntax-table)))
       )))
 
-;; This is the way it should be done for all post 19.6 Lemacsen and
-;; for all GNU19 implementations
+;; This is the way it should be done for all post 19.7 Lemacsen and
+;; for all FSF19 implementations
 (defun c++-fast-backward-syntactic-ws-2 (&optional lim)
   "Skip backwards over syntactic whitespace.
 Syntactic whitespace is defined as lexical whitespace, C and C++ style
@@ -1673,7 +1672,7 @@ used."
 	'pound)
        (t nil)))))
 
-;; This is for all 1-bit emacsen (GNU19)
+;; This is for all 1-bit emacsen (FSF19)
 (defun c++-in-literal-1-bit (&optional lim)
   "Determine if point is in a C++ ``literal''.
 Return `c' if in a C-style comment, `c++' if in a C++ style comment,
