@@ -2092,64 +2092,74 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     ;; Advance to first nonblank line.
     (skip-chars-forward " \t\n")
     (beginning-of-line)
-    (let ((endmark (copy-marker end))
-	  (c-tab-always-indent t)
-	  (c-echo-semantic-information-p nil)) ;shut up msgs on indiv lines
-      (while (and (bolp)
-		  (not (eobp))
-		  (< (point) endmark))
-	;; Indent one line as with TAB.
-	(let (nextline sexpend sexpbeg)
-	  ;; skip blank lines
-	  (skip-chars-forward " \t\n")
-	  (beginning-of-line)
-	  ;; indent the current line
-	  (c-indent-line)
-	  (if (save-excursion
+    (let (endmark)
+      (unwind-protect
+	  (let ((c-tab-always-indent t)
+		;; shut up any echo msgs on indiv lines
+		(c-echo-semantic-information-p nil))
+	    (setq endmark (copy-marker end))
+	    (while (and (bolp)
+			(not (eobp))
+			(< (point) endmark))
+	      ;; Indent one line as with TAB.
+	      (let (nextline sexpend sexpbeg)
+		;; skip blank lines
+		(skip-chars-forward " \t\n")
 		(beginning-of-line)
-		(looking-at "[ \t]*#"))
-	      (forward-line 1)
-	    (save-excursion
-	      ;; Find beginning of following line.
-	      (setq nextline (c-point 'bonl))
-	      ;; Find first beginning-of-sexp for sexp extending past
-	      ;; this line.
-	      (beginning-of-line)
-	      (while (< (point) nextline)
-		(condition-case nil
-		    (progn
-		      (forward-sexp 1)
-		      (setq sexpend (point)))
-		  (error (setq sexpend nil)
-			 (goto-char nextline)))
-		(c-forward-syntactic-ws))
-	      (if sexpend
-		  (progn 
-		    ;; make sure the sexp we found really starts on the
-		    ;; current line and extends past it
-		    (goto-char sexpend)
-		    (setq sexpend (point-marker))
-		    (backward-sexp 1)
-		    (setq sexpbeg (point)))))
-	    ;; If that sexp ends within the region, indent it all at
-	    ;; once, fast.
-	    (condition-case nil
-		(if (and sexpend
-			 (> sexpend nextline)
-			 (<= sexpend endmark))
-		    (progn
-		      (goto-char sexpbeg)
-		      (c-indent-exp 'shutup)
-		      (goto-char sexpend)))
-	      (error
-	       (goto-char sexpbeg)
-	       (c-indent-line)))
-	    ;; Move to following line and try again.
-	    (and sexpend
-		 (markerp sexpend)
-		 (set-marker sexpend nil))
-	    (forward-line 1))))
-      (set-marker endmark nil)))
+		;; indent the current line
+		(c-indent-line)
+		(if (save-excursion
+		      (beginning-of-line)
+		      (looking-at "[ \t]*#"))
+		    (forward-line 1)
+		  (save-excursion
+		    ;; Find beginning of following line.
+		    (setq nextline (c-point 'bonl))
+		    ;; Find first beginning-of-sexp for sexp extending past
+		    ;; this line.
+		    (beginning-of-line)
+		    (while (< (point) nextline)
+		      (condition-case nil
+			  (progn
+			    (forward-sexp 1)
+			    (setq sexpend (point)))
+			(error (setq sexpend nil)
+			       (goto-char nextline)))
+		      (c-forward-syntactic-ws))
+		    (if sexpend
+			(progn 
+			  ;; make sure the sexp we found really starts on the
+			  ;; current line and extends past it
+			  (goto-char sexpend)
+			  (setq sexpend (point-marker))
+			  (backward-sexp 1)
+			  (setq sexpbeg (point)))))
+		  ;; check to see if the next line starts a
+		  ;; comment-only line
+		  (save-excursion
+		    (forward-line 1)
+		    (skip-chars-forward " \t")
+		    (if (looking-at c-comment-start-regexp)
+			(setq sexpbeg (c-point 'bol))))
+		  ;; If that sexp ends within the region, indent it all at
+		  ;; once, fast.
+		  (condition-case nil
+		      (if (and sexpend
+			       (> sexpend nextline)
+			       (<= sexpend endmark))
+			  (progn
+			    (goto-char sexpbeg)
+			    (c-indent-exp 'shutup)
+			    (goto-char sexpend)))
+		    (error
+		     (goto-char sexpbeg)
+		     (c-indent-line)))
+		  ;; Move to following line and try again.
+		  (and sexpend
+		       (markerp sexpend)
+		       (set-marker sexpend nil))
+		  (forward-line 1)))))
+	(set-marker endmark nil))))
   (message "indenting region... done."))
 
 (defun c-mark-function ()
