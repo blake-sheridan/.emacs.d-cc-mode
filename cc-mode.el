@@ -4555,6 +4555,18 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		       (current-column))))
       (- ce-curcol cs-curcol -1))))
 
+(defun c-lineup-arglist-close-under-paren (langelem)
+  ;; lineup an arglist-intro line to just after the open paren
+  (save-excursion
+    (let ((cs-curcol (save-excursion
+		       (goto-char (cdr langelem))
+		       (current-column)))
+	  (ce-curcol (save-excursion
+		       (beginning-of-line)
+		       (backward-up-list 1)
+		       (current-column))))
+      (- ce-curcol cs-curcol))))
+
 (defun c-lineup-streamop (langelem)
   ;; lineup stream operators
   (save-excursion
