@@ -2496,18 +2496,17 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			  ;;(char-after (1- placeholder))
 			  (<= placeholder here)
 			  (= (char-after (1- placeholder)) ?\}))
-		     (save-excursion
-		       (let (donep)
-			 (goto-char last-bod)
-			 (while (and (not donep) (not at-bob))
-			   (beginning-of-defun)
-			   (if (= (following-char) ?\{)
-			       (setq last-bod (point)
-				     donep t))
-			   (setq at-bob (bobp)))
-			 (setq pos (point))
-			 (throw 'backup-bod t))))
-		 ))
+		     (while t
+		       (setq last-bod (c-safe (scan-lists last-bod -1 1)))
+		       (if (not last-bod)
+			   (error "unbalanced close brace found at position %d"
+				  (1- placeholder))
+			 (setq at-bob (= last-bod (point-min))
+			       pos last-bod)
+			 (if (= (char-after last-bod) ?\{)
+			     (throw 'backup-bod t)))
+		       ))		;end-if
+		 ))			;end-while
 	     nil))
     state))
 
