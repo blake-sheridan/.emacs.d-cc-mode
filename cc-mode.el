@@ -3003,5 +3003,5 @@ region."
 (fset 'set-c-style           'c-set-style)
 (fset 'c-backslash-region    'c-macroize-region)
 
-(provide 'c-mode)
-;;; c-mode.el ends here
+(provide 'cc-mode)
+;;; cc-mode.el ends here
