@@ -638,7 +638,7 @@ backward-delete-char-untabify."
 	  ;; try to clean up empty defun braces if conditions apply
 	  (let ((here (point-marker)))
 	    (and (memq 'empty-defun-braces c++-cleanup-list)
-		 (c++-at-top-level-p)
+		 (c++-at-top-level-p t)
 		 c++-auto-newline
 		 (= last-command-char ?\})
 		 (progn (forward-char -1)
