@@ -918,6 +918,8 @@ class.  Putting underscore in word class breaks forward word movement
 behavior that users are familiar with.")
 (defconst c-C++-class-key "\\(class\\|struct\\|union\\)"
   "Regexp describing a C++ class declaration, including templates.")
+(defconst c-C-class-key "\\(struct\\|union\\)"
+  "Regexp describing a C struct declaration.")
 (defconst c-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
 	  c-C++-class-key "[ \t]+" c-symbol-key
@@ -1047,7 +1049,7 @@ Key bindings:
   (setq comment-start "/* "
 	comment-end   " */"
 	c-conditional-key c-C-conditional-key
-	c-class-key c-C++-class-key
+	c-class-key c-C-class-key
 	c-comment-start-regexp "/\\*")
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'c-mode-hook))
