@@ -466,7 +466,7 @@ in your Emacs documentation.
 				      empty-defun-braces
 				      defun-close-semi))
     (c-offsets-alist               . ((arglist-close     . c-lineup-arglist)
-				      (substatement-open . 0
+				      (substatement-open . 0)
 				      (case-label        . 4)
 				      (block-open        . 0)
 				      (knr-argdecl-intro . -)))
