@@ -1643,8 +1643,8 @@ used."
 	) ; end-while
       state)))
 
-;; This is for all v19 and patched v18 emacsen
-(defun c++-in-literal-quick (&optional lim)
+;; This is for all 8-bit emacsen (Lucid 19, patched GNU18)
+(defun c++-in-literal-8-bit (&optional lim)
   "Determine if point is in a C++ `literal'.
 Return 'c if in a C-style comment, 'c++ if in a C++ style comment,
 'string if in a string literal, 'pound if on a preprocessor line, or
@@ -1666,13 +1666,40 @@ used."
 	'pound)
        (t nil)))))
 
+;; This is for all 1-bit emacsen (GNU19)
+(defun c++-in-literal-1-bit (&optional lim)
+  "Determine if point is in a C++ `literal'.
+Return 'c if in a C-style comment, 'c++ if in a C++ style comment,
+'string if in a string literal, 'pound if on a preprocessor line, or
+nil if not in a comment at all.  Optional LIM is used as the backward
+limit of the search.  If omitted, or nil, c++-beginning-of-defun is
+used."
+  (save-excursion
+    (let* ((backlim (or lim (c++-point 'bod)))
+	   (here (point))
+	   (parse-sexp-ignore-comments t) ; may not be necessary
+	   (state (parse-partial-sexp backlim (point))))
+      (cond
+       ((nth 3 state) 'string)
+       ((nth 4 state) (if (nth 7 state) 'c 'c++))
+       ((progn
+	  (goto-char here)
+	  (beginning-of-line)
+	  (looking-at "[ \t]*#"))
+	'pound)
+       (t nil)))))
+
 (cond
  ((memq 'old-v19 c++-emacs-features)
-  (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-1)
-  (fset 'c++-in-literal 'c++-in-literal-quick))
+  (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-1))
  ((memq 'v19 c++-emacs-features)
-  (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-2)
-  (fset 'c++-in-literal 'c++-in-literal-quick))
+  (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-2))
+ )
+(cond
+ ((memq '8-bit c++-emacs-features)
+  (fset 'c++-in-literal 'c++-in-literal-8-bit))
+ ((memq '1-bit c++-emacs-features)
+  (fset 'c++-in-literal 'c++-in-literal-1-bit))
  )
 
 
