@@ -69,17 +69,17 @@
 
 ;; Important Note about Escapes in Comments, and Performance
 ;; =========================================================
+
 ;; You may notice that certain characters, when typed in comment
-;; regions, get escaped with a backslash.  This is a workaround for an
-;; emacs bug. In brief, syntax parsing in emacs 18 and derivatives is
-;; broken in 2 ways: syntax tables are not rich enough to support more
-;; than 1 comment style per mode (as C++ requires), and backward
-;; parsing over comment regions is not perfect.  The result is that
-;; emacs will sometimes choke on unbalanced parentheses and single
-;; quotes in comments.  Please do a "C-h v c++-untame-characters" for
-;; more information.
+;; regions, get escaped with a backslash.  This is a workaround for
+;; bugs in emacs' syntax parsing algorithms. In brief, syntax parsing
+;; in emacs 18 and derivatives is broken because syntax tables are not
+;; rich enough to support more than 1 comment style per mode (as C++
+;; requires).  The result is that emacs will sometimes choke on
+;; unbalanced parentheses and single quotes in comments.  Please do a
+;; "C-h v c++-untame-characters" for more information.
 ;;
-;; These problems affect both the accuracy and performance of c++-mode
+;; This problem affect both the accuracy and performance of c++-mode
 ;; because some parsing must be performed in elisp instead of relying
 ;; on the C primitives. In general, I've chosen accuracy over
 ;; performance, but have worked hard to give moderately acceptable
@@ -93,7 +93,7 @@
 ;; up in a future release of that editor.  Some patches for GNU emacs
 ;; 18 have been released on the beta site, but they are not up-to-date
 ;; with the proposed Lemacs patches. I probably won't re-engineer the
-;; GNU patches, but if you do, please send them to me so I can make
+;; v18 patches, but if you do, please send them to me so I can make
 ;; them available to other users via the beta site. If you have the
 ;; patches installed, c++-mode will automatically recognize this and
 ;; use the faster built-in primitives instead, and no characters will
