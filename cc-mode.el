@@ -2034,7 +2034,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (save-excursion
 	      ;; Find beginning of following line.
 	      (setq nextline (c-point 'bonl))
-	      ;; Find first beginning-of-sexp for sexp extending past this line.
+	      ;; Find first beginning-of-sexp for sexp extending past
+	      ;; this line.
 	      (beginning-of-line)
 	      (while (< (point) nextline)
 		(condition-case nil
