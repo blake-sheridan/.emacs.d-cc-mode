@@ -875,7 +875,10 @@ if it is embedded in an expression."
 		(if (not (re-search-forward "*/" here 'move)) 'c))
 	       ;; looking at the opening of a double quote string
 	       ((string= "\"" match)
-		(if (not (re-search-forward "[^\\]\"" here 'move)) 'string))
+		(if (not (save-restriction
+			   (narrow-to-region (point) here)
+			   (re-search-forward "\`\"\\|[^\\]?\"" here 'move)))
+		    'string))
 	       ;; looking at the opening of a single quote string
 	       ((string= "'" match)
 		(if (not (re-search-forward "[^\\]'" here 'move)) 'string))
