@@ -151,12 +151,12 @@ style 1:       style 2:       style 3:       style 4:
    blah         * blah        ** blah        blah
    */           */            */             */
 ")
-(defvar cc-cleanup-list nil
+(defvar cc-cleanup-list '(scope-operator)
   "*List of various C/C++ constructs to \"clean up\".
 These cleanups only take place when the auto-newline feature is turned
 on, as evidenced by the `/a' or `/ah' appearing next to the mode name.
 
-Current valid values are:
+Valid values are:
  `brace-else-brace'   -- clean up `} else {' constructs by placing entire
                          construct on a single line.  This cleanup only
                          takes place when there is nothing but white
@@ -167,7 +167,9 @@ Current valid values are:
                          definitions and functions by placing the semi
                          on the same line as the closing brace.
  `list-close-comma'   -- cleans up commas following braces in array
-                         and aggregate initializers.")
+                         and aggregate initializers.
+ `scope-operator'     -- cleans up double colon scope operator which may be
+                         split across multiple lines.")
 
 (defvar cc-hanging-braces-alist nil
   "*Controls the insertion of newlines before and after open braces.
@@ -311,6 +313,7 @@ you should upgrade your Emacs.")
   (define-key cc-mode-map "/"         'cc-electric-slash)
   (define-key cc-mode-map "*"         'cc-electric-star)
   (define-key cc-mode-map ":"         'cc-electric-colon)
+  (define-key cc-mode-map "\C-c\C-;"  'cc-scope-operator)
   (define-key cc-mode-map "\177"      'cc-electric-delete)
   (define-key cc-mode-map "\C-c\C-t"  'cc-toggle-auto-hungry-state)
   (define-key cc-mode-map "\C-c\C-h"  'cc-toggle-hungry-state)
@@ -437,7 +440,8 @@ Note that the details of configuring cc-c++-mode have been moved to
 the accompanying texinfo manual.
 
 The hook variable `cc-c++-mode-hook' is run with no args, if that
-value is non-nil.
+value is non-nil.  Also the common hook cc-mode-hook is run both by
+this defun, and `cc-c-mode'.
 
 Key bindings:
 \\{cc-mode-map}"
@@ -467,7 +471,8 @@ Note that the details of configuring cc-c-mode have been moved to
 the accompanying texinfo manual.
 
 The hook variable `cc-c-mode-hook' is run with no args, if that
-value is non-nil.
+value is non-nil.  Also the common hook cc-mode-hook is run both by
+this defun, and `cc-c++-mode'.
 
 Key bindings:
 \\{cc-mode-map}"
@@ -528,7 +533,8 @@ Key bindings:
 		      (cc-auto-newline "/a")))))
 	 (setcdr name (append hack (cdr name)))
 	 (put 'mode-line-format 'cc-hacked-mode-line t)
-	 )))
+	 ))
+  (run-hooks 'cc-mode-hook))
 
 
 ;; indentation functions to hook into Emacs generic variables
@@ -665,7 +671,7 @@ then the function in the variable `cc-delete-function' is called."
 	  (cc-in-literal))
       (funcall cc-delete-function (prefix-numeric-value arg))
     (let ((here (point)))
-      (skip-chars-backward "\\s ")
+      (skip-chars-backward " \t\n")
       (if (/= (point) here)
 	  (delete-region (point) here)
 	(funcall cc-delete-function 1)
@@ -835,10 +841,16 @@ If numeric ARG is supplied, indentation is inhibited."
 	(goto-char (- (point-max) pos)))
       ;; re-indent line
       (cc-indent-via-language-element bod)
-      (newline)
+      ;; newline only after semicolon
+      (and (= last-command-char ?\;)
+	   (newline))
       )))
 
-;; <<TBD>>
+(defun cc-scope-operator ()
+  "Insert a double colon scope operator at point.
+No indentation or other \"electric\" behavior is performed."
+  (interactive)
+  (insert "::"))
 
 (defun cc-electric-colon (arg)
   "Insert a colon, possible reindenting a line.
@@ -854,29 +866,21 @@ Will also cleanup double colon scope operators."
 	(cc-insert-and-tame arg)
       ;; lets do some special stuff with the colon character
       (setq semantics (progn
-			(newline)
 			(self-insert-command (prefix-numeric-value arg))
 			(cc-guess-basic-semantics bod))
-	    newlines (or (assq (car (or (assq 'member-init-intro semantics)
-					(assq 'inher-intro semantics)
-					(assq 'case-label semantics)
-					(assq 'label semantics)
-					(assq 'access-key semantics)))
-			       cc-hanging-colons-alist)
-			 '(ignore after)))
+	    newlines (assq (car (or (assq 'member-init-intro semantics)
+				    (assq 'inher-intro semantics)
+				    (assq 'case-label semantics)
+				    (assq 'label semantics)
+				    (assq 'access-key semantics)))
+			   cc-hanging-colons-alist))
       ;; does a newline go before the colon?
       (if (memq 'before newlines)
-	  ;; we leave the newline we've put in there before, but we
-	  ;; need to re-indent the line above
 	  (let ((pos (- (point-max) (point))))
-	    (forward-line -1)
-	    (cc-indent-via-language-element bod)
-	    (goto-char (- (point-max) pos)))
-	;; must remove the newline we just stuck in
-	(delete-region (- (point) 2) (1- (point)))
-	;; since we're hanging the colon, we need to recalculate
-	;; semantics
-	(setq semantics (cc-guess-basic-semantics bod)))
+	    (forward-char -1)
+	    (newline)
+	    (cc-indent-via-language-element bod semantics)
+	    (goto-char (- (point-max) pos))))
       ;; now adjust the line's indentation
       (cc-indent-via-language-element bod semantics)
       ;; does a newline go after the colon?
@@ -884,6 +888,19 @@ Will also cleanup double colon scope operators."
 	  (progn
 	    (newline)
 	    (cc-indent-via-language-element)))
+      ;; we may have to clean up double colons
+      (let ((pos (- (point-max) (point)))
+	    (here (point)))
+	(if (and (memq 'scope-operator cc-cleanup-list)
+		 (= (preceding-char) ?:)
+		 (progn
+		   (forward-char -1)
+		   (skip-chars-backward " \t\n")
+		   (= (preceding-char) ?:))
+		 (not (cc-in-literal))
+		 (not (= (char-after (- (point) 2)) ?:)))
+	    (delete-region (point) (1- here)))
+	(goto-char (- (point-max) pos)))
       )))
 
 (defun c++-electric-colon (arg)
