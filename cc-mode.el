@@ -1799,7 +1799,7 @@ the leading \"// \" from each line, if any."
 	    (forward-line 1)))))
 
 ;; ======================================================================
-;; grammer pasing
+;; grammar pasing
 ;; ======================================================================
 
 ;;; Below are two regular expressions that attempt to match defuns
