@@ -3868,6 +3868,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		 (- (current-column) cs-curcol))
 	(goto-char containing-sexp)
 	(or (eolp)
+	    (not (memq (following-char) '(?{ ?\( )))
 	    (let ((eol (c-point 'eol))
 		  (here (progn
 			  (forward-char 1)
