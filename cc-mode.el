@@ -974,7 +974,10 @@ for member initialization list."
   "Insert character and correct line's indentation."
   (interactive "P")
   (let (insertpos (end (point)))
-    (if (and (not arg) (eolp)
+    (if (and (not arg)
+	     (save-excursion
+	       (skip-chars-forward " \t")
+	       (eolp))
 	     (not (save-excursion
 		    (beginning-of-line)
 		    (skip-chars-forward " \t")
