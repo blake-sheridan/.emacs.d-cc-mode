@@ -2656,7 +2656,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (skip-chars-forward " \t}")
 	    (if (zerop (car (parse-partial-sexp lim (point))))
 		(if inclass-p
-		    (c-add-semantics 'inline-close relpos)
+		    (progn (goto-char relpos)
+			   (c-add-semantics 'inline-close (c-point 'boi)))
 		  (c-add-semantics 'defun-close relpos))
 	      (goto-char relpos)
 	      (c-add-semantics 'block-close (c-point 'boi))
