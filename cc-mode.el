@@ -1995,6 +1995,7 @@ of the expression are preserved."
 	 ;; likely we are either in a function prototype or a function
 	 ;; call argument list
 	 ((/= (char-after containing-sexp) ?{)
+	  (cc-backward-syntactic-ws containing-sexp)
 	  (cond
 	   ;; CASE 4A: we are looking at the first argument in an empty
 	   ;; argument list
