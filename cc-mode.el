@@ -505,9 +505,10 @@ Emacs.")
   ;; In Emacs 19, it makes more sense to inherit c-mode-map
   (if (memq 'v19 c-emacs-features)
       ;; Lucid and FSF 19 do this differently
-      (if (memq 'Lucid c-emacs-features)
-	  (set-keymap-parent c++-mode-map c-mode-map)
-	(setq c++-mode-map (cons 'keymap c-mode-map)))
+      (if (memq 'FSF c-emacs-features)
+	  (setq c++-mode-map (cons 'keymap c-mode-map))
+	(setq c++-mode-map (make-sparse-keymap))
+	(set-keymap-parent c++-mode-map c-mode-map))
     ;; Do it the hard way for GNU18 -- given by JWZ
     (setq c++-mode-map (nconc (make-sparse-keymap) c-mode-map)))
   ;; add bindings which are only useful for C++
