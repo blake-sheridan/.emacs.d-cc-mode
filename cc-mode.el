@@ -550,6 +550,11 @@ your style, only those that are different from the default.")
 ;; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ;; NO USER DEFINABLE VARIABLES BEYOND THIS POINT
 
+;; shut the byte-compiler up as best as possible
+(and (fboundp 'byte-compiler-options)
+     (byte-compiler-options
+       (warnings (- unresolved unused-vars))))
+
 (defconst c-emacs-features
   (let ((major (and (boundp 'emacs-major-version)
 		    emacs-major-version))
