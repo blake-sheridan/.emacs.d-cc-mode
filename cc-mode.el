@@ -859,17 +859,25 @@ if it is embedded in an expression."
 		    (re-search-backward "/[/*]" nil 'move))
 		  (point))))
       (or
-       ;; in a c++ style comment?
-       (nth 4 (parse-partial-sexp bod here 0))
+       ;; in a c++ style comment?  turn off C style comment syntax and
+       ;; turn on only C++ style comment syntax
+       (let ((stab (copy-syntax-table c++-mode-syntax-table))
+	     (in-comment-p
+	      (progn (modify-syntax-entry ?/  ". 12" c++-mode-syntax-table)
+		     (modify-syntax-entry ?\* "."    c++-mode-syntax-table)
+		     (goto-char here)
+		     (nth 4 (parse-partial-sexp bod here 0)))))
+	 (setq c++-mode-syntax-table (set-syntax-table stab))
+	 in-comment-p)
        ;; special case for checking c style comment
-       (let ((in-c-comment-p
+       (let ((stab (copy-syntax-table c++-mode-syntax-table))
+	     (in-comment-p
 	      (progn (modify-syntax-entry ?\n " "    c++-mode-syntax-table)
 		     (modify-syntax-entry ?/  ". 14" c++-mode-syntax-table)
 		     (goto-char here)
 		     (nth 4 (parse-partial-sexp bod here 0)))))
-	 (modify-syntax-entry ?\n ">"    c++-mode-syntax-table)
-	 (modify-syntax-entry ?/  ". 12" c++-mode-syntax-table)
-	 in-c-comment-p)))))
+	 (setq c++-mode-syntax-table (set-syntax-table stab))
+	 in-comment-p)))))
 
 (defun c++-in-open-string-p ()
   "Return non-nil if in an open string as defined by mode's syntax."
