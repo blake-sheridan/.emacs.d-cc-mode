@@ -2934,7 +2934,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
       (if (consp car)
 	  (setq car (car cdr)
 		cdr (cdr cdr)))
-      (if (or (null cdr) (consp car))
+      ;; TBD: is this test relevent???
+      (if (consp car)
 	  state				;on error, don't change
 	;; watch out for balanced expr already on cdr of list
 	(cons (cons car bufpos)
@@ -3620,11 +3621,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (c-backward-syntactic-ws lim)
 	      (while (and inclass-p
 			  c-access-key
-			  (= (preceding-char) ?:)
-			  (not (and (eq major-mode 'objc-mode)
-				    (bobp)))
+			  (not (bobp))
 			  (save-excursion
-			    (backward-sexp 1)
+			    (c-safe (progn (backward-sexp 1) t))
 			    (looking-at c-access-key)))
 		(backward-sexp 1)
 		(c-backward-syntactic-ws lim))
