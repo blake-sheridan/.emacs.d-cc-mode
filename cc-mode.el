@@ -972,8 +972,8 @@ Key bindings:
   ;; set the c-auto-hungry-string for the correct designation on the modeline
   (setq c-auto-hungry-string
 	(if c-auto-newline
-	    (if c-hungry-delete "/ah" "/a")
-	  (if c-hungry-delete "/h" nil)))
+	    (if c-hungry-delete-key "/ah" "/a")
+	  (if c-hungry-delete-key "/h" nil)))
   ;; updates the modeline for all Emacsen
   (if (memq 'v19 c-emacs-features)
       (force-mode-line-update)
