@@ -437,7 +437,7 @@ If a number, percentage complete gets updated after each interval of
 that many seconds.   Set to nil to inhibit updating.  This is only
 useful for Emacs 19.")
 
-(defvar c-style-alist
+(defconst c-style-alist
   '(("gnu"
      (c-basic-offset . 2)
      (c-comment-only-line-offset . (0 . 0))
