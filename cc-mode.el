@@ -825,21 +825,22 @@ literal, nothing special happens."
 	 semantics newlines)
     (if (or literal
 	    arg
-	    (not (looking-at "[ \t]*$"))
-	    (not cc-auto-newline))
+	    (not (looking-at "[ \t]*$")))
 	(cc-insert-and-tame arg)
       (setq semantics (progn
 			(newline)
 			(self-insert-command (prefix-numeric-value arg))
 			(cc-guess-basic-semantics bod))
-	    newlines (or (assq (car (or (assq 'defun-open semantics)
-					(assq 'class-open semantics)
-					(assq 'inline-open semantics)
-					(assq 'block-open semantics)))
-			       cc-hanging-braces-alist)
-			 (if (= last-command-char ?{)
-			     '(ignore before after)
-			   '(ignore after))))
+	    newlines (and
+		      cc-auto-newline
+		      (or (assq (car (or (assq 'defun-open semantics)
+					 (assq 'class-open semantics)
+					 (assq 'inline-open semantics)
+					 (assq 'block-open semantics)))
+				cc-hanging-braces-alist)
+			  (if (= last-command-char ?{)
+			      '(ignore before after)
+			    '(ignore after)))))
       ;; does a newline go before the open brace?
       (if (memq 'before newlines)
 	  ;; we leave the newline we've put in there before,
@@ -860,7 +861,8 @@ literal, nothing special happens."
 	    (pos (- (point-max) (point)))
 	    mbeg mend)
 	;; clean up empty defun braces
-	(if (and (memq 'empty-defun-braces cc-cleanup-list)
+	(if (and cc-auto-newline
+		 (memq 'empty-defun-braces cc-cleanup-list)
 		 (= last-command-char ?\})
 		 (or (assq 'defun-close semantics)
 		     (assq 'class-close semantics)
@@ -873,7 +875,8 @@ literal, nothing special happens."
 		 (not (cc-in-literal)))
 	    (delete-region (point) (1- here)))
 	;; clean up brace-else-brace
-	(if (and (memq 'brace-else-brace cc-cleanup-list)
+	(if (and cc-auto-newline
+		 (memq 'brace-else-brace cc-cleanup-list)
 		 (= last-command-char ?\{)
 		 (re-search-backward "}[ \t\n]*else[ \t\n]*{" nil t)
 		 (progn
@@ -934,14 +937,14 @@ If numeric ARG is supplied, indentation is inhibited."
 	 (here (point)))
     (if (or literal
 	    arg
-	    (not (looking-at "[ \t]*$"))
-	    (not cc-auto-newline))
+	    (not (looking-at "[ \t]*$")))
 	(cc-insert-and-tame arg)
       ;; do some special stuff with the character
       (self-insert-command (prefix-numeric-value arg))
       (let ((pos (- (point-max) (point))))
 	;; possibly do some cleanups
-	(if (and (or (and
+	(if (and cc-auto-newline
+		 (or (and
 		      (= last-command-char ?,)
 		      (memq 'list-close-comma cc-cleanup-list))
 		     (and
@@ -959,7 +962,8 @@ If numeric ARG is supplied, indentation is inhibited."
       (cc-indent-via-language-element bod)
       ;; newline only after semicolon, but only if that semicolon is
       ;; not inside a parenthesis list (e.g. a for loop statement)
-      (and (= last-command-char ?\;)
+      (and cc-auto-newline
+	   (= last-command-char ?\;)
 	   (condition-case nil
 	       (save-excursion
 		 (up-list -1)
@@ -984,8 +988,7 @@ Will also cleanup double colon scope operators."
 	 semantics newlines)
     (if (or literal
 	    arg
-	    (not (looking-at "[ \t]*$"))
-	    (not cc-auto-newline))
+	    (not (looking-at "[ \t]*$")))
 	(cc-insert-and-tame arg)
       ;; lets do some special stuff with the colon character
       (setq semantics (progn
@@ -994,22 +997,24 @@ Will also cleanup double colon scope operators."
       ;; some language elements can only be determined by checking the
       ;; following line.  Lets first look for ones that can be found
       ;; when looking on the line with the colon
-	    newlines (or
-		      (let ((langelem (or (assq 'case-label semantics)
-					  (assq 'label semantics)
-					  (assq 'access-label semantics))))
+	    newlines
+	    (and cc-auto-newline
+		 (or
+		  (let ((langelem (or (assq 'case-label semantics)
+				      (assq 'label semantics)
+				      (assq 'access-label semantics))))
+		    (and langelem
+			 (assq (car langelem) cc-hanging-colons-alist)))
+		  (prog2
+		      (insert "\n")
+		      (let* ((semantics (cc-guess-basic-semantics bod))
+			     (langelem
+			      (or (assq 'member-init-intro semantics)
+				  (assq 'inher-intro semantics))))
 			(and langelem
 			     (assq (car langelem) cc-hanging-colons-alist)))
-		      (prog2
-			(insert "\n")
-			(let* ((semantics (cc-guess-basic-semantics bod))
-			       (langelem
-				(or (assq 'member-init-intro semantics)
-				    (assq 'inher-intro semantics))))
-			  (and langelem
-			       (assq (car langelem) cc-hanging-colons-alist)))
-			(delete-char -1))
-		      ))
+		    (delete-char -1))
+		  )))
       ;; indent the current line
       (cc-indent-via-language-element bod semantics)
       ;; does a newline go before the colon?
@@ -1027,7 +1032,8 @@ Will also cleanup double colon scope operators."
       ;; we may have to clean up double colons
       (let ((pos (- (point-max) (point)))
 	    (here (point)))
-	(if (and (memq 'scope-operator cc-cleanup-list)
+	(if (and cc-auto-newline
+		 (memq 'scope-operator cc-cleanup-list)
 		 (= (preceding-char) ?:)
 		 (progn
 		   (forward-char -1)
