@@ -2156,7 +2156,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (looking-at "\\<enum\\>")))
        ;; this will pick up array/aggregate init lists, even if they
        ;; are nested
-       (progn (goto-char (1- containing-sexp))
+       (progn (goto-char containing-sexp)
 	      (while (not donep)
 		(c-backward-syntactic-ws)
 		(cond
