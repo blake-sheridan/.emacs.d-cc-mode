@@ -148,26 +148,39 @@
 ;; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 (defconst c++-emacs-features
-  (list
-   (if (= 8 (length (parse-partial-sexp (point) (point))))
-       (if (or (string-match "Lucid" emacs-version)
-	       (fboundp 'forward-syntactic-ws))
-	   '8-bit '1-bit)
-     'no-dual-comments)
-   (if (fboundp 'forward-comment)
-       'v19
-     (if (fboundp 'forward-syntactic-ws)
-	 'old-v19 'v18)))
+  (let (mse-spec scanner)
+    (if (= 7 (length (parse-partial-sexp (point) (point))))
+	;; vanilla GNU18/Epoch 4
+	(setq mse-spec 'no-dual-comments
+	      scanner 'v18)
+      ;; we know we're using v19 style dual-comment specifications.
+      ;; All Lemacsen use 8-bit modify-syntax-entry flags, as do all
+      ;; patched GNU18 and Epoch4's.  Only GNU19 uses 1-bit flag. this
+      ;; is a bit kludgy since we can't directly query emacs about
+      ;; this feature.
+      (if (or (string-match "Lucid" emacs-version)
+	      (not (string= (substring emacs-version 0 2) "19")))
+	  (setq mse-spec '8-bit)
+	(setq mse-spec '1-bit))
+      ;; we also know we're using a quicker, built-in comment scanner,
+      ;; but we don't know if its old-style or new. Fortunately we can
+      ;; ask emacs directly
+      (if (fboundp 'forward-comment)
+	  (setq scanner 'v19)
+	(setq scanner 'old-v19)))
+    ;; now cobble up the necessary list
+    (list mse-spec scanner))
   "A list of needed features extant in the emacs you are using.
 There are many flavors of emacs out on the net, each with different
 features supporting those needed by c++-mode.  Here's the current
 known list, along with the values for this variable:
 
-Vanilla GNU 18/Epoch 4: (no-dual-comments v18)
-Patched GNU 18/Epoch 4: (8-bit old-v19)
-Lemacs 19.4 - 19.6:     (8-bit old-v19)
-Lemacs 19.7 and over:   (8-bit v19)
-GNU 19:                 (1-bit v19)")
+Vanilla GNU 18/Epoch 4:  (no-dual-comments v18)
+GNU 18/Epoch 4 (patch1): (8-bit old-v19)
+GNU 18/Epoch 4 (patch2): (8-bit v19)
+Lemacs 19.4 - 19.6:      (8-bit old-v19)
+Lemacs 19.7 and over:    (8-bit v19)
+GNU 19:                  (1-bit v19)")
 
 (defvar c++-mode-abbrev-table nil
   "Abbrev table in use in C++-mode buffers.")
