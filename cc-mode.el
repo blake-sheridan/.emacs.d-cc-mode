@@ -2516,7 +2516,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	       (> (point)
 		  (save-excursion
 		    (c-beginning-of-statement nil containing-sexp)
-		    (setq placeholder (point)))))
+		    (setq placeholder (point))))
+	       (/= placeholder containing-sexp))
 	  (goto-char indent-point)
 	  (skip-chars-forward " \t")
 	  (cond
@@ -2562,7 +2563,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; beginning of statement or substatement
 	   (t
 	    (c-beginning-of-statement nil
-	     (progn
+	     (save-excursion
 	       (goto-char placeholder)
 	       (and (looking-at c-conditional-key)
 		    (c-safe (progn (forward-sexp 2) t))
