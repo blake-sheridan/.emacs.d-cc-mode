@@ -3279,33 +3279,39 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(save-excursion
 	  (save-restriction
 	    (goto-char search-start)
-	    (let (foundp class)
+	    (let (foundp class match-end)
 	      (while (and (not foundp)
 			  (progn
 			    (c-forward-syntactic-ws)
 			    (> search-end (point)))
 			  (re-search-forward c-class-key search-end t))
-		(setq class (match-beginning 0))
+		(setq class (match-beginning 0)
+		      match-end (match-end 0))
 		(if (c-in-literal search-start)
 		    nil			; its in a comment or string, ignore
 		  (goto-char class)
 		  (skip-chars-forward " \t\n")
 		  (setq foundp (vector (c-point 'boi) search-end))
-		  ;; make sure we're really looking at the start of
-		  ;; a class definition, and not a forward decl,
-		  ;; return arg, template arg list, or an ObjC method.
-		  (if (eq major-mode 'objc-mode)
-		      (if (re-search-forward c-ObjC-method-key search-end t)
-			  (setq foundp nil))
-		    ;; Its impossible to define a regexp for this, and
-		    ;; nearly so to do it programmatically.
-		    ;;
-		    ;; ; picks up forward decls
-		    ;; = picks up init lists
-		    ;; ) picks up return types
-		    ;; > picks up templates, but remember that we can
-		    ;;   inherit from templates!
-		    (let ((skipchars "^;=)"))
+		  (cond
+		   ;; check for embedded keywords
+		   ((/= (char-syntax class) 32)
+		    (goto-char match-end)
+		    (setq foundp nil))
+		   ;; make sure we're really looking at the start of a
+		   ;; class definition, and not a forward decl, return
+		   ;; arg, template arg list, or an ObjC method.
+		   ((and (eq major-mode 'objc-mode)
+			 (re-search-forward c-ObjC-method-key search-end t))
+		    (setq foundp nil))
+		   ;; Its impossible to define a regexp for this, and
+		   ;; nearly so to do it programmatically.
+		   ;;
+		   ;; ; picks up forward decls
+		   ;; = picks up init lists
+		   ;; ) picks up return types
+		   ;; > picks up templates, but remember that we can
+		   ;;   inherit from templates!
+		   ((let ((skipchars "^;=)"))
 		      ;; try to see if we found the `class' keyword
 		      ;; inside a template arg list
 		      (save-excursion
@@ -3313,9 +3319,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			(if (= (preceding-char) ?<)
 			    (setq skipchars (concat skipchars ">"))))
 		      (skip-chars-forward skipchars search-end)
-		      (if (/= (point) search-end)
-			  (setq foundp nil))
-		      ))))
+		      (/= (point) search-end))
+		    (setq foundp nil))
+		   )))
 	      foundp))
 	  )))))
 
