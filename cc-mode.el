@@ -2477,6 +2477,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		 ;; and try again
 		 (if (and (not pos) (not at-bob)
 			  (setq placeholder (c-safe (scan-lists last-pos 1 1)))
+			  (char-after placeholder)
 			  (= (char-after placeholder) ?}))
 		     (save-excursion
 		       (let (donep)
