@@ -1713,17 +1713,23 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	       (while (not donep)
 		 (setq foundp (re-search-backward cc-class-key lim t))
 		 (save-excursion
-		   (let* ((cop (scan-lists foundp 1 -1))
-			  (state (parse-partial-sexp cop search-end)))
+		   (let* ((cop (cc-safe (scan-lists foundp 1 -1)))
+			  (state (cc-safe (parse-partial-sexp cop search-end)))
+			  )
 		     (if (and foundp
+			      cop
 			      (not (cc-in-literal))
 			      (<= cop search-end)
 			      (<= 0 (nth 6 state))
 			      (<= 0 (nth 0 state)))
-			 (setq donep t
-			       foundp (cons (1- cop) foundp))
-		       ))))
-	       foundp))
+			 (progn
+			   (goto-char foundp)
+			   (setq donep t
+				 foundp (cons (1- cop) (cc-point 'boi)))
+			   )
+		       (setq donep (not foundp))) ;end if
+		     )))		;end while
+	       foundp))			;end s-e
 	 (error nil))))
 
 
