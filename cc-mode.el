@@ -4392,16 +4392,25 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; of the first method call argument, so lineup the current line
   ;; with it.
   (save-excursion
-    (let* ((open-bracket-pos (cdr langelem))
-           (open-bracket-col (progn (goto-char open-bracket-pos)
-                                    (current-column)))
-           (target-col (progn (forward-char)
-                              (forward-sexp)
-			      (skip-chars-forward " \t")
-			      (if (eolp)
-                                  (+ open-bracket-col (* 2 c-basic-offset))
-                                (current-column)))))
-      (- target-col open-bracket-col))))
+    (let* ((extra (save-excursion
+		    (back-to-indentation)
+		    (c-backward-syntactic-ws (cdr langelem))
+		    (if (= (preceding-char) ?:)
+			(- c-basic-offset)
+		      0)))
+	   (open-bracket-pos (cdr langelem))
+           (open-bracket-col (progn
+			       (goto-char open-bracket-pos)
+			       (current-column)))
+           (target-col (progn
+			 (forward-char)
+			 (forward-sexp)
+			 (skip-chars-forward " \t")
+			 (if (eolp)
+			     (+ open-bracket-col c-basic-offset)
+			   (current-column))))
+	   )
+      (- target-col open-bracket-col extra))))
 
 (defun c-lineup-ObjC-method-args (langelem)
   ;; Line up the colons that separate args. This is done trying to
