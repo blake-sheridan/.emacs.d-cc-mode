@@ -615,38 +615,39 @@ supported list, along with the values for this variable:
   (modify-syntax-entry ?>  "."     table)
   (modify-syntax-entry ?&  "."     table)
   (modify-syntax-entry ?|  "."     table)
-  (modify-syntax-entry ?\' "\""    table)
-  ;; comment syntax
-  (cond
-   ((eq major-mode 'c-mode)
-    (modify-syntax-entry ?/  ". 14"  table)
-    (modify-syntax-entry ?*  ". 23"  table))
-   ;; the rest are for C++'s dual comments
-   ((memq '8-bit c-emacs-features)
-    ;; Lucid emacs has the best implementation
-    (modify-syntax-entry ?/  ". 1456" table)
-    (modify-syntax-entry ?*  ". 23"   table)
-    (modify-syntax-entry ?\n "> b"    table))
-   ((memq '1-bit c-emacs-features)
-    ;; FSF Emacs 19 does things differently, but we can work with it
-    (modify-syntax-entry ?/  ". 124b" table)
-    (modify-syntax-entry ?*  ". 23"   table)
-    (modify-syntax-entry ?\n "> b"    table))
-   ))
+  (modify-syntax-entry ?\' "\""    table))
 
 (defvar c-mode-syntax-table nil
   "Syntax table used in c-mode buffers.")
 (if c-mode-syntax-table
     ()
   (setq c-mode-syntax-table (make-syntax-table))
-  (c-populate-syntax-table c-mode-syntax-table))
+  (c-populate-syntax-table c-mode-syntax-table)
+  ;; add extra comment syntax
+  (modify-syntax-entry ?/  ". 14"  c-mode-syntax-table)
+  (modify-syntax-entry ?*  ". 23"  c-mode-syntax-table))
 
 (defvar c++-mode-syntax-table nil
   "Syntax table used in c++-mode buffers.")
 (if c++-mode-syntax-table
     ()
   (setq c++-mode-syntax-table (make-syntax-table))
-  (c-populate-syntax-table c++-mode-syntax-table))
+  (c-populate-syntax-table c++-mode-syntax-table)
+  ;; add extra comment syntax
+  (cond
+   ((memq '8-bit c-emacs-features)
+    ;; Lucid emacs has the best implementation
+    (modify-syntax-entry ?/  ". 1456" c++-mode-syntax-table)
+    (modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
+    (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table))
+   ((memq '1-bit c-emacs-features)
+    ;; FSF Emacs 19 does things differently, but we can work with it
+    (modify-syntax-entry ?/  ". 124b" c++-mode-syntax-table)
+    (modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
+    (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table))
+   )
+  ;; TBD: does it make sense for colon to be symbol class in C++?  I think, yes.
+  (modify-syntax-entry ?: "_" c++-mode-syntax-table))
 
 (defvar c-hungry-delete-key nil
   "Internal state of hungry delete key feature.")
