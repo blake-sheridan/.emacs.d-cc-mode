@@ -2338,7 +2338,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	;; try to narrow the region even farther. skip over any
 	;; balanced lists between start and end.  Could be ill-formed
 	;; top-level constructs that b-o-d didn't pick up
-	(c-safe (while t (setq start (scan-lists start 1 0))))
+	(c-safe
+	 (let (newstart)
+	   (while (setq newstart (scan-lists start 1 0))
+	     (setq start newstart))))
 	;; now parse from the point we're at to end
 	(setq state (parse-partial-sexp start end))
 	(if (and (setq brace (nth 1 state))
