@@ -127,7 +127,7 @@ with previous initializations rather than with the colon on the first line.")
 list.  Nil indicates to just after the paren.")
 (defvar c++-comment-only-line-offset 4
   "*Indentation offset for line which contains only C or C++ style comments.")
-(defvar c++-cleanup-}-else-{-p t
+(defvar c++-cleanup-brace-else-brace-p t
   "*Controls whether } else { style should remain on a single line.
 When t, cleans up this style (when only whitespace intervenes).")
 (defvar c++-hanging-braces t
@@ -270,7 +270,7 @@ from their c-mode cousins.
     just under previous line's argument indentation.
  c++-comment-only-line-offset
     Extra indentation for a line containing only a C or C++ style comment.
- c++-cleanup-}-else-{-p
+ c++-cleanup-brace-else-brace-p
     Controls whether } else { style (with only whitespace intervening)
     should be cleaned up so that it sits on only a single line.
  c++-hanging-braces
@@ -550,7 +550,7 @@ backward-delete-char-untabify."
 	  (insert last-command-char)
 	  (let ((here (make-marker)) mbeg mend)
 	    (set-marker here (point))
-	    (if (and c++-cleanup-}-else-{-p
+	    (if (and c++-cleanup-brace-else-brace-p
 		     (= last-command-char ?\{)
 		     (let ((status (re-search-backward "}[ \t\n]*else[ \t\n]*{"
 						       nil t)))
@@ -1698,7 +1698,7 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 		       'c++-empty-arglist-indent
 		       'c++-always-arglist-indent-p
 		       'c++-comment-only-line-offset
-		       'c++-cleanup-}-else-{-p
+		       'c++-cleanup-brace-else-brace-p
 		       'c++-hanging-braces
 		       'c++-hanging-member-init-colon
 		       'c++-auto-hungry-initial-state
