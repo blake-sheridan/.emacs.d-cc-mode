@@ -1138,7 +1138,7 @@ behavior that users are familiar with.")
 ;; defconst'd instead of defvar'd to override any old pre-loaded versions
 (defconst c-recognize-knr-p t
   "Non-nil means K&R style argument declarations are valid.")
-(defconst c-buffer-style "gnu"
+(defvar c-buffer-style "gnu"
   "Name of style installed in the current buffer.")
 
 ;; minor mode variables
