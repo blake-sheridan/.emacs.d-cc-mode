@@ -1226,13 +1226,14 @@ characters to escape are defined in the variable c++-untame-characters."
 (defun c++-match-paren ()
   "Jumps to the paren matching the one under point, if there is one."
   (interactive)
-  (cond ((looking-at "[\(\[{]")
-	 (forward-sexp 1)
-	 (backward-char))
-	((looking-at "[])}]")
-	 (forward-char)
-	 (backward-sexp 1))
-	(t (message "Could not find matching paren."))))
+  (let ((parse-sexp-ignore-comments t))
+    (cond ((looking-at "[\(\[{]")
+	   (forward-sexp 1)
+	   (backward-char))
+	  ((looking-at "[])}]")
+	   (forward-char)
+	   (backward-sexp 1))
+	  (t (message "Could not find matching paren.")))))
 
 
 ;; ======================================================================
