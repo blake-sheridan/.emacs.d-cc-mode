@@ -637,7 +637,7 @@ re-dump Emacs.")
     ["Backward Statement"     c-beginning-of-statement t]
     ["Forward Statement"      c-end-of-statement t]
     )
-  "XEmacs 19 menu for C/C++/ObjC modes.")
+  "XEmacs 19 menu for C/C++/ObjC/Java modes.")
 
 ;; Sadly we need this for a macro in Emacs 19.
 (eval-when-compile
@@ -925,7 +925,7 @@ All other Emacsen use the `old-re' suite.")
   ;;
   ;; Emacs 19 defines menus in the mode map. This call will return
   ;; t on Emacs 19, otherwise no-op and return nil.
-  (if (and (not (c-mode-fsf-menu "C" c-mode-map))
+  (if (and (not (c-mode-fsf-menu "CC-Mode" c-mode-map))
 	   ;; in XEmacs 19, we want the menu to popup when the 3rd
 	   ;; button is hit.  In Lucid Emacs 19.10 and beyond this is
 	   ;; done automatically if we put the menu on mode-popup-menu
@@ -962,7 +962,8 @@ All other Emacsen use the `old-re' suite.")
   (define-key c++-mode-map ">"      'c-electric-lt-gt)
   ;; Emacs 19 defines menus in the mode map. This call will return
   ;; t on Emacs 19, otherwise no-op and return nil.
-  (c-mode-fsf-menu "C++" c++-mode-map))
+;  (c-mode-fsf-menu "C++" c++-mode-map)
+  )
 
 (defvar objc-mode-map ()
   "Keymap used in objc-mode buffers.")
@@ -986,7 +987,8 @@ All other Emacsen use the `old-re' suite.")
   (define-key objc-mode-map "/"      'c-electric-slash)
   ;; Emacs 19 defines menus in the mode map. This call will return
   ;; t on Emacs 19, otherwise no-op and return nil.
-  (c-mode-fsf-menu "ObjC" objc-mode-map))
+;  (c-mode-fsf-menu "ObjC" objc-mode-map)
+  )
 
 (defvar java-mode-map ()
   "Keymap used in java-mode buffers.")
@@ -1011,7 +1013,8 @@ All other Emacsen use the `old-re' suite.")
   (define-key java-mode-map "/"      'c-electric-slash)
   ;; Emacs 19 defines menus in the mode map. This call will return t
   ;; on Emacs 19, otherwise no-op and return nil.
-  (c-mode-fsf-menu "Java" java-mode-map))
+;  (c-mode-fsf-menu "Java" java-mode-map)
+  )
 
 (defun c-populate-syntax-table (table)
   ;; Populate the syntax TABLE
