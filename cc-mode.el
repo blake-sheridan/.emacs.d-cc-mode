@@ -2467,6 +2467,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (not (eolp)))
 		 (save-excursion
 		   (c-beginning-of-statement)
+		   (skip-chars-backward " \t(")
 		   (<= (point) containing-sexp)))
 	    (c-add-semantics 'arglist-cont-nonempty containing-sexp))
 	   ;; CASE 5D: two possibilities here. First, its possible
