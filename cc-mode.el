@@ -2938,11 +2938,19 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		    ;; ; picks up forward decls
 		    ;; = picks up init lists
 		    ;; ) picks up return types
-		    ;; > picks up templates
-		    (skip-chars-forward "^;=)>" search-end)
-		    (if (/= (point) search-end)
-			(setq foundp nil))
-		    )))
+		    ;; > picks up templates, but remember that we can
+		    ;;   inherit from templates!
+		    (let ((skipchars "^;=)"))
+		      ;; try to see if we found the `class' keyword
+		      ;; inside a template arg list
+		      (save-excursion
+			(skip-chars-backward "^<" search-start)
+			(if (= (preceding-char) ?<)
+			    (setq skipchars (concat skipchars ">"))))
+		      (skip-chars-forward skipchars search-end)
+		      (if (/= (point) search-end)
+			  (setq foundp nil))
+		      ))))
 	      foundp))
 	  )))))
 
