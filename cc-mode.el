@@ -1429,13 +1429,14 @@ search."
     (save-excursion
       (goto-char lim)
       (setq state (parse-partial-sexp (point) here nil nil)))
-    (if (or (nth 3 state)
-	    (nth 4 state)
-	    (looking-at (concat "[ \t]*" comment-start-skip))
-	    (save-excursion
-	      (skip-chars-backward " \t")
-	      (goto-char (- (point) 2))
-	      (looking-at "\\*/")))
+    (if (and (interactive-p)
+	     (or (nth 3 state)
+		 (nth 4 state)
+		 (looking-at (concat "[ \t]*" comment-start-skip))
+		 (save-excursion
+		   (skip-chars-backward " \t")
+		   (goto-char (- (point) 2))
+		   (looking-at "\\*/"))))
 	(forward-sentence (- count))
       (while (> count 0)
 	(c-beginning-of-statement-1)
