@@ -3772,8 +3772,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    ;; enclosure in a class block
 	    (save-restriction
 	      (widen)
-	      (c-add-syntax 'topmost-intro (c-point 'bol)))
-	    (and inclass-p (c-add-syntax 'inclass (aref inclass-p 0))))
+	      (c-add-syntax 'topmost-intro (c-point 'bol))
+	      (if inclass-p
+		  (progn
+		    (goto-char (aref inclass-p 1))
+		    (c-add-syntax 'inclass (c-point 'boi))))))
 	   ;; CASE 5I: we are at a method definition continuation line
 	   ((and (eq major-mode 'objc-mode)
 		 (progn
