@@ -1639,57 +1639,64 @@ BOD is the beginning of the C++ definition."
 				(beginning-of-line)
 				(looking-at "[ \t]*\\<friend\\>")))
 			  0
-			(beginning-of-line) ; cont arg decls or member inits
-			(skip-chars-forward " \t")
-			(if (or (memq (c++-in-literal bod) '(c c++))
-				(looking-at "/[/*]"))
+			;; cont arg decls or member inits
+			(beginning-of-line)
+			;; we might be inside a K&R C arg decl
+			(if (save-excursion
+			      (c++-backward-over-syntactic-ws)
+			      (and (eq major-mode 'c++-c-mode)
+				   (= (preceding-char) ?\))))
+			    c-argdecl-indent
+			  (skip-chars-forward " \t")
+			  (if (or (memq (c++-in-literal bod) '(c c++))
+				  (looking-at "/[/*]"))
 			      0
-			  (if (= (following-char) ?:)
-			      (if c++-continued-member-init-offset
-				  (+ (current-indentation)
-				     c++-continued-member-init-offset)
-				(progn
-				  (forward-char 1)
-				  (skip-chars-forward " \t")
-				  (- (current-column)
-				     inclass-shift)))
-			    ;; else first check to see if its a
-			    ;; multiple inheritance continuation line
-			    (if (looking-at
-				 (concat c++-class-key
-					 "[ \t]+"
-					 "\\(\\w+[ \t]*:[ \t]*\\)?"))
-				(if (= char-before-ip ?,)
-				    (progn (goto-char (match-end 0))
-					   (current-column))
-				  0)
-			      ;; we might be looking at the opening
-			      ;; brace of a class defun
-			      (if (= (following-char) ?\{)
-				  0
-				(if (eolp)
-				    ;; looking at a blank line, indent
-				    ;; next line to zero
+			    (if (= (following-char) ?:)
+				(if c++-continued-member-init-offset
+				    (+ (current-indentation)
+				       c++-continued-member-init-offset)
+				  (progn
+				    (forward-char 1)
+				    (skip-chars-forward " \t")
+				    (- (current-column)
+				       inclass-shift)))
+			      ;; else first check to see if its a
+			      ;; multiple inheritance continuation line
+			      (if (looking-at
+				   (concat c++-class-key
+					   "[ \t]+"
+					   "\\(\\w+[ \t]*:[ \t]*\\)?"))
+				  (if (= char-before-ip ?,)
+				      (progn (goto-char (match-end 0))
+					     (current-column))
+				    0)
+				;; we might be looking at the opening
+				;; brace of a class defun
+				(if (= (following-char) ?\{)
 				    0
-				  (if (save-excursion
-					(goto-char indent-point)
-					(beginning-of-line)
-					(bobp))
-				      ;; at beginning of buffer, if
-				      ;; nothing else, indent to zero 
+				  (if (eolp)
+				      ;; looking at a blank line, indent
+				      ;; next line to zero
 				      0
-				    (if (c++-in-parens-p)
-					;; we are perhaps inside a
-					;; member init call
-					(while (and (c++-in-parens-p)
-						    (< bod (point)))
-					  (forward-line -1)
-					  (skip-chars-forward " \t")))
-				    ;; subtract inclass-shift since
-				    ;; its already incorporated by
-				    ;; defaultin current-indentation
-				    (- (current-indentation) inclass-shift)
-				    ))))))))
+				    (if (save-excursion
+					  (goto-char indent-point)
+					  (beginning-of-line)
+					  (bobp))
+					;; at beginning of buffer, if
+					;; nothing else, indent to zero 
+					0
+				      (if (c++-in-parens-p)
+					  ;; we are perhaps inside a
+					  ;; member init call
+					  (while (and (c++-in-parens-p)
+						      (< bod (point)))
+					    (forward-line -1)
+					    (skip-chars-forward " \t")))
+				      ;; subtract inclass-shift since
+				      ;; its already incorporated by
+				      ;; default in current-indentation
+				      (- (current-indentation) inclass-shift)
+				      )))))))))
 		    )))))
 	    ((/= (char-after containing-sexp) ?{)
 	     ;; line is expression, not statement:
