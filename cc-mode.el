@@ -1913,7 +1913,7 @@ for details of setting up styles."
                                       c-style-alist nil t)))
   (let ((vars (cdr (assoc stylename c-style-alist)))
 	(default (assoc "Default" c-style-alist)))
-    (or vars (error "Invalid indentation style `%s'" style))
+    (or vars (error "Invalid indentation style `%s'" stylename))
     (or default (error "No \"Default\" style found!"))
     ;; first reset the style to Default to give every style a common
     ;; base. Then institute the new style.
