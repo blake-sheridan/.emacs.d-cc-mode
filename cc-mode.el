@@ -891,10 +891,16 @@ All other Emacsen use the `old-re' suite.")
   ;; In Emacs 19, it makes more sense to inherit c-mode-map
   (if (memq 'v19 c-emacs-features)
       ;; XEmacs and Emacs 19 do this differently
-      (if (not (fboundp 'set-keymap-parent))
-	  (setq c++-mode-map (cons 'keymap c-mode-map))
+      (cond
+       ;; XEmacs 19.13
+       ((fboundp 'set-keymap-parents)
+	(setq c++-mode-map (make-sparse-keymap))
+	(set-keymap-parents c++-mode-map c-mode-map))
+       ((fboundp 'set-keymap-parent)
 	(setq c++-mode-map (make-sparse-keymap))
 	(set-keymap-parent c++-mode-map c-mode-map))
+       (t (setq c++-mode-map (cons 'keymap c-mode-map)))
+       )
     ;; Do it the hard way for Emacs 18 -- given by JWZ
     (setq c++-mode-map (nconc (make-sparse-keymap) c-mode-map)))
   ;; add bindings which are only useful for C++
@@ -913,10 +919,16 @@ All other Emacsen use the `old-re' suite.")
   ;; In Emacs 19, it makes more sense to inherit c-mode-map
   (if (memq 'v19 c-emacs-features)
       ;; XEmacs and Emacs 19 do this differently
-      (if (not (fboundp 'set-keymap-parent))
-	  (setq objc-mode-map (cons 'keymap c-mode-map))
+      (cond
+       ;; XEmacs 19.13
+       ((fboundp 'set-keymap-parents)
+	(setq objc-mode-map (make-sparse-keymap))
+	(set-keymap-parents objc-mode-map c-mode-map))
+       ((fboundp 'set-keymap-parent)
 	(setq objc-mode-map (make-sparse-keymap))
 	(set-keymap-parent objc-mode-map c-mode-map))
+       (t (setq objc-mode-map (cons 'keymap c-mode-map)))
+       )
     ;; Do it the hard way for Emacs 18 -- given by JWZ
     (setq objc-mode-map (nconc (make-sparse-keymap) c-mode-map)))
   ;; add bindings which are only useful for Objective-C
@@ -932,10 +944,16 @@ All other Emacsen use the `old-re' suite.")
   ;; In Emacs 19, it makes more sense to inherit c-mode-map
   (if (memq 'v19 c-emacs-features)
       ;; XEmacs and Emacs 19 do this differently
-      (if (not (fboundp 'set-keymap-parent))
- 	  (setq java-mode-map (cons 'keymap c-mode-map))
- 	(setq java-mode-map (make-sparse-keymap))
- 	(set-keymap-parent java-mode-map c-mode-map))
+      (cond
+       ;; XEmacs 19.13
+       ((fboundp 'set-keymap-parents)
+	(setq java-mode-map (make-sparse-keymap))
+	(set-keymap-parents java-mode-map c-mode-map))
+       ((fboundp 'set-keymap-parent)
+	(setq java-mode-map (make-sparse-keymap))
+	(set-keymap-parent java-mode-map c-mode-map))
+       (t (setq java-mode-map (cons 'keymap c-mode-map)))
+       )
     ;; Do it the hard way for Emacs 18 -- given by JWZ
     (setq java-mode-map (nconc (make-sparse-keymap) c-mode-map)))
   ;; add bindings which are only useful for Java
