@@ -3880,7 +3880,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (c-add-syntax 'statement-cont (c-point 'boi)))
 	   ;; CASE 15D: any old statement
 	   ((< (point) indent-point)
-	    (let ((safepos (point)))
+	    (let ((safepos (c-most-enclosing-brace fullstate)))
 	      (goto-char indent-point)
 	      (c-beginning-of-statement-1 safepos)
 	      (c-add-syntax 'statement (c-point 'boi))
