@@ -1727,7 +1727,12 @@ BOD is the beginning of the C++ definition."
 			   ;; The first following code counts
 			   ;; if it is before the line we want to indent.
 			   (and (< (point) indent-point)
-				(current-column))))
+				(+ (current-column)
+				   (if (save-excursion
+					 (goto-char indent-point)
+					 (c++-backward-over-syntactic-ws)
+					 (= (preceding-char) ?,))
+				       c-indent-level 0)))))
 		    ;; If no previous statement, indent it relative to
 		    ;; line brace is on.  For open brace in column
 		    ;; zero, don't let statement start there too.  If
