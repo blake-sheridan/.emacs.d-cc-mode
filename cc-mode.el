@@ -2073,7 +2073,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ))
 	   ;; CASE 7B: iostream insertion or extraction operator
 	   ((looking-at "<<\\|>>")
-	    (cc-add-semantics 'stream-op placeholder))
+	    (goto-char placeholder)
+	    (while (and (re-search-forward "<<\\|>>" indent-point 'move)
+			(cc-in-literal)))
+	    (cc-add-semantics 'stream-op (cc-point 'boi)))
 	   ;; CASE 7C: hanging continued statement
 	   (t (cc-add-semantics 'statement-cont placeholder))
 	   ))
