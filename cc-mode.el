@@ -2555,7 +2555,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		 (progn
 		   (forward-char -1)
 		   (c-backward-syntactic-ws)
-		   (looking-at "\\s *:\\([^:]+\\|$\\)")))
+		   (looking-at "[ \t\n]*:\\([^:]+\\|$\\)")))
 	    nil
 	  (goto-char checkpoint))
 	)
