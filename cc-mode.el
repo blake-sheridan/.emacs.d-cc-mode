@@ -2361,7 +2361,8 @@ search."
 				   (and lim
 					(<= lim (point))
 					(not (c-in-literal lim))
-					(looking-at c-conditional-key)))))
+;					(looking-at c-conditional-key)))))
+					t))))
 		     ;; did we find a conditional?
 		     (if (not foundp)
 			 (goto-char here))
@@ -3966,7 +3967,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		;; after the next release, I may call a recognition
 		;; hook like so: (run-hooks 'c-recognize-hook), but I
 		;; dunno.
-		(c-add-syntax 'statement-cont placeholder)
+		(goto-char placeholder)
+		(c-add-syntax 'statement-cont (c-point 'boi))
 		(c-add-syntax 'block-open))
 	       ))
 	     ;; CASE 9C: iostream insertion or extraction operator
