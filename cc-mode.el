@@ -2448,6 +2448,7 @@ style name."
 	(c-set-style-1 vars)))
   (c-keep-region-active))
 
+;;;###autoload
 (defun c-add-style (style descrip &optional set-p)
   "Adds a style to `c-style-alist', or updates an existing one.
 STYLE is a string identifying the style to add or update.  DESCRIP is
