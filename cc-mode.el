@@ -69,6 +69,7 @@
   (define-key c++-mode-map "\C-c\C-\\" 'c++-macroize-region)
   (define-key c++-mode-map "\C-c\C-c"  'c++-comment-region)
   (define-key c++-mode-map "\C-c\C-u"  'c++-uncomment-region)
+  (define-key c++-mode-map "\C-c\C-x"  'c++-match-paren)
   (define-key c++-mode-map "\e\C-a"    'c++-beginning-of-defun)
   (define-key c++-mode-map "\e\C-e"    'c++-end-of-defun)
   (define-key c++-mode-map "\e\C-x"    'c++-indent-defun)
@@ -1015,6 +1016,18 @@ characters to escape are defined in the variable c++-untame-characters."
 	    (insert "\\"))
 	(if (not (eobp))
 	    (forward-char 1))))))
+
+;; taken from match-paren.el. Author: unknown
+(defun c++-match-paren ()
+  "Jumps to the paren matching the one under point, if there is one."
+  (interactive)
+  (cond ((looking-at "[\(\[{]")
+	 (forward-sexp 1)
+	 (backward-char))
+	((looking-at "[])}]")
+	 (forward-char)
+	 (backward-sexp 1))
+	(t (message "Could not find matching paren."))))
 
 
 ;; ======================================================================
