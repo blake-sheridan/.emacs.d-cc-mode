@@ -3261,14 +3261,14 @@ it trailing backslashes are removed."
 (defun c-submit-bug-report ()
   "Submit via mail a bug report on cc-mode."
   (interactive)
-  (require 'reporter)
   (and
    (y-or-n-p "Do you want to submit a report on cc-mode? ")
+   (require 'reporter)
    (reporter-submit-bug-report
     c-mode-help-address
-    (concat "cc-mode version " c-version " (editing "
+    (concat "cc-mode " c-version " ("
 	    (if (eq major-mode 'c++-mode) "C++" "C")
-	    " code)")
+	    ")")
     (list
      ;; report only the vars that affect indentation
      'c-emacs-features
