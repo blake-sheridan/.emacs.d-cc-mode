@@ -1469,6 +1469,8 @@ search."
 			    ))
 		      (not (looking-at c-conditional-key))
 		      )
+	    ;; this seems bogus, but necessary
+	    (skip-chars-backward "*&:.")
 	    (if (not (looking-at c-label-key))
 		(setq last-begin (point)
 		      first nil)))
