@@ -682,7 +682,8 @@ available by doing a \"\\[describe-function] c++-mode\"."
   (interactive)
   (c++-mode)
   (setq major-mode 'c++-c-mode
-	mode-name "C")
+	mode-name "C"
+	local-abbrev-table c-mode-abbrev-table)
   (setq comment-start "/* "
 	comment-end   " */")
   ;; some syntax differences are necessary for C vs. C++
