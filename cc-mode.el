@@ -1822,9 +1822,12 @@ search."
 		(goto-char last-begin))
 	      ;; skip over any unary operators, or other special
 	      ;; characters appearing at front of identifier
-	      (c-backward-syntactic-ws)
-	      (skip-chars-backward "-+!*&:.~")
-	      (setq last-begin (point))
+	      (save-excursion
+		(c-backward-syntactic-ws)
+		(skip-chars-backward "-+!*&:.~")
+		(if (= (preceding-char) ?\()
+		    (setq last-begin (point))))
+	      (goto-char last-begin)
 	      (setq donep t)))
 
 	;; see if we're in a literal. if not, then this bufpos may be
@@ -2524,8 +2527,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		      ;; make sure there's no semi-colon or equal sign
 		      ;; between class and brace. Otherwise, we found
 		      ;; a forward declaration or a struct init.
-		      (skip-chars-forward "^;=" search-end)
-		      (if (memq (following-char) '(?= ?\;))
+		      (skip-chars-forward "^;=," search-end)
+		      (if (/= (point) search-end)
 			  (setq foundp nil)
 			;; make sure we aren't looking at the `class'
 			;; keyword inside a template arg list
