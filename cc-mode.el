@@ -961,10 +961,10 @@ Key bindings:
 	  (not (c-in-literal))
 	  (not (newline)))))
 
-(defmacro c-safe (body)
+(defmacro c-safe (&rest body)
   ;; safely execute BODY, return nil if an error occurred
   (` (condition-case nil
-	 ((,@ body))
+	 (progn (,@ body))
        (error nil))))
 
 (defun c-insert-special-chars (arg)
