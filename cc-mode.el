@@ -460,12 +460,12 @@ Emacs.")
   (modify-syntax-entry ?\' "\""    c++-mode-syntax-table)
   ;; comment syntax
   (cond
-   ((memq '8-bit cc-emacs-features)
+   ((memq '8-bit c-emacs-features)
     ;; Lucid emacs has the best implementation
     (modify-syntax-entry ?/  ". 1456" c++-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
     (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table))
-   ((memq '1-bit cc-emacs-features)
+   ((memq '1-bit c-emacs-features)
     ;; FSF19 does things differently, but we can work with it
     (modify-syntax-entry ?/  ". 124b" c++-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
