@@ -773,6 +773,12 @@ Optional argument has the following meanings when supplied:
 	  (not (cc-in-literal))
 	  (not (newline)))))
 
+(defmacro cc-safe (body)
+  ;; safely execute BODY, return nil if an error occurred
+  (` (condition-case nil
+	 ((,@ body))
+       (error nil))))
+
 
 ;; COMMANDS
 (defun cc-electric-delete (arg)
@@ -1571,23 +1577,20 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	(lim (or lim (cc-point 'bod)))
 	(here (point))
 	stop)
-    (goto-char
-     (max
-      (save-excursion
-	(condition-case nil
-	    (forward-sexp -1)
-	  (error nil))
-	(point))
-      (cc-point 'bol)))
+    ;; if we are already at the beginning of indentation for the
+    ;; current line, do not skip a sexp backwards
+    (if (/= (point) (cc-point 'boi))
+	(or (cc-safe (progn (forward-sexp -1) t))
+	    (beginning-of-line)))
+    ;; skip whitespace
     (cc-backward-syntactic-ws lim)
     (while (not stop)
       (if (or (memq (preceding-char) charlist)
 	      (<= (point) lim))
 	  (setq stop t)
 	;; catch multi-line function calls
-	(condition-case nil
-	    (forward-sexp -1)
-	  (error (goto-char lim)))
+	(or (cc-safe (progn (forward-sexp -1) t))
+	    (goto-char lim))
 	(setq here (point))
 	(if (looking-at "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>")
 	    (setq stop t)
@@ -1895,8 +1898,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	      ;; we can probably indent it just like and arglist-cont
 	      (cc-add-semantics 'arglist-cont (point)))
 	     ;; CASE 4D.5: perhaps a top-level statement-cont
-	     (t (cc-beginning-of-statement lim)
-		(cc-add-semantics 'statement-cont (cc-point 'boi)))
+	     (t
+	      (cc-beginning-of-statement lim)
+	      (cc-add-semantics 'statement-cont (cc-point 'boi)))
 	     ))
 	   ;; CASE 4E: we are looking at a access specifier
 	   ((and inclass-p
@@ -2014,10 +2018,11 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	    (cc-add-semantics 'inher-cont (point))
 	    )))
 	 ;; CASE 7: A continued statement
-	 ((> (point)
-	     (save-excursion
-	       (cc-beginning-of-statement containing-sexp)
-	       (setq placeholder (point))))
+	 ((and (not (memq char-before-ip '(?\; ?})))
+	       (> (point)
+		  (save-excursion
+		    (cc-beginning-of-statement containing-sexp)
+		    (setq placeholder (point)))))
 	  (goto-char indent-point)
 	  (skip-chars-forward " \t")
 	  (cond
@@ -2074,22 +2079,18 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	 ((= char-after-ip ?})
 	  (let ((relpos (save-excursion
 			  (goto-char containing-sexp)
-			  (cc-point 'boi))))
-	    ;; CASE 12.A: we are closing a top-level construct. it
-	    ;; must be a defun-close since class-close is caught much
-	    ;; earlier on
-	    (if (= containing-sexp lim)
-		(cc-add-semantics 'defun-close relpos)
-	      ;; CASE 12.B: we could be a block-close or inline-close.
-	      ;; if we are exactly 1 paren level deep, it must be an
-	      ;; inline-close, otherwise its a block-close
-	      (goto-char indent-point)
-	      (skip-chars-forward " \t}")
-	      (if (zerop (car (parse-partial-sexp lim (point))))
-		  (cc-add-semantics 'inline-close relpos)
-		;; CASE 12.C: we are a block-close
-		(cc-add-semantics 'block-close relpos)
-		))))
+			  (if (/= (point) (cc-point 'boi))
+			      (cc-beginning-of-statement lim))
+			  (point))))
+	    ;; lets see if we close a top-level construct.
+	    (goto-char indent-point)
+	    (skip-chars-forward " \t}")
+	    (if (zerop (car (parse-partial-sexp lim (point))))
+		(if inclass-p
+		    (cc-add-semantics 'inline-close relpos)
+		  (cc-add-semantics 'defun-close relpos))
+	      (cc-add-semantics 'block-close relpos)
+	      )))
 	 ;; CASE 13: statement catchall
 	 (t
 	  ;; we know its a statement, but we need to find out if it is
@@ -2139,6 +2140,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	     ;; CASE 13.F: first statement in a block
 	     (t
 	      (goto-char containing-sexp)
+	      (if (/= (point) (cc-point 'boi))
+		  (cc-beginning-of-statement))
 	      (cc-add-semantics 'statement-block-intro (cc-point 'boi)))
 	     )))
 	 ))				; end save-restriction
