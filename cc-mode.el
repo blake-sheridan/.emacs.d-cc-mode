@@ -2911,7 +2911,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (while (and (not foundp)
 			  (progn
 			    (c-forward-syntactic-ws)
-			    (re-search-forward c-class-key search-end t)))
+			    (> search-end (point)))
+			  (re-search-forward c-class-key search-end t))
 		(setq class (match-beginning 0))
 		(if (c-in-literal search-start)
 		    nil			; its in a comment or string, ignore
