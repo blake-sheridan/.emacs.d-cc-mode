@@ -157,17 +157,11 @@
 	;; patched GNU19, GNU18, Epoch4's.  Only vanilla GNU19.7-8
 	;; uses 1-bit flag. Lets be as smart as we can about figuring
 	;; this out.
-	(let ((cur (current-buffer))
-	      (buf (generate-new-buffer " --syntax-kludge-- ")))
-	  (unwind-protect
-	      (progn
-		(set-buffer buf)
-		(modify-syntax-entry ?a ". 12345678" (syntax-table))
-		(if (= (logand (lsh (aref (syntax-table) ?a) -16) 255) 255)
-		    (setq mse-spec '8-bit)
-		  (setq mse-spec '1-bit)))
-	    (kill-buffer buf)
-	    (set-buffer cur))
+	(let ((table (copy-syntax-table)))
+	  (modify-syntax-entry ?a ". 12345678" table)
+	  (if (= (logand (lsh (aref table ?a) -16) 255) 255)
+	      (setq mse-spec '8-bit)
+	    (setq mse-spec '1-bit))
 	  ;; we also know we're using a quicker, built-in comment
 	  ;; scanner, but we don't know if its old-style or new.
 	  ;; Fortunately we can ask emacs directly
