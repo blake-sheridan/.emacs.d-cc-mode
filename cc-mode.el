@@ -370,6 +370,7 @@ when loaded, you should upgrade your Emacs.")
   (define-key cc-mode-map ":"         'cc-electric-colon)
   (define-key cc-mode-map "\C-c\C-;"  'cc-scope-operator)
   (define-key cc-mode-map "\C-c\C-s"  'cc-show-semantic-information)
+  (define-key cc-mode-map "\C-c\C-o"  'cc-change-semantic-symbol-offset)
   (define-key cc-mode-map "\177"      'cc-electric-delete)
   (define-key cc-mode-map "\C-c\C-t"  'cc-toggle-auto-hungry-state)
   (define-key cc-mode-map "\C-c\C-h"  'cc-toggle-hungry-state)
@@ -996,6 +997,12 @@ Will also cleanup double colon scope operators."
 	(goto-char (- (point-max) pos)))
       )))
 
+(defun cc-change-semantic-symbol-offset (symbol offset)
+  (interactive "SSemantic symbol: \nnOffset: ")
+  (setcdr (or (assq symbol cc-offsets-alist)
+	      (error "%s is not a valid semantic symbol." symbol))
+	  offset)
+  (cc-keep-region-active))
 
 
 ;; Workarounds for GNU Emacs 18 scanning deficiencies
