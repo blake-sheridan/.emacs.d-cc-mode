@@ -980,7 +980,7 @@ for member initialization list."
 		 (condition-case premature-end
 		     (backward-sexp 1)
 		   (error nil))
-		 (c++-backward-over-syntactic-ws bod)
+		 (c++-backward-syntactic-ws bod)
 		 (= (preceding-char) ?\?))
 	  (setq c++-auto-newline nil))
 	 ;; check for being at top level or top with respect to the
@@ -989,7 +989,7 @@ for member initialization list."
 		 (not (c++-at-top-level-p t bod))))
 	 ;; if at top level, check to see if we are introducing a member
 	 ;; init list. if not, continue
-	 ((progn (c++-backward-over-syntactic-ws bod)
+	 ((progn (c++-backward-syntactic-ws bod)
 		 (= (preceding-char) ?\)))
 	  (goto-char insertion-point)
 	  ;; at a member init list, figure out about auto newlining. if
@@ -1219,7 +1219,7 @@ of the expression are preserved."
 		  (save-excursion
 		    (setq at-else (looking-at "else\\W"))
 		    (setq at-brace (= (following-char) ?{))
-		    (c++-backward-over-syntactic-ws opoint)
+		    (c++-backward-syntactic-ws opoint)
 		    (if (not (memq (preceding-char) '(nil ?\, ?\; ?} ?: ?{)))
 			;; Preceding line did not end in comma or semi;
 			;; indent this line  c-continued-statement-offset
@@ -1504,12 +1504,12 @@ supplied, point is used as search start."
     (let ((here (if (not containing)
 		    (point)
 		  (goto-char containing)
-		  (c++-backward-over-syntactic-ws)
+		  (c++-backward-syntactic-ws)
 		  (point))))
       (if (and (= (preceding-char) ?t)
 	       (forward-word -1)
 	       (looking-at "\\<const\\>"))
-	  (c++-backward-over-syntactic-ws)
+	  (c++-backward-syntactic-ws)
 	(goto-char here))
       (= (preceding-char) ?\)))))
 
@@ -1637,7 +1637,7 @@ BOD is the beginning of the C++ definition."
       ;; cache char before indent point
       (save-excursion
 	(goto-char indent-point)
-	(c++-backward-over-syntactic-ws bod)
+	(c++-backward-syntactic-ws bod)
 	(setq char-before-ip (preceding-char)))
       (cond ((memq literal '(string))
 	     ;; in a string.
@@ -1674,7 +1674,7 @@ BOD is the beginning of the C++ definition."
 		(skip-chars-forward " \t")
 		(if (or (= (following-char) ?{)
 			(progn
-			  (c++-backward-over-syntactic-ws parse-start)
+			  (c++-backward-syntactic-ws parse-start)
 			  (bobp)))
 		    0
 		  (if (c++-in-function-p)
@@ -1733,7 +1733,7 @@ BOD is the beginning of the C++ definition."
 			(beginning-of-line)
 			;; we might be inside a K&R C arg decl
 			(if (save-excursion
-			      (c++-backward-over-syntactic-ws bod)
+			      (c++-backward-syntactic-ws bod)
 			      (and (eq major-mode 'c++-c-mode)
 				   (= (preceding-char) ?\))))
 			    c-argdecl-indent
@@ -1833,7 +1833,7 @@ BOD is the beginning of the C++ definition."
 	    (t
 	     ;; Statement.  Find previous non-comment character.
 	     (goto-char indent-point)
-	     (c++-backward-over-syntactic-ws containing-sexp)
+	     (c++-backward-syntactic-ws containing-sexp)
 	     (if (not (memq char-before-ip '(nil ?\, ?\; ?} ?: ?\{)))
 		 ;; This line is continuation of preceding line's statement;
 		 ;; indent  c-continued-statement-offset  more than the
@@ -1857,7 +1857,7 @@ BOD is the beginning of the C++ definition."
 			;; indentation:
 			(if (save-excursion
 			      (beginning-of-line 1)
-			      (c++-backward-over-syntactic-ws containing-sexp)
+			      (c++-backward-syntactic-ws containing-sexp)
 			      (memq (preceding-char)
 				    '(nil ?\, ?\; ?} ?: ?\{)))
 			    c-continued-statement-offset
@@ -1870,7 +1870,7 @@ BOD is the beginning of the C++ definition."
 			    ;; a simple for/else/while/if/do loop
 			    (beginning-of-line 1)
 			    (forward-char -1)
-			    (c++-backward-over-syntactic-ws containing-sexp)
+			    (c++-backward-syntactic-ws containing-sexp)
 			    (c-backward-to-start-of-continued-exp
 			     containing-sexp)
 			    (if (looking-at
@@ -2030,7 +2030,7 @@ argument COL0-LINE-P, and the current indentation INDENT."
 ;; defuns to look backwards for things
 ;; ======================================================================
 
-(defun c++-backward-over-syntactic-ws (&optional lim)
+(defun c++-backward-syntactic-ws (&optional lim)
   "Skip backwards over syntactic whitespace.
 Syntactic whitespace is defined as lexical whitespace, C and C++ style
 comments, and preprocessor directives. Search no farther back than
@@ -2080,7 +2080,7 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	      ;; none of the above
 	      (setq stop t))))))))
 
-(defun c++-fast-backward-over-syntactic-ws (&optional lim)
+(defun c++-fast-backward-syntactic-ws (&optional lim)
   ;; we can throw away lim since its not really necessary
   (let ((parse-sexp-ignore-comments t))
     ;; if you're not running a patched lemacs, the new byte compiler
@@ -2090,8 +2090,8 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	(forward-char 1))))
 
 (if c++-emacs-is-really-fixed-p
-    (fset 'c++-backward-over-syntactic-ws
-	  'c++-fast-backward-over-syntactic-ws))
+    (fset 'c++-backward-syntactic-ws
+	  'c++-fast-backward-syntactic-ws))
 
 (defun c++-backward-to-start-of-do (&optional limit)
   "Move to the start of the last ``unbalanced'' do."
