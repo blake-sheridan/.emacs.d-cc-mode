@@ -105,28 +105,6 @@
 ;; You do not need the autoload calls if your Emacs comes with cc-mode
 ;; automatically.
 
-;; Several Majordomo mailing lists exist for those of you who are
-;; interested in beta testing new versions: cc-mode-announce for
-;; announcements of new beta versions only, and cc-mode-victims for
-;; more technical discussions of the mode.  For more information, send
-;; the word `help' in a message to one of the following addresses:
-;;
-;;       cc-mode-victims-request@merlin.cnri.reston.va.us
-;;       cc-mode-announce-request@merlin.cnri.reston.va.us
-
-;; Many, many thanks go out to all the folks on the beta test list.
-;; Without their patience, testing, insight, code contributions, and
-;; encouragement cc-mode.el would be a far inferior package.
-
-;; Anonymous ftp URL:
-;;
-;;    ftp://ftp.python.org/pub/emacs/cc-mode.tar.gz
-
-;; LCD Archive Entry:
-;; cc-mode.el|Barry A. Warsaw|cc-mode-help@merlin.cnri.reston.va.us
-;; |Major mode for editing C++, Objective-C, and ANSI/K&R C code
-;; |$Date$|$Revision$|
-
 ;;; Code:
 
 
