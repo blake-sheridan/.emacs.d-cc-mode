@@ -751,7 +751,7 @@ behavior that users are familiar with.")
   (concat
    "\\(\\(extern\\|typedef\\)\\s +\\)?"
    "\\(template\\s *<[^>]*>\\s *\\)?"
-   "\\<\\(\\([^<]\\|^\\)[ \t]*class\\|struct\\|union\\)\\>")
+   "[^<][ \t]*class\\|struct\\|union")
   "Regexp describing a class declaration, including templates.")
 (defconst c-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
