@@ -1421,7 +1421,13 @@ of the expression are preserved."
 		       (not (looking-at c++-class-key)))))
 	      (setq this-indent
 		    (+ this-indent
-		       c-continued-statement-offset
+		       (save-excursion
+			 (c++-compound-offset
+			  (progn
+			    (c++-backward-syntactic-ws (car contain-stack))
+			    (preceding-char))
+			  (car contain-stack)
+			  (c++-point 'bod)))
 		       ;; are we in a member init list?
 		       (if (not (looking-at "[ \t]*:"))
 			   (save-excursion
@@ -2445,7 +2451,7 @@ BOD is the `beginning-of-defun' point."
 	       (= (preceding-char) ?=))
 	     (progn
 	       (beginning-of-line)
-	       (looking-at "\\(^\\|[ \t]*\\)enum[ \t]"))
+	       (looking-at "\\(^\\|[ \t]*\\)\\(typedef[ \t]*\\)?enum[ \t]"))
 	     ))
     0)
    ;; check for inside an enum
