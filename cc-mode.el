@@ -2502,7 +2502,7 @@ BOD is the `beginning-of-defun' point."
     (while (and (not (bobp))
 		(not (zerop if-level)))
       (c++-backward-syntactic-ws)
-      (c++-backward-sexp 1)
+      (backward-sexp 1)
       (cond ((looking-at "else\\b")
 	     (setq if-level (1+ if-level)))
 	    ((looking-at "if\\b")
