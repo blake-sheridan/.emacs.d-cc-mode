@@ -1403,7 +1403,9 @@ statement then go to the beginning of the preceding one.
 If within a string or comment, or next to a comment (only whitespace between),
 move by sentences instead of statements."
   (interactive "p")
-  (let ((here (point)) state)
+  (let ((here (point))
+	(count (or count 1))
+	state)
     (save-excursion
       (beginning-of-defun)
       (setq state (parse-partial-sexp (point) here nil nil)))
@@ -1426,7 +1428,7 @@ With prefix arg, go forward N - 1 statements.
 Move forward to end of the next statement if already at end.
 If within a string or comment, move by sentences instead of statements."
   (interactive "p")
-  (c-beginning-of-statement (- count)))
+  (c-beginning-of-statement (- (or count 1))))
 
 (defun c-beginning-of-statement-1 ()
   (let ((last-begin (point))
