@@ -1213,7 +1213,7 @@ The expansion is entirely correct because it uses the C preprocessor."
 (defconst c-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
 	  c-C++-class-key "[ \t]+" c-symbol-key
-	  "\\([ \t]*:[ \t]*\\)?\\s *[^;]")
+	  "\\([ \t]*:[ \t]*\\)\\s *[^;]")
   "Regexp describing a class inheritance declaration.")
 (defconst c-switch-label-key
   "\\(\\(case[( \t]+\\S .*\\)\\|default[ \t]*\\):"
