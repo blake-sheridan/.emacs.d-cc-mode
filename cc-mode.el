@@ -372,6 +372,11 @@ NL-LIST is used to determine where newlines are inserted.  If the
 language element for the colon is not found in this list, the default
 behavior is to not insert any newlines.")
 
+(defvar c-hanging-comment-ender-p t
+  "*If nil, `c-fill-paragraph' leaves C block comment enders on their own line.
+Default value is t, which inhibits leaving block comment ending string
+`*/' on a line by itself.  This is BOCM's sole behavior.")
+
 (defvar c-backslash-column 48
   "*Column to insert backslashes when macroizing a region.")
 (defvar c-special-indent-hook nil
@@ -1901,12 +1906,13 @@ preserving the comment indentation or line-starting decorations."
 		    (delete-region (point) (+ (point) chars-to-delete)))
 		;; Find the comment ender (should be on last line of
 		;; buffer, given the narrowing) and don't leave it on
-		;; its own line.
+		;; its own line, unless that's the style that's desired.
 		(goto-char (point-max))
 		(forward-line -1)
 		(search-forward "*/" nil 'move)
 		(beginning-of-line)
-		(if (looking-at "[ \t]*\\*/")
+		(if (and c-hanging-comment-ender-p
+			 (looking-at "[ \t]*\\*/"))
 		    (delete-indentation)))))
 	;; Outside of comments: do ordinary filling.
 	(fill-paragraph arg)))))
