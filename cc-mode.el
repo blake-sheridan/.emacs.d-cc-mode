@@ -2750,7 +2750,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (c-add-semantics 'arglist-cont-nonempty containing-sexp))
 	   ;; CASE 5E: we are looking at just a normal arglist
 	   ;; continuation line
-	   (t (c-add-semantics 'arglist-cont (c-point 'boi)))
+	   (t (c-beginning-of-statement 1 containing-sexp)
+	      (c-add-semantics 'arglist-cont (c-point 'boi)))
 	   ))
 	 ;; CASE 6: func-local multi-inheritance line
 	 ((save-excursion
