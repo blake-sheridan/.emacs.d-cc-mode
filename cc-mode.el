@@ -1876,7 +1876,11 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 (defun c++-submit-bug-report ()
   "Submit via mail a bug report using the mailer in c++-mailer."
   (interactive)
-  (funcall c++-mailer)
+  (let ((curbuf (current-buffer))
+	(mailbuf (progn (funcall c++-mailer)
+			(current-buffer))))
+    (pop-to-buffer curbuf)
+    (pop-to-buffer mailbuf))
   (insert c++-mode-help-address)
   (if (re-search-forward "^subject:[ \t]+" (point-max) 'move)
       (insert "Bug in c++-mode.el " c++-version))
