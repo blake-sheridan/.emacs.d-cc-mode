@@ -2194,7 +2194,15 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; Find all open parens between BOD and point. BOD is optional and
   ;; defaults to `beginning-of-defun'
   (let ((pos (save-excursion
-	       (beginning-of-defun 2)
+	       ;; go back 2 bods, but ignore any bogus b-o-d positions
+	       ;; (i.e. open paren in column zero)
+	       (let ((cnt 2))
+		 (while (> cnt 0)
+		   (beginning-of-defun)
+		   (if (= (following-char) ?\{)
+		       (setq cnt (1- cnt)))
+		   (if (bobp)
+		       (setq cnt 0))))
 	       (point)))
 	(here (save-excursion
 		;;(skip-chars-forward " \t}")
