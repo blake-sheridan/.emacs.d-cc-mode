@@ -950,13 +950,11 @@ Key bindings:
 
 ;; active regions, and auto-newline/hungry delete key
 (defun c-keep-region-active ()
-  ;; do whatever is necessary to keep the region active. ignore
-  ;; byte-compiler warnings you might see
-  (if (boundp 'zmacs-region-stays)
-      (setq zmacs-region-stays t)
-    (if (boundp 'deactivate-mark)
-	(setq deactivate-mark (not mark-active))
-      )))
+  ;; do whatever is necessary to keep the region active in
+  ;; Lucid. ignore byte-compiler warnings you might see
+  (and (interactive-p)
+       (boundp 'zmacs-region-stays)
+       (setq zmacs-region-stays t)))
 
 (defun c-update-modeline ()
   ;; set the c-auto-hungry-string for the correct designation on the modeline
@@ -1409,7 +1407,8 @@ flag comes from the prefix argument.  The styles are chosen from the
 		  )))
 	     val))
 	  )))
-     vars)))
+     vars))
+  (c-keep-region-active))
 
 (defun c-fill-paragraph (&optional arg)
   "Like \\[fill-paragraph] but handles C and C++ style comments.
@@ -1669,7 +1668,8 @@ search."
 	(setq count (1+ count))))
     ;; its possible we've been left up-buf of lim
     (goto-char (max (point) lim))
-    ))
+    )
+  (c-keep-region-active))
 
 (defun c-end-of-statement (&optional count lim)
   "Go to the end of the innermost C statement.
@@ -1682,7 +1682,8 @@ When called from a program, this function takes 2 optional args: the
 prefix arg, and a buffer position limit which is the farthest back to
 search."
   (interactive "p")
-  (c-beginning-of-statement (- (or count 1)) lim))
+  (c-beginning-of-statement (- (or count 1)) lim)
+  (c-keep-region-active))
 
 (defun c-beginning-of-statement-1 ()
   (let ((last-begin (point))
@@ -1750,14 +1751,16 @@ move forward to the end of the containing preprocessor conditional.
 When going backwards, `#elif' is treated like `#else' followed by
 `#if'.  When going forwards, `#elif' is ignored."
   (interactive "p")
-  (c-forward-conditional (- count) t))
+  (c-forward-conditional (- count) t)
+  (c-keep-region-active))
 
 (defun c-backward-conditional (count &optional up-flag)
   "Move back across a preprocessor conditional, leaving mark behind.
 A prefix argument acts as a repeat count.  With a negative argument,
 move forward across a preprocessor conditional."
   (interactive "p")
-  (c-forward-conditional (- count) up-flag))
+  (c-forward-conditional (- count) up-flag)
+  (c-keep-region-active))
 
 (defun c-forward-conditional (count &optional up-flag)
   "Move forward across a preprocessor conditional, leaving mark behind.
@@ -1813,7 +1816,8 @@ move backward across a preprocessor conditional."
 	  (goto-char (setq new found)))
 	(setq count (+ count increment))))
     (push-mark)
-    (goto-char new)))
+    (goto-char new))
+  (c-keep-region-active))
 
 
 ;; Workarounds for GNU Emacs 18 scanning deficiencies
@@ -1851,8 +1855,7 @@ See also the variable `c-untame-characters'."
 		 (/= (preceding-char) ?\\ ))
 	    (insert-char  ?\\ 1))
 	(if (not (eobp))
-	    (forward-char 1)))))
-  (c-keep-region-active))
+	    (forward-char 1))))))
 
 
 ;; commands to indent lines, regions, defuns, and expressions
@@ -1907,8 +1910,7 @@ of the expression are preserved."
 	(if (c-in-literal bod)
 	    (insert-tab))
 	(c-indent-via-language-element bod)
-	))))
-  (c-keep-region-active))
+	)))))
 
 (defun c-indent-exp (&optional shutup-p)
   "Indent each line in block following pont.
@@ -1937,8 +1939,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (or shutup-p
 	(message "indenting expression... done."))
     (goto-char start)
-    (set-marker end nil))
-  (c-keep-region-active))
+    (set-marker end nil)))
 
 (defun c-indent-defun ()
   "Indents the current function def, struct or class declaration."
@@ -1948,8 +1949,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (beginning-of-defun)
     (c-indent-exp)
     (goto-char here)
-    (set-marker here nil))
-  (c-keep-region-active))
+    (set-marker here nil)))
 
 (defun c-indent-region (start end)
   ;; Indent every line whose first char is between START and END inclusive.
@@ -2011,8 +2011,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		 (set-marker sexpend nil))
 	    (forward-line 1))))
       (set-marker endmark nil)))
-  (message "indenting region... done.")
-  (c-keep-region-active))
+  (message "indenting region... done."))
 
 (defun c-mark-function ()
   "Put mark at end of a C/C++ defun, point at beginning."
@@ -3206,8 +3205,7 @@ it trailing backslashes are removed."
       (and do-lastline-p
 	   (progn (goto-char end)
 		  (c-backslashify-current-line (null arg))))
-      ))
-  (c-keep-region-active))
+      )))
 
 (defun c-comment-region (beg end arg)
   "Comment out all lines in a region between mark and current point.
@@ -3236,8 +3234,7 @@ region."
 	    (if (looking-at comment-regexp)
 		(delete-region (match-beginning 0) (match-end 0)))
 	    (forward-line 1)))
-	)))
-  (c-keep-region-active))
+	))))
 
 
 ;; defuns for submitting bug reports
@@ -3301,7 +3298,8 @@ region."
 (defun c-popup-menu (e)
   "Pops up the C/C++ menu."
   (interactive "@e")
-  (popup-menu (cons "C/C++ Mode Commands" c-mode-menu)))
+  (popup-menu (cons "C/C++ Mode Commands" c-mode-menu))
+  (c-keep-region-active))
     
 
 ;; fsets for compatibility with BOCM
