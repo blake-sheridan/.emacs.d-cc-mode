@@ -842,7 +842,14 @@ Key bindings:
        (,@ (cond
 	    ((eq position 'bol)  '((beginning-of-line)))
 	    ((eq position 'eol)  '((end-of-line)))
-	    ((eq position 'bod)  '((beginning-of-defun)))
+	    ((eq position 'bod)
+	     '((beginning-of-defun)
+	       ;; if defun-prompt-regexp is non-nil, b-o-d won't leave
+	       ;; us at the open brace.
+	       (and defun-prompt-regexp
+		    (looking-at defun-prompt-regexp)
+		    (goto-char (match-end 0)))
+	       ))
 	    ((eq position 'boi)  '((back-to-indentation)))
 	    ((eq position 'bonl) '((forward-line 1)))
 	    ((eq position 'bopl) '((forward-line -1)))
