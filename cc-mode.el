@@ -1136,11 +1136,17 @@ The expansion is entirely correct because it uses the C preprocessor."
 (defconst c-label-key
   (concat c-symbol-key ":\\([^:]\\|$\\)")
   "Regexp describing any label.")
+(defconst c-C-conditionals '("for" "if" "do" "else" "while" "switch")
+  "Shared conditional keywords for C-like languages.")
 (defconst c-C-conditional-key
-  "\\b\\(for\\|if\\|do\\|else\\|while\\|switch\\)\\b[^_]"
-  "Regexp describing a conditional control.")
+  (concat "\\b\\("
+	  (mapconcat 'identity c-C-conditionals "\\|")
+	  "\\)\\b[^_]")
+  "Regexp describing a conditional control for C.")
 (defconst c-C++-conditional-key
-  "\\b\\(for\\|if\\|do\\|else\\|while\\|switch\\|try\\|catch\\)\\b[^_]"
+  (concat "\\b\\(" (mapconcat 'identity
+			      (append '("try" "catch") c-C-conditionals) "\\|")
+	  "\\)\\b[^_]")
   "Regexp describing a conditional control for C++.")
 (defconst c-C++-friend-key
   "friend[ \t]+\\|template[ \t]*<.+>[ \t]*friend[ \t]+"
@@ -1190,9 +1196,12 @@ The expansion is entirely correct because it uses the C preprocessor."
    )
   "Regexp describing a class or protocol declaration for Java.")
 (defconst c-Java-conditional-key
-  "\\b\\(for\\|if\\|do\\|else\\|while\\|switch\\|try\\|catch\\|finally\\)\\b[^_]"
-  "Regexp describing a conditional control for C++.")
-
+  (concat "\\b\\("
+	  (mapconcat 'identity
+		     (append '("try" "catch" "finally" "synchronized")
+			     c-C-conditionals) "\\|")
+	  "\\)\\b[^_]")
+  "Regexp describing a conditional control for Java.")
 
 ;; KLUDGE ALERT.  We default these variables to their `C' values so
 ;; that non-cc-mode-ized modes that depend on c-mode will still work
