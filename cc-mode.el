@@ -1626,12 +1626,16 @@ BOD is the beginning of the C++ definition."
 			(progn
 			  (backward-char 1)
 			  (skip-chars-backward " \t")))
-		    ;; may be first line after a hanging member init colon
+		    ;; may be first line after a hanging member init
+		    ;; colon. check to be sure its not a scope
+		    ;; operator meaning we are inside a member def
 		    (if (or (= (preceding-char) ?:)
 			    (save-excursion
 			      (forward-line 1)
 			      (skip-chars-forward " \t")
-			      (= (following-char) ?:))
+			      (forward-char 1)
+			      (and (= (preceding-char) ?:)
+				   (/= (following-char) ?:)))
 			    (save-excursion
 			      (and (= (preceding-char) ?,)
 				   (let ((bol (c++-point 'bol)))
