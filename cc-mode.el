@@ -1672,7 +1672,7 @@ When called from a program, this function takes 2 optional args: the
 prefix arg, and a buffer position limit which is the farthest back to
 search."
   (interactive "p")
-  (c-beginning-of-statement (- (or count 1) lim)))
+  (c-beginning-of-statement (- (or count 1)) lim))
 
 (defun c-beginning-of-statement-1 ()
   (let ((last-begin (point))
