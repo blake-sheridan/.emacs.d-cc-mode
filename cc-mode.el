@@ -591,9 +591,12 @@ Emacs.")
   "Internal state of auto newline feature.")
 (defvar c-semantics nil
   "Variable containing semantics list during indentation.")
+(defvar c-style-name nil
+  "The style name for a cc-mode indentation style.")
 
 (make-variable-buffer-local 'c-auto-newline)
 (make-variable-buffer-local 'c-hungry-delete-key)
+(make-variable-buffer-local 'c-style-name)
 
 ;; cmacexp is lame because it uses no preprocessor symbols.
 ;; It isn't very extensible either -- hardcodes /lib/cpp.
@@ -754,6 +757,10 @@ Key bindings:
 	 (setcdr name (append hack (cdr name)))
 	 (put 'mode-line-format 'c-hacked-mode-line t)
 	 ))
+  (and (listp minor-mode-alist)
+       (setq minor-mode-alist
+	     (append minor-mode-alist '((c-style-name c-style-name)))
+	     ))
   (run-hooks 'c-mode-common-hook))
 
 
@@ -1338,6 +1345,9 @@ GNU, K&R, BSD and Whitesmith."
   (let ((vars (cdr (assoc style c-style-alist))))
     (or vars
 	(error "Invalid C indentation style `%s'" style))
+    ;; set the c-style-name variable
+    (setq c-style-name style)
+    ;; set all the variables
     (mapcar
      (function
       (lambda (varentry)
@@ -1345,7 +1355,7 @@ GNU, K&R, BSD and Whitesmith."
 	      (val (cdr varentry)))
 	  (or global
 	      (make-local-variable var))
-	  ;; special case c-offsets-alist
+	  ;; special case for c-offsets-alist
 	  (if (not (eq var 'c-offsets-alist))
 	      (set var val)
 	    (mapcar
