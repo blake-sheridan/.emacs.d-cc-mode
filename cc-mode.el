@@ -155,6 +155,7 @@ reported and the semantic symbol is ignored.")
     (stream-op             . c-lineup-streamop)
     (inclass               . +)
     (cpp-macro             . -1000)
+    (friend                . 0)
     )
   "Default settings for offsets of syntactic elements.
 Do not change this constant!  See the variable `c-offsets-alist' for
@@ -243,6 +244,7 @@ Here is the current list of valid semantic element symbols:
  stream-op              -- lines continuing a stream operator construct
  inclass                -- the construct is nested inside a class definition
  cpp-macro              -- the start of a cpp macro
+ friend                 -- a C++ friend declaration
 ")
 
 (defvar c-tab-always-indent t
@@ -2774,6 +2776,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    ;; reset semantics kludge
 	    (setq semantics nil)
 	    (c-add-semantics 'comment-intro)))
+      ;; we might want to give additional offset to friends (in C++)
+      (if (and (eq major-mode 'c++-mode)
+	       (looking-at "friend[ \t]+"))
+	  (c-add-semantics 'friend))
       ;; return the semantics
       semantics)))
 
