@@ -1014,10 +1014,16 @@ Returns nil if line starts inside a string, t if in a comment."
 		      ;; j.peck hack replaced this line:
 		      ;; \(+ c-continued-statement-offset (current-column)
 		      ;; Add continued-brace-offset? [weikart]
-		      (if (save-excursion (goto-char indent-point)
-					  (skip-chars-forward " \t")
-					  (eq (following-char) ?{))
-			  c-continued-brace-offset 0)))
+		      (save-excursion
+			(goto-char indent-point)
+			(skip-chars-forward " \t")
+			(cond ((= (following-char) ?\{)
+			       c-continued-brace-offset)
+			      ((and (= (following-char) ?\})
+				    (progn (forward-char 1)
+					   (c++-at-top-level-p)))
+			       (- c-continued-statement-offset))
+			      (t 0)))))
 	       ;; This line may start a new statement, or it could
 	       ;; represent the while closure of a do/while construct
 	       (if (save-excursion
