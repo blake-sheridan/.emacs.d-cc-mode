@@ -2875,7 +2875,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		cdr (cdr cdr)))
       (if (or (null cdr) (consp car))
 	  state				;on error, don't change
-	(cons (cons car bufpos) cdr)
+	;; watch out for balanced expr already on cdr of list
+	(cons (cons car bufpos)
+	      (if (consp (car cdr))
+		  (cdr cdr) cdr))
 	))))
 
 
