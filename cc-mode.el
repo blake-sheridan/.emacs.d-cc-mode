@@ -1199,14 +1199,9 @@ Returns nil if line starts inside a string, t if in a comment."
 	      (let ((sblim (max (c++-point-bol) lim)))
 		(if (< (point) sblim)
 		    nil
-		  (search-backward "//" (max (c++-point-bol) lim) 'move)))
+		  (search-backward "//" sblim 'move)))
 	      (not (c++-in-open-string-p))))
-	  (t (beginning-of-line)
-	     (skip-chars-forward " \t")
-	     (if (looking-at "#")
-		 (setq stop (<= (point) lim))
-	       (setq stop t)
-	       (goto-char opoint)))))))
+	    (t (setq stop (<= (point) lim)))))))
 
 (defun c++-backward-to-start-of-do (&optional limit)
   "Move to the start of the last ``unbalanced'' do."
