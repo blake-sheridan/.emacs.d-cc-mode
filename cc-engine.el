@@ -1020,6 +1020,7 @@
 	     (while (and (setq okp (zerop (c-backward-token-1 1 t)))
 			 (not (memq (char-after) '(?{ ?\;)))
 			 (or (not (eq (char-after) ?=))
+			     (memq (char-before) '(?= ?`))
 			     (save-excursion
 			       (forward-word -1)
 			       (looking-at "operator[ \t]*=")))
@@ -1067,16 +1068,24 @@
 				    (point)
 				  nil)))))
 	      (if (and beg type)
-		  (if (c-safe (goto-char beg)
-			      (c-forward-sexp 1)
-			      (setq end (point))
-			      (forward-char -1)
-			      (= (char-after) ?\)))
-		      (if (progn
-			    (c-backward-syntactic-ws)
-			    (/= (char-before) (cdr type)))
-			  nil
-			(cons (cons beg end) type))
+		  (if (and (c-safe (goto-char beg)
+				   (c-forward-sexp 1)
+				   (setq end (point))
+				   (= (char-before) ?\)))
+			   (c-safe (goto-char beg)
+				   (forward-char 1)
+				   (c-forward-sexp 1)
+				   ;; Kludges needed to handle inner
+				   ;; chars both with and without
+				   ;; paren syntax.
+				   (or (/= (char-syntax (char-before)) ?\))
+				       (= (char-before) (cdr type)))))
+		      (if (or (/= (char-syntax (char-before)) ?\))
+			      (= (progn
+				   (c-forward-syntactic-ws)
+				   (point))
+				 (1- end)))
+			  (cons (cons beg end) type))
 		    (cons (list beg) type)))))
 	(error nil))))
 
@@ -1805,7 +1814,7 @@
 	  (cond
 	   ;; CASE 9A: In the middle of a special brace list opener.
 	   ((and (consp special-brace-list)
-		 (= char-after-ip (car (cdr special-brace-list))))
+		 (eq char-after-ip (car (cdr special-brace-list))))
 	    (goto-char (car (car special-brace-list)))
 	    (c-beginning-of-statement-1 lim)
 	    (c-forward-token-1 0)
@@ -1821,10 +1830,10 @@
 		    (back-to-indentation)
 		    (or
 		     ;; We were between the special close char and the `)'.
-		     (and (= (char-after) ?\))
+		     (and (eq (char-after) ?\))
 			  (eq (1+ (point)) (cdr (car special-brace-list))))
 		     ;; We were before the special close char.
-		     (and (= (char-after) (cdr (cdr special-brace-list)))
+		     (and (eq (char-after) (cdr (cdr special-brace-list)))
 			  (= (c-forward-token-1) 0)
 			  (eq (1+ (point)) (cdr (car special-brace-list)))))))
 	      ;; Normal brace list check.
