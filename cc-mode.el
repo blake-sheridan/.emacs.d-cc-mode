@@ -2426,7 +2426,7 @@ style name."
 			   (prompt (format "Which %s indentation style? "
 					   mode-name)))
 		       (completing-read prompt c-style-alist nil t
-					(cons c-site-default-style 0)
+					(cons c-indentation-style 0)
 					'c-set-style-history))))
   (let ((vars (cdr (or (assoc (downcase stylename) c-style-alist)
 		       (assoc (upcase stylename) c-style-alist)
