@@ -5,7 +5,6 @@
 ;; Authors: 1992-1996 Barry A. Warsaw
 ;;          1987 Dave Detlefs and Stewart Clamen
 ;;          1985 Richard M. Stallman
-;; Maintainer: cc-mode-help@merlin.cnri.reston.va.us
 ;; Created: a long, long, time ago. adapted from the original c-mode.el
 ;; Version:         $Revision$
 ;; Last Modified:   $Date$
@@ -49,11 +48,12 @@
 ;; Java support contributed by Eduardo Pelegri-Llopart
 ;; <pelegri@calterra.eng.sun.com>.
 
-;; To submit bug reports, type "C-c C-b". Please include a code sample
-;; and exact recipe so I can reproduce your problem.  If you have
-;; other questions contact me at the following address:
-;; cc-mode-help@merlin.cnri.reston.va.us.  Please don't send bug
-;; reports to my personal account, I may not get it for a long time.
+;; To submit bug reports, type "C-c C-b".  These will be sent to
+;; bug-gnu-emacs@prep.ai.mit.edu and I'll read about them there (this
+;; is mirrored as the Usenet newsgroup gnu.emacs.bug).  Questions can
+;; sent to help-gnu-emacs@prep.ai.mit.edu (mirrored as
+;; gnu.emacs.help).  Please do not send bugs or questions to my
+;; personal account.
 
 ;; YOU CAN IGNORE ALL BYTE-COMPILER WARNINGS. They are the result of
 ;; the multi-Emacsen support.  Emacs 19 (from the FSF), XEmacs 19
