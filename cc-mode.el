@@ -2367,8 +2367,13 @@ comment."
 				   (and lim
 					(<= lim (point))
 					(not (c-in-literal lim))
-;					(looking-at c-conditional-key)))))
-					t))))
+;					(looking-at c-conditional-key)
+					(save-excursion
+					  (if (c-safe
+					       (progn (backward-up-list 1) t))
+					      (/= (following-char) ?\()
+					    t))
+					))))
 		     ;; did we find a conditional?
 		     (if (not foundp)
 			 (goto-char here))
