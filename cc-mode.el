@@ -88,7 +88,7 @@
 
 
 ;; user definable variables
-;; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+;; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 (defvar c-strict-semantics-p nil
   "*If non-nil, all semantic symbols must be found in `c-offsets-alist'.
@@ -427,10 +427,27 @@ is necessary under GNU Emacs 18, please refer to the texinfo manual.")
 			 ))
 
      ))
-  "Styles of Indentation.")
+  "Styles of Indentation.
+Elements of this alist are of the form:
+
+  (STYLE-STRING (VARIABLE . VALUE) [(VARIABLE . VALUE) ...])
+
+where STYLE-STRING is a short descriptive string used to select a
+style, VARIABLE is any cc-mode variable, and VALUE is the intended
+value for that variable when using the selected style.
+
+There is one special case when VARIABLE is `c-offsets-alist'.  In this
+case, the VALUE is a list containing elements of the form:
+
+  (SYNTACTIC-ELEMENT . VALUE)
+
+as described in `c-offsets-alist'.  These are passed directly to
+`c-set-offset' so there is no need to set every syntactic symbol in
+your style, only those that are different from the default.")
+
 
 
-;; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+;; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ;; NO USER DEFINABLE VARIABLES BEYOND THIS POINT
 
 (defconst c-emacs-features
@@ -666,7 +683,7 @@ behavior that users are familiar with.")
 ;;;###autoload
 (defun c++-mode ()
   "Major mode for editing C++ code.
-CC-MODE REVISION: $Revision$
+cc-mode Revision: $Revision$
 To submit a problem report, enter `\\[c-submit-bug-report]' from a
 c++-mode buffer.  This automatically sets up a mail buffer with
 version information already added.  You just need to add a description
@@ -697,7 +714,7 @@ Key bindings:
 ;;;###autoload
 (defun c-mode ()
   "Major mode for editing K&R and ANSI C code.
-CC-MODE REVISION: $Revision$
+cc-mode Revision: $Revision$
 To submit a problem report, enter `\\[c-submit-bug-report]' from a
 c-mode buffer.  This automatically sets up a mail buffer with version
 information already added.  You just need to add a description of the
@@ -1338,11 +1355,11 @@ With a negative ARG, go up ARG block levels."
   (c-keep-region-active))
 
 (defun c-set-style (style &optional global)
-  "Set CC-MODE variables to use one of several different indentation styles.
+  "Set cc-mode variables to use one of several different indentation styles.
 The arguments are a string representing the desired style and a flag
-which, if non-nil, means to set the style globally.  (Interactively,
-the flag comes from the prefix argument.)  Available styles include
-GNU, K&R, BSD and Whitesmith."
+which, if non-nil, means to set the style globally.  Interactively,
+the flag comes from the prefix argument.  The styles are chosen from
+the `c-style-alist' variable."
   (interactive (list (completing-read "Use which C indentation style? "
                                       c-style-alist nil t)
 		     current-prefix-arg))
