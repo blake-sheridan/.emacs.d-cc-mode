@@ -206,12 +206,12 @@ an error is generated if `c-strict-syntax-p' is non-nil, otherwise
 the element is ignored.
 
 Actually, OFFSET can be an integer, a function, a variable, or one of
-the following symbols: `+', `-', `++', or `--'.  These latter
-designate positive or negative multiples of `c-basic-offset',
-respectively: *1, *-1, *2, and *-2. If OFFSET is a function, it is
-called with a single argument containing the cons of the syntactic
-element symbol and the relative indent point.  The function should
-return an integer offset.
+the following symbols: `+', `-', `++', `--', `*', or `/'.  These
+latter designate positive or negative multiples of `c-basic-offset',
+respectively: *1, *-1, *2, *-2, *0.5, and *-0.5. If OFFSET is a
+function, it is called with a single argument containing the cons of
+the syntactic element symbol and the relative indent point.  The
+function should return an integer offset.
 
 Here is the current list of valid syntactic element symbols:
 
@@ -1832,7 +1832,7 @@ value of `c-cleanup-list'."
   ;; read new offset value for LANGELEM from minibuffer. return a
   ;; legal value only
   (let ((oldoff (format "%s" (cdr-safe (assq langelem c-offsets-alist))))
-	(errmsg "Offset must be int, func, var, or one of +, -, ++, --: ")
+	(errmsg "Offset must be int, func, var, or in [+,-,++,--,*,/]: ")
 	(prompt "Offset: ")
 	offset input interned)
     (while (not offset)
@@ -1841,6 +1841,8 @@ value of `c-cleanup-list'."
 			 ((string-equal "-" input) '-)
 			 ((string-equal "++" input) '++)
 			 ((string-equal "--" input) '--)
+			 ((string-equal "*" input) '*)
+			 ((string-equal "/" input) '/)
 			 ((string-match "^-?[0-9]+$" input)
 			  (string-to-int input))
 			 ((fboundp (setq interned (intern input)))
@@ -1887,10 +1889,12 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
       (eq offset '-)
       (eq offset '++)
       (eq offset '--)
+      (eq offset '*)
+      (eq offset '/)
       (integerp offset)
       (fboundp offset)
       (boundp offset)
-      (error "Offset must be int, func, var, or one of +, -, ++, --: %s"
+      (error "Offset must be int, func, var, or in [+,-,++,--,*,/]: %s"
 	     offset))
   (let ((entry (assq symbol c-offsets-alist)))
     (if entry
@@ -4098,6 +4102,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
      ((eq offset '-)  (setq offset (- c-basic-offset)))
      ((eq offset '++) (setq offset (* 2 c-basic-offset)))
      ((eq offset '--) (setq offset (* 2 (- c-basic-offset))))
+     ((eq offset '*)  (setq offset (/ 2 c-basic-offset)))
+     ((eq offset '/)  (setq offset (/ 2 (- c-basic-offset))))
      ((and (not (numberp offset))
 	   (fboundp offset))
       (setq offset (funcall offset langelem)))
