@@ -1879,13 +1879,17 @@ value of `c-cleanup-list'."
 (defun c-read-offset (langelem)
   ;; read new offset value for LANGELEM from minibuffer. return a
   ;; legal value only
-  (let ((oldoff (format "%s" (cdr-safe (assq langelem c-offsets-alist))))
-	(errmsg "Offset must be int, func, var, or in [+,-,++,--,*,/]: ")
-	(prompt "Offset: ")
-	offset input interned)
+  (let* ((oldoff (cdr-safe (assq langelem c-offsets-alist)))
+	 (defstr (format "(default %s): " oldoff))
+	 (errmsg (concat "Offset must be int, func, var, "
+			 "or in [+,-,++,--,*,/] "
+			 defstr))
+	 (prompt (concat "Offset " defstr))
+	 offset input interned)
     (while (not offset)
-      (setq input (read-string prompt oldoff)
-	    offset (cond ((string-equal "+" input) '+)
+      (setq input (read-string prompt)
+	    offset (cond ((string-equal "" input) oldoff)  ; default
+			 ((string-equal "+" input) '+)
 			 ((string-equal "-" input) '-)
 			 ((string-equal "++" input) '++)
 			 ((string-equal "--" input) '--)
