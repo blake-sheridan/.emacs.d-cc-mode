@@ -813,11 +813,15 @@ point is inside a literal, nothing special happens."
        )))
 
 (defun cc-electric-brace (arg)
-  "Electric brace insertion.
-Inserts a brace and possibly some newlines based on the value of
-`cc-hanging-braces-alist'.  It may also correct the line's
-indentation. If a numeric ARG is supplied, or if point is inside a
-literal, nothing special happens."
+  "Insert a brace.
+
+If the auto-newline feature is turned on, as evidenced by the \"/a\"
+or \"/ah\" string on the mode line, newlines are inserted before and
+after open braces based on the value of `cc-hanging-braces-alist'.
+
+Also, the line is re-indented unless a numeric ARG is supplied, there
+are non-whitespace characters present on the line after the brace, or
+the brace is inserted inside a literal."
   (interactive "P")
   (let* ((bod (cc-point 'bod))
 	 (literal (cc-in-literal bod))
@@ -904,10 +908,11 @@ literal, nothing special happens."
       )))
       
 (defun cc-electric-slash (arg)
-  "Insert slash, possibly indenting line as a comment.
-If slash is second of a double-slash comment introducing construct,
-and we are on a comment-only-line, indent line as comment.  If numeric
-ARG is supplied, indentation is inhibited."
+  "Insert a slash character.
+If slash is second of a double-slash C++ style comment introducing
+construct, and we are on a comment-only-line, indent line as comment.
+If numeric ARG is supplied or point is inside a literal, indentation
+is inhibited."
   (interactive "P")
   (let ((indentp (and (not arg)
 		      (= (preceding-char) ?/)
@@ -918,8 +923,11 @@ ARG is supplied, indentation is inhibited."
 	(cc-indent-via-language-element))))
 
 (defun cc-electric-star (arg)
-  "Insert a start, possibly indenting line as a C block comment.
-If numeric ARG is supplied, indentation is inhibited."
+  "Insert a star character.
+If the star is the second character of a C style comment introducing
+construct, and we are on a comment-only-line, indent line as comment.
+If numeric ARG is supplied or point is inside a literal, indentation
+is inhibited."
   (interactive "P")
   (let ((indentp (and (not arg)
 		      (or (and (memq (cc-in-literal) '(c))
@@ -932,8 +940,14 @@ If numeric ARG is supplied, indentation is inhibited."
 	(cc-indent-via-language-element))))
 
 (defun cc-electric-semi&comma (arg)
-  "Insert a comma or semicolon, possibly re-indenting line.
-If numeric ARG is supplied, indentation is inhibited."
+  "Insert a comma or semicolon.
+When the auto-newline feature is turned on, as evidenced by the \"/a\"
+or \"/ah\" string on the mode line, a newline is inserted after
+semicolons, but not commas.
+
+When semicolon is inserted, the line is re-indented unless a numeric
+arg is supplied, point is inside a literal, or there are
+non-whitespace characters on the line following the semicolon."
   (interactive "P")
   (let* ((bod (cc-point 'bod))
 	 (literal (cc-in-literal bod))
@@ -983,8 +997,18 @@ No indentation or other \"electric\" behavior is performed."
   (insert "::"))
 
 (defun cc-electric-colon (arg)
-  "Insert a colon, possible reindenting a line.
-Will also cleanup double colon scope operators."
+  "Insert a colon.
+
+If the auto-newline feature is turned on, as evidenced by the \"/a\"
+or \"/ah\" string on the mode line, newlines are inserted before and
+after colons based on the value of `cc-hanging-colons-alist'.
+
+Also, the line is re-indented unless a numeric ARG is supplied, there
+are non-whitespace characters present on the line after the colon, or
+the colon is inserted inside a literal.
+
+This function will also cleanup double colon scope operators based on
+the value of `cc-cleanup-list'."
   (interactive "P")
   (let* ((bod (cc-point 'bod))
 	 (literal (cc-in-literal bod))
@@ -1049,6 +1073,7 @@ Will also cleanup double colon scope operators."
       )))
 
 (defun cc-change-semantic-symbol-offset (symbol offset)
+  "Change the value of a langelem symbol in `cc-offsets-alist'."
   (interactive "SSemantic symbol: \nnOffset: ")
   (setcdr (or (assq symbol cc-offsets-alist)
 	      (error "%s is not a valid semantic symbol." symbol))
