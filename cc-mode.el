@@ -760,6 +760,9 @@ Optional argument has the following meanings when supplied:
        (prog1
 	   (point)
 	 (goto-char here))
+       ;; workaround for an Emacs18 bug -- blech! Well, at least it
+       ;; doesn't hurt for v19
+       (,@ nil)
        )))
 
 (defmacro cc-auto-newline ()
@@ -834,8 +837,11 @@ the brace is inserted inside a literal."
 	 (literal (cc-in-literal bod))
 	 ;; we want to inhibit blinking the paren since this will be
 	 ;; most disruptive. we'll blink it ourselves later on
-	 (old-blink-paren-function blink-paren-function)
-	 (blink-paren-function nil)
+	 (old-blink-paren (if (memq 'v18 cc-emacs-features)
+			      blink-paren-hook
+			    blink-paren-function))
+	 blink-paren-function		; emacs19
+	 blink-paren-hook		; emacs18
 	 semantics newlines)
     (if (or literal
 	    arg
@@ -908,10 +914,12 @@ the brace is inserted inside a literal."
 	    (cc-indent-via-language-element)))
       ;; blink the paren
       (and (= last-command-char ?\})
-	   old-blink-paren-function
+	   old-blink-paren
 	   (save-excursion
 	     (cc-backward-syntactic-ws bod)
-	     (funcall old-blink-paren-function)))
+	     (if (memq 'v18 cc-emacs-features)
+		 (run-hooks old-blink-paren)
+	       (funcall old-blink-paren))))
       )))
       
 (defun cc-electric-slash (arg)
@@ -1269,7 +1277,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
   (interactive)
   (push-mark (point))
   (end-of-defun)
-  (push-mark (point) nil t)
+  ;; emacs 18/19 compatibility -- blech!
+  (if (memq 'v18 cc-emacs-features)
+      (funcall 'push-mark)
+    (funcall 'push-mark (point) nil t))
   (beginning-of-defun)
   (backward-paragraph))
 
