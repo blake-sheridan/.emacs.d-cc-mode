@@ -1444,17 +1444,12 @@ of the expression are preserved."
       (narrow-to-region lim (point))
       (while (/= here (point))
 	(setq here (point))
-	;; skip cpp intro lines
-	(if (and (< (point) lim)
-		 (= (char-after (cc-point 'boi)) ?#))
-	    (end-of-line))
 	(forward-comment 1)
-	;; skip multi-line preprocessor directives
-	(while (and (< (point) lim)
-		    (= (char-after (1- (cc-point 'eol))) ?\\))
-	  (forward-line)
-	  (end-of-line))
-	))))
+	;; skip preprocessor directives
+	(if (and (= (following-char) ?#)
+		 (= (cc-point 'boi) (point)))
+	    (end-of-line)
+	  )))))
 
 (defun cc-emacs19-accurate-bsws (&optional lim)
   ;; Backward skip over syntactic whitespace for Emacs 19.
@@ -1467,8 +1462,7 @@ of the expression are preserved."
 	    (while (/= here (point))
 	      (setq here (point))
 	      (forward-comment -1)
-	      (if (or (= (char-after (1- (cc-point 'eol))) ?\\)
-		      (= (char-after (cc-point 'boi)) ?#))
+	      (if (eq (cc-in-literal lim) 'pound)
 		  (beginning-of-line))
 	      )))
       )))
