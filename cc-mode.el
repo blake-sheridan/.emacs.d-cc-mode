@@ -2495,9 +2495,11 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 	    (if (eq mode 'c++-mode) "C++" "C")
 	    " code) \n"
 	    (if c++-emacs-is-fixed-p
-		"You've applied the (hopefully most recent) syntax patch!\n")
+		"You've applied the (hopefully most recent) syntax patch!\n"
+	      "No syntax patch applied.\n")
 	    (if c++-emacs-is-really-fixed-p
-		"Looks like you've also got the parse-back patch. Good!\n")
+		"Looks like you've also got the parse-back patch. Good!\n"
+	      "No parse-back patch applied.\n")
 	    "\ncurrent state:\n==============\n(setq\n")
     (mapcar
      (function
