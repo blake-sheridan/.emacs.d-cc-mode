@@ -1493,9 +1493,9 @@ search."
       (error (if first
 		 (backward-up-list 1)
 	       (goto-char last-begin)
-	       ;; this seems bogus, but necessary
-	       (skip-chars-backward "-*&:.")
-
+	       ;; skip over any unary operators, or other special
+	       ;; characters appearing at front of identifier 
+	       (skip-chars-backward "-+!*&:.~")
 	       ))
       )))
 
