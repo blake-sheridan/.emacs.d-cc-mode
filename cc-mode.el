@@ -2023,7 +2023,7 @@ search."
   ;; move to the start of the current statement, or the previous
   ;; statement if already at the beginning of one.
   (let ((firstp t)
-	donep c-in-literal-cache
+	donep c-in-literal-cache maybe-labelp
 	(last-begin (point)))
     (while (not donep)
       ;; stop at beginning of buffer
@@ -2045,6 +2045,7 @@ search."
 	      (goto-char last-begin)
 	      (setq donep t)))
 
+	(setq maybe-labelp nil)
 	;; see if we're in a literal. if not, then this bufpos may be
 	;; a candidate for stopping
 	(cond
@@ -2082,17 +2083,31 @@ search."
 	    (save-excursion
 	      (while (and (not crossedp)
 			  (< (point) last-begin))
-		(skip-chars-forward "^;{}" last-begin)
-		(if (and (memq (following-char) '(?\; ?{ ?}))
-			 (not (c-in-literal lim)))
-		    (setq crossedp t
-			  donep t)
+		(skip-chars-forward "^;{}:" last-begin)
+		(if (not (c-in-literal lim))
+		    (if (memq (following-char) '(?\; ?{ ?}))
+			(setq crossedp t
+			      donep t)
+		      (if (= (following-char) ?:)
+			  (setq maybe-labelp t))
+		      (forward-char 1))
 		  (forward-char 1))))
 	    crossedp))
 	 ;; CASE 6: ignore labels
-	 ((or (and c-access-key (looking-at c-access-key))
-	      (looking-at c-label-key)
-	      (looking-at c-switch-label-key)))
+	 ((and maybe-labelp
+	       (or (and c-access-key (looking-at c-access-key))
+		   ;; with switch labels, we have to go back further
+		   ;; to try to pick up the case or default
+		   ;; keyword. Potential bogosity alert: we assume
+		   ;; `case' or `default' is first thing on line
+		   (let ((here (point)))
+		     (beginning-of-line)
+		     (c-forward-syntactic-ws)
+		     (if (looking-at c-switch-label-key)
+			 t
+		       (goto-char here)
+		       nil))
+		   (looking-at c-label-key))))
 	 ;; CASE 7: ObjC method def
 	 ((and (eq major-mode 'objc-mode)
 	       (c-in-objc-method-def-p))
