@@ -1017,12 +1017,12 @@ Returns nil if line starts inside a string, t if in a comment."
 			   ;; multiple inheritance continuation line
 			   (if (looking-at
 				"\\(class\\|struct\\)[ \t]+\\w+[ \t]*:[ \t]*")
-			       (if (save-excursion
-				     (beginning-of-line)
-				     (bobp))
-				   0
-				 (progn (goto-char (match-end 0))
-					(current-column)))
+			       (if (progn (goto-char indent-point)
+					  (skip-chars-backward " \t\n")
+					  (= (preceding-char) ?,))
+				   (progn (goto-char (match-end 0))
+					  (current-column))
+				 0)
 			     (if (eolp)
 				 ;; looking at a blank line, indent
 				 ;; next line to zero
