@@ -1962,12 +1962,15 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	(end (and (c-safe (progn (forward-sexp 1) t))
 		  (point-marker))))
     ;; sanity check
-    (and (not start)
-	 (not shutup-p)
-	 (error "Cannot find start of balanced expression to indent."))
-    (and (not end)
-	 (not shutup-p)
-	 (error "Cannot find end of balanced expression to indent."))
+    (unwind-protect
+	(progn
+	  (and (not start)
+	       (not shutup-p)
+	       (error "Cannot find start of balanced expression to indent."))
+	  (and (not end)
+	       (not shutup-p)
+	       (error "Cannot find end of balanced expression to indent.")))
+      (goto-char here))
     (or shutup-p
 	(message "indenting expression... (this may take a while)"))
     (goto-char start)
