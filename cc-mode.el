@@ -96,6 +96,10 @@
   (modify-syntax-entry ?\n ">" c++-mode-syntax-table)
   (modify-syntax-entry ?\' "\"" c++-mode-syntax-table))
 
+(defvar c++-always-arglist-indent t
+  "*When non-nil, arglists continued on subsequent lines will always 
+indent c++-empty-arglist-indent spaces.")
+
 (defvar c++-tab-always-indent
   (if (boundp 'c-tab-always-indent) c-tab-always-indent t)
   "*Controls the operation of the TAB key.
@@ -1001,7 +1005,8 @@ Returns nil if line starts inside a string, t if in a comment."
 	     ;; empty arg list, in which case we do what
 	     ;; c++-empty-arglist-indent says to do.
 	     (if (and c++-empty-arglist-indent
-		      (or (null (nth 2 state))	;; indicates empty arg
+		      (or c++-always-arglist-indent
+			  (null (nth 2 state))	;; indicates empty arg
 						;; list.
 			  ;; Use a heuristic: if the first
 			  ;; non-whitespace following left paren on
