@@ -1382,7 +1382,7 @@ c++-untame-characters."
 (defun c++-match-paren ()
   "Jumps to the paren matching the one under point, if there is one."
   (interactive)
-  (let ((parse-sexp-ignore-comments t))
+  (let ((parse-sexp-ignore-comments c++-emacs-is-fixed-p))
     (cond
      ((looking-at "[\(\[{]")
       (forward-sexp 1)
