@@ -2081,11 +2081,18 @@ BOD is the beginning of the C++ definition."
 		   (skip-chars-forward " \t")
 		   (looking-at c++-access-key))
 		 ;; access specifier. class defun opening brace may
-		 ;; not be in col zero
-		 (progn (goto-char (or containing-sexp bod))
-			(- (current-indentation)
-			   ;; remove some nested inclass indentation
-			   inclass-unshift))
+		 ;; not be in col zero, and derived classes could be
+		 ;; on a separate line than class intro
+		 (progn
+		   (goto-char (or containing-sexp bod))
+		   (beginning-of-line)
+		   (skip-chars-forward " \t")
+		   (if (looking-at
+			":[ \t]*\\<\\(public\\|protected\\|private\\)\\>")
+		       (forward-line -1))
+		   (- (current-indentation)
+		      ;; remove some nested inclass indentation
+		      inclass-unshift))
 	       ;; member init, so add offset. add additional offset if
 	       ;; looking at line with just a member init colon
 	       (+ c++-member-init-indent
@@ -2124,7 +2131,11 @@ BOD is the beginning of the C++ definition."
 	       (or (memq (c++-in-literal bod) '(c c++))
 		   (looking-at "/[/*]")))
 	     0)
-	    ((= (following-char) ?:)
+	    ;; are we looking at the first member init?
+	    ((and (= (following-char) ?:)
+		  (save-excursion
+		    (c++-backward-syntactic-ws bod)
+		    (= (preceding-char) ?\))))
 	     (if c++-continued-member-init-offset
 		 (+ (current-indentation)
 		    c++-continued-member-init-offset)
@@ -2181,7 +2192,10 @@ BOD is the beginning of the C++ definition."
 		   (skip-chars-forward " \t")))
 	     ;; check to be sure that we're not on the first line of
 	     ;; the member init list
-	     (if (= (following-char) ?:)
+	     (if (and (= (following-char) ?:)
+		      (save-excursion
+			(c++-backward-syntactic-ws bod)
+			(= (preceding-char) ?\))))
 		 (progn
 		   (forward-char 1)
 		   (skip-chars-forward " \t")))
