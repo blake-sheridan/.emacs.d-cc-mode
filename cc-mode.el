@@ -2244,6 +2244,7 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
 	)))
    stylevars))
 
+;;;###autoload
 (defun c-set-style (stylename)
   "Set cc-mode variables to use one of several different indentation styles.
 STYLENAME is a string representing the desired style from the list of
@@ -4959,7 +4960,7 @@ definition and conveniently use this command."
 ;; there is no cc-mode equivalent for electric-c-terminator
 (fset 'mark-c-function       'c-mark-function)
 (fset 'indent-c-exp          'c-indent-exp)
-(fset 'set-c-style           'c-set-style)
+;;;###autoload (fset 'set-c-style           'c-set-style)
 ;; Lucid Emacs 19.9 + font-lock + cc-mode - c++-mode lossage
 (fset 'c++-beginning-of-defun 'beginning-of-defun)
 (fset 'c++-end-of-defun 'end-of-defun)
