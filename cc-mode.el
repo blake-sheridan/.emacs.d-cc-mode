@@ -2292,6 +2292,8 @@ supplied, or point is inside a literal."
 
 
 
+(defvar c-read-offset-history nil)
+
 (defun c-read-offset (langelem)
   ;; read new offset value for LANGELEM from minibuffer. return a
   ;; legal value only
@@ -2303,7 +2305,8 @@ supplied, or point is inside a literal."
 	 (prompt (concat "Offset " defstr))
 	 offset input interned raw)
     (while (not offset)
-      (setq input (read-string prompt)
+      (setq input (completing-read prompt obarray nil nil nil
+				   c-read-offset-history)
 	    offset (cond ((string-equal "" input) oldoff)  ; default
 			 ((string-equal "+" input) '+)
 			 ((string-equal "-" input) '-)
