@@ -1957,6 +1957,7 @@ c++-mode into the bug report mail buffer.
 Use \\[c++-submit-bug-report] to submit a bug report."
   (let ((buffer (current-buffer))
 	(varlist (list 'c++-continued-member-init-offset
+		       'c++-class-member-indent
 		       'c++-member-init-indent
 		       'c++-friend-offset
 		       'c++-access-specifier-offset
