@@ -2626,8 +2626,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	       (error "Cannot find start of balanced expression to indent."))
 	  (and (not end)
 	       (not shutup-p)
-	       (error "Cannot find end of balanced expression to
-	       indent."))
+	       (error "Cannot find end of balanced expression to indent."))
 	  (c-progress-init start end 'c-indent-exp)
 	  (setq progress-p t)
 	  (goto-char start)
