@@ -374,7 +374,7 @@ Only currently supported behavior is `alignleft'.")
      (c-comment-only-line-offset . 0)
      (c-offsets-alist . ((statement-block-intro . +)
 			 (knr-argdecl-intro . 5)
-			 (substatement-open . 0)
+			 (substatement-open . +)
 			 (label . -)
 			 (statement-cont . +)
 			 ))
@@ -384,7 +384,7 @@ Only currently supported behavior is `alignleft'.")
      (c-comment-only-line-offset . 0)
      (c-offsets-alist . ((statement-block-intro . +)
 			 (knr-argdecl-intro . 0)
-			 (substatement-open . -)
+			 (substatement-open . 0)
 			 (label . -)
 			 (statement-cont . +)
 			 ))
@@ -394,7 +394,7 @@ Only currently supported behavior is `alignleft'.")
      (c-comment-only-line-offset . 0)
      (c-offsets-alist . ((statement-block-intro . +)
 			 (knr-argdecl-intro . +)
-			 (substatement-open . -)
+			 (substatement-open . 0)
 			 (label . -)
 			 (statement-cont . +)
 			 ))
@@ -403,7 +403,7 @@ Only currently supported behavior is `alignleft'.")
      (c-basic-offset . 4)
      (c-comment-only-line-offset . 0)
      (c-offsets-alist . ((statement-block-intro . +)
-			 (substatement-open . -)
+			 (substatement-open . 0)
 			 (label . -)
 			 (statement-cont . +)
 			 ))
@@ -450,6 +450,30 @@ case, the VALUE is a list containing elements of the form:
 as described in `c-offsets-alist'.  These are passed directly to
 `c-set-offset' so there is no need to set every syntactic symbol in
 your style, only those that are different from the default.")
+
+;; dynamically append the default value of most variables
+(or (assoc "Default" c-style-alist)
+    (let* ((varlist '(c-inhibit-startup-warnings-p
+		      c-strict-semantics-p
+		      c-echo-semantic-information-p
+		      c-basic-offset
+		      c-offsets-alist
+		      c-tab-always-indent
+		      c-comment-only-line-offset
+		      c-block-comments-indent-p
+		      c-cleanup-list
+		      c-hanging-braces-alist
+		      c-hanging-colons-alist
+		      c-backslash-column
+		      c-electric-pound-behavior))
+	   (default (cons "Default"
+			  (mapcar
+			   (function
+			    (lambda (var)
+			      (cons var (symbol-value var))
+			      ))
+			   varlist))))
+      (setq c-style-alist (cons default c-style-alist))))
 
 (defvar c-mode-hook nil
   "*Hook called by `c-mode'.")
