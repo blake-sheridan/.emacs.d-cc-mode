@@ -904,7 +904,8 @@ Key bindings:
 	     '((beginning-of-defun)
 	       ;; if defun-prompt-regexp is non-nil, b-o-d won't leave
 	       ;; us at the open brace.
-	       (and defun-prompt-regexp
+	       (and (boundp 'defun-prompt-regexp)
+		    defun-prompt-regexp
 		    (looking-at defun-prompt-regexp)
 		    (goto-char (match-end 0)))
 	       ))
@@ -1963,7 +1964,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (beginning-of-defun)
     ;; if defun-prompt-regexp is non-nil, b-o-d might not leave us at
     ;; the open brace. I consider this an Emacs bug.
-    (and defun-prompt-regexp
+    (and (boundp 'defun-prompt-regexp)
+	 defun-prompt-regexp
 	 (looking-at defun-prompt-regexp)
 	 (goto-char (match-end 0)))
     ;; catch all errors in c-indent-exp so we can 1. give more
