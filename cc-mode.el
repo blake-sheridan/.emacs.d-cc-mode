@@ -1234,10 +1234,15 @@ the brace is inserted inside a literal."
       (if (memq 'before newlines)
 	  ;; we leave the newline we've put in there before,
 	  ;; but we need to re-indent the line above
-	  (let ((pos (- (point-max) (point))))
+	  (let ((pos (- (point-max) (point)))
+		(here (point)))
 	    (forward-line -1)
 	    (c-indent-line)
-	    (goto-char (- (point-max) pos)))
+	    (goto-char (- (point-max) pos))
+	    ;; if the buffer has changed due to the indentation, we
+	    ;; need to recalculate semantics for the current line
+	    (if (/= (point) here)
+		(setq semantics (c-guess-basic-semantics))))
 	;; must remove the newline we just stuck in (if we really did it)
 	(and delete-temp-newline
 	     (delete-region (- (point) 2) (1- (point))))
