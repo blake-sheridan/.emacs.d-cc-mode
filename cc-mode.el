@@ -413,7 +413,7 @@ Default value is t, which inhibits leaving block comment ending string
   "*Hook for user defined special indentation adjustments.
 This hook gets called after a line is indented by the mode.")
 (defvar c-delete-function 'backward-delete-char-untabify
-  "*Function called by `c-electric-delete' when deleting a single char.")
+  "*Function called by `c-electric-delete' when deleting characters.")
 (defvar c-electric-pound-behavior nil
   "*List of behaviors for electric pound insertion.
 Only currently supported behavior is `alignleft'.")
