@@ -1050,7 +1050,7 @@ Returns nil if line starts inside a string, t if in a comment."
 				    (looking-at
 				     (concat
 				      "#\\|/\\*\\|//"
-				      "\\|case[ \t]"
+				      "\\|\\(case\\|default\\)[ \t]"
 				      "\\|[a-zA-Z0-9_$]*:[^:]"
 				      "\\|friend[ \t]class[ \t]")))
 			;; Skip over comments and labels following openbrace.
@@ -1060,7 +1060,7 @@ Returns nil if line starts inside a string, t if in a comment."
 			       (search-forward "*/" nil 'move))
 			      ((looking-at "//\\|friend[ \t]class[ \t]")
 			       (forward-line 1))
-			      ((looking-at "case\\b")
+			      ((looking-at "\\(case\\|default\\)\\b")
 			       (forward-line 1))
 			      (t
 			       (re-search-forward ":[^:]" nil 'move))))
