@@ -634,11 +634,13 @@ Key bindings:
 
 ;; auto-newline/hungry delete key
 (defmacro cc-keep-region-active ()
-  ;; macro to keep region active in Emacs 19. Right now, I only know
-  ;; how to do this portably for Lemacs. It would be great if FSFmacs
-  ;; supported the _ interactive spec like Lemacs does, but until
-  ;; then, I don't now of a way to keep the region active in FSFmacs.
-  (` (if (interactive-p) (setq zmacs-region-stays t))))
+  ;; macro to keep region active in Emacs 19
+  (cond
+   ((boundp 'zmacs-region-stays)
+    (` (if (interactive-p) (setq zmacs-region-stays t))))
+   ((boundp 'deactivate-mark)
+    (` (if (interactive-p) (setq deactivate-mark (not mark-active)))))
+   ))
 
 (defun cc-set-auto-hungry-state (auto-p hungry-p)
   ;; Set auto/hungry to state indicated by AUTO-P and HUNGRY-P, and
@@ -2346,8 +2348,8 @@ the leading `// ' from each line, if any."
      'cc-default-macroize-column
      'cc-delete-function
      'cc-electric-pound-behavior
-     'cc-hanging-braces-list
-     'cc-hanging-member-init-colon
+     'cc-hanging-braces-alist
+     'cc-hanging-colon-alist
      'cc-tab-always-indent
      'cc-untame-characters
      'tab-width
