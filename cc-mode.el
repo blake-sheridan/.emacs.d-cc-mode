@@ -19,6 +19,17 @@
 ;; the command c++-submit-bug-report and automatically sets up the
 ;; mail buffer with all the necessary information.
 ;;
+;; Important Note about Escapes in Comments
+;; ========================================
+;; You will notice that certain characters, when typed in comment
+;; regions, get escaped with a backslash.  This is a workaround for an
+;; emacs bug.  In brief, GNU emacs 18 and its derivatives cannot
+;; handle more than 1 comment style per mode, and as you know, C++
+;; supports 2 orthogonal comment styles.  Thus emacs' syntax parsing
+;; code will sometimes choke on unbalanced parentheses and single
+;; quotes in comments.  Please do a "C-h v c++-untame-characters" for
+;; more information.
+
 ;; Notes for Novice Emacs Users
 ;; ============================
 ;; c++-mode facilitates editing of C++ code by automatically handling
@@ -281,7 +292,7 @@ first statement in the block.  When nil, the indentation is calculated
 without regard to how the first statement is indented.")
 
 (defvar c++-untame-characters '(?\')
-  "*Utilize a backslashing workaround of an emacs scan-lists bug.
+  "*Utilize a backslashing workaround of an emacs syntax parsing bug.
 If non-nil, this variable should contain a list of characters which
 will be prepended by a backslash in comment regions.  By default, the
 list contains only the most troublesome character, the single quote.
