@@ -96,10 +96,6 @@
   (modify-syntax-entry ?\n ">" c++-mode-syntax-table)
   (modify-syntax-entry ?\' "\"" c++-mode-syntax-table))
 
-(defvar c++-always-arglist-indent t
-  "*When non-nil, arglists continued on subsequent lines will always 
-indent c++-empty-arglist-indent spaces.")
-
 (defvar c++-tab-always-indent
   (if (boundp 'c-tab-always-indent) c-tab-always-indent t)
   "*Controls the operation of the TAB key.
@@ -109,6 +105,11 @@ indentation; otherwise insert a tab.  If not-nil-or-t, then the line
 is first reindented, then if the indentation hasn't changed, a tab is
 inserted. This last mode is useful if you like to add tabs after the #
 of preprocessor commands.")
+(defvar c++-always-arglist-indent-p nil
+  "*Control indentation of continued arglists.
+When non-nil, arglists continued on subsequent lines will always
+indent c++-empty-arglist-indent spaces, otherwise, they will indent to
+just under previous line's argument indentation.")
 (defvar c++-block-close-brace-offset 0
   "*Extra indentation given to close braces which close a block. This
 does not affect braces which close a top-level construct (e.g. function).")
@@ -264,6 +265,11 @@ from their c-mode cousins.
     If non-nil, a function declaration or invocation which ends a line with a
     left paren is indented this many extra spaces, instead of flush with the
     left paren. If nil, it lines up with the left paren.
+ c++-always-arglist-indent-p
+    Control indentation of continued arglists. When non-nil, arglists
+    continued on subsequent lines will always indent
+    c++-empty-arglist-indent spaces, otherwise, they will indent to
+    just under previous line's argument indentation.
  c++-comment-only-line-offset
     Extra indentation for a line containing only a C or C++ style comment.
  c++-cleanup-}-else-{-p
@@ -1660,6 +1666,7 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 		       'c++-member-init-indent
 		       'c++-friend-offset
 		       'c++-empty-arglist-indent
+		       'c++-always-arglist-indent-p
 		       'c++-comment-only-line-offset
 		       'c++-cleanup-}-else-{-p
 		       'c++-hanging-braces
