@@ -131,7 +131,7 @@ with previous initializations rather than with the colon on the first line.")
 list.  Nil indicates to just after the paren.")
 (defvar c++-comment-only-line-offset 4
   "*Indentation offset for line which contains only C or C++ style comments.")
-(defvar c++-cleanup-brace-else-brace-p t
+(defvar c++-cleanup-brace-else-brace-p nil
   "*Controls whether } else { style should remain on a single line.
 When t, cleans up this style (when only whitespace intervenes).")
 (defvar c++-hanging-braces t
