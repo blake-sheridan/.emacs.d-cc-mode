@@ -794,6 +794,7 @@ supported list, along with the values for this variable:
 (defun c-populate-syntax-table (table)
   ;; Populate the syntax TABLE
   ;; DO NOT TRY TO SET _ (UNDERSCORE) TO WORD CLASS!
+  (modify-syntax-entry ?_  "_"     table)
   (modify-syntax-entry ?\\ "\\"    table)
   (modify-syntax-entry ?+  "."     table)
   (modify-syntax-entry ?-  "."     table)
