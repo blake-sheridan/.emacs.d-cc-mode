@@ -710,7 +710,43 @@ Optional argument has the following meanings when supplied:
   (cc-keep-region-active))
 
 
-;; COMMANDS
+;; macro definitions
+(defmacro cc-point (position)
+  ;; Returns the value of point at certain commonly referenced POSITIONs.
+  ;; POSITION can be one of the following symbols:
+  ;; 
+  ;; bol  -- beginning of line
+  ;; eol  -- end of line
+  ;; bod  -- beginning of defun
+  ;; boi  -- back to indentation
+  ;; ionl -- indentation of next line
+  ;; iopl -- indentation of previous line
+  ;; bonl -- beginning of next line
+  ;; bopl -- beginning of previous line
+  ;; 
+  ;; This function does not modify point or mark.
+  (` (let ((here (point)))
+       (,@ (let ((position (eval position)))
+	     (cond
+	      ((eq position 'bol)  '((beginning-of-line)))
+	      ((eq position 'eol)  '((end-of-line)))
+	      ((eq position 'bod)  '((beginning-of-defun)))
+	      ((eq position 'boi)  '((back-to-indentation)))
+	      ((eq position 'bonl) '((forward-line 1)))
+	      ((eq position 'bopl) '((forward-line -1)))
+	      ((eq position 'iopl)
+	       '((forward-line -1)
+		 (back-to-indentation)))
+	      ((eq position 'ionl)
+	       '((forward-line 1)
+		 (back-to-indentation)))
+	      (t (error "unknown buffer position requested: %s" position))
+	      )))
+       (prog1
+	   (point)
+	 (goto-char here))
+       )))
+
 (defmacro cc-auto-newline ()
   ;; if auto-newline feature is turned on, insert a newline character
   ;; and return t, otherwise return nil.
@@ -718,6 +754,8 @@ Optional argument has the following meanings when supplied:
 	  (not (cc-in-literal))
 	  (not (newline)))))
 
+
+;; COMMANDS
 (defun cc-electric-delete (arg)
   "Deletes preceding character or whitespace.
 If `cc-hungry-delete-key' is non-nil, as evidenced by the \"/h\" or
@@ -1430,42 +1468,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
     (while (< (point) lim)
       (setq state (parse-partial-sexp (point) lim 0)))
     state))
-
-(defmacro cc-point (position)
-  ;; Returns the value of point at certain commonly referenced POSITIONs.
-  ;; POSITION can be one of the following symbols:
-  ;; 
-  ;; bol  -- beginning of line
-  ;; eol  -- end of line
-  ;; bod  -- beginning of defun
-  ;; boi  -- back to indentation
-  ;; ionl -- indentation of next line
-  ;; iopl -- indentation of previous line
-  ;; bonl -- beginning of next line
-  ;; bopl -- beginning of previous line
-  ;; 
-  ;; This function does not modify point or mark.
-  (` (let ((here (point)))
-       (,@ (let ((position (eval position)))
-	     (cond
-	      ((eq position 'bol)  '((beginning-of-line)))
-	      ((eq position 'eol)  '((end-of-line)))
-	      ((eq position 'bod)  '((beginning-of-defun)))
-	      ((eq position 'boi)  '((back-to-indentation)))
-	      ((eq position 'bonl) '((forward-line 1)))
-	      ((eq position 'bopl) '((forward-line -1)))
-	      ((eq position 'iopl)
-	       '((forward-line -1)
-		 (back-to-indentation)))
-	      ((eq position 'ionl)
-	       '((forward-line 1)
-		 (back-to-indentation)))
-	      (t (error "unknown buffer position requested: %s" position))
-	      )))
-       (prog1
-	   (point)
-	 (goto-char here))
-       )))
 
 (defmacro cc-back-block ()
   ;; move up one block, returning t if successful, otherwise returning
