@@ -2269,11 +2269,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     ;; catch all errors in c-indent-exp so we can 1. give more
     ;; meaningful error message, and 2. restore point
     (unwind-protect
-	(condition-case ()
-	    (c-indent-exp)
-	  (buffer-read-only (error))
-	  (error
-	   (error "Cannot find closed top-level defun containing point.")))
+	(c-indent-exp)
       (goto-char here)
       (set-marker here nil))))
 
