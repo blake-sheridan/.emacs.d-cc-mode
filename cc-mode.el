@@ -4681,10 +4681,10 @@ definition and conveniently use this command."
 			     c-strict-syntax-p
 			     c-tab-always-indent
 			     c-inhibit-startup-warnings-p
-			     ))))
-    ;; the default style is now GNU.  This can be overridden in
-    ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
-    (c-set-style "GNU"))
+			     )))
+      ;; the default style is now GNU.  This can be overridden in
+      ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
+      (c-set-style "GNU")))
 
 ;; style variables
 (make-variable-buffer-local 'c-offsets-alist)
