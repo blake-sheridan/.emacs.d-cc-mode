@@ -606,6 +606,29 @@ loaded into your Emacs at compile time, you will need to set this
 variable in the `site-init.el' file before cc-mode is loaded, then
 re-dump Emacs.")
 
+(defvar c-style-variables-are-local-p t
+  "*Whether style variables should be buffer local by default.
+If non-nil, then all indentation style related variables will be made
+buffer local by default.  If nil, they will remain global.  Variables
+are made buffer local when this file is loaded, and once buffer
+localized, they cannot be made global again.
+
+The list of variables to buffer localize are:
+    c-offsets-alist
+    c-basic-offset
+    c-file-style
+    c-file-offsets
+    c-comment-only-line-offset
+    c-cleanup-list
+    c-hanging-braces-alist
+    c-hanging-colons-alist
+    c-hanging-comment-ender-p
+    c-backslash-column
+    c-label-minimum-indentation
+    c-special-indent-hook
+    c-indentation-style")
+
+
 (defvar c-mode-hook nil
   "*Hook called by `c-mode'.")
 (defvar c++-mode-hook nil
@@ -1150,28 +1173,6 @@ behavior that users are familiar with.")
   "Non-nil means K&R style argument declarations are valid.")
 (defvar c-indentation-style c-site-default-style
   "Name of style installed in the current buffer.")
-
-(defvar c-style-variables-are-local-p t
-  "*Whether style variables should be buffer local by default.
-If non-nil, then all indentation style related variables will be made
-buffer local by default.  If nil, they will remain global.  Variables
-are made buffer local when this file is loaded, and once buffer
-localized, they cannot be made global again.
-
-The list of variables to buffer localize are:
-    c-offsets-alist
-    c-basic-offset
-    c-file-style
-    c-file-offsets
-    c-comment-only-line-offset
-    c-cleanup-list
-    c-hanging-braces-alist
-    c-hanging-colons-alist
-    c-hanging-comment-ender-p
-    c-backslash-column
-    c-label-minimum-indentation
-    c-special-indent-hook
-    c-indentation-style")
 
 ;; these variables should always be buffer local.  they do not affect
 ;; indentation styles.
