@@ -33,18 +33,21 @@
 
 ;;; Commentary:
 
-;; This package provides modes in GNU Emacs for editing C, C++, and
-;; Objective-C code. It is intended to be a replacement for c-mode.el
-;; (a.k.a. BOCM -- Boring Old C-Mode), and c++-mode.el (a.k.a
-;; cplus-md.el and cplus-md1.el), both of which are ancestors of this
-;; file.  A number of important improvements have been made, briefly:
-;; complete K&R C, ANSI C, `ARM' C++, and Objective-C support with
-;; consistent indentation across all modes, more intuitive indentation
-;; controlling variables, compatibility across all known Emacsen, nice
-;; new features, and tons of bug fixes.  This package is called
-;; "cc-mode" to distinguish it from its ancestors, but there really is
-;; no top-level cc-mode.  Usage and programming details are contained
-;; in an accompanying texinfo manual.
+;; This package provides modes in GNU Emacs for editing C, C++, 
+;; Objective-C, and Java code. It is intended to be a replacement for
+;; c-mode.el (a.k.a. BOCM -- Boring Old C-Mode), and c++-mode.el
+;; (a.k.a cplus-md.el and cplus-md1.el), both of which are ancestors
+;; of this file.  A number of important improvements have been made,
+;; briefly: complete K&R C, ANSI C, `ARM' C++, Objective-C, and Java
+;; support with consistent indentation across all modes, more
+;; intuitive indentation controlling variables, compatibility across
+;; all known Emacsen, nice new features, and tons of bug fixes.  This
+;; package is called "cc-mode" to distinguish it from its ancestors,
+;; but there really is no top-level cc-mode.  Usage and programming
+;; details are contained in an accompanying texinfo manual.
+;;
+;; Java support contributed by Eduardo Pelegri-Llopart
+;; <pelegri@calterra.eng.sun.com>.
 
 ;; To submit bug reports, type "C-c C-b". Please include a code sample
 ;; and exact recipe so I can reproduce your problem.  If you have
