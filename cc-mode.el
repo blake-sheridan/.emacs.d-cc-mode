@@ -1935,39 +1935,41 @@ optional LIM.  If LIM is ommitted, point-min is used."
     (while (not stop)
       (skip-chars-backward " \t\n\r\f" lim)
       (setq literal (c++-in-literal lim))
-      (cond ((eq literal 'c++)
-	     (setq skip t)
-	     (while skip
-	       (skip-chars-backward "^/" lim)
-	       (skip-chars-backward "/" lim)
-	       (setq skip (not (and (= (following-char) ?/)
-				    (= (char-after (1+ (point))) ?/))))
-	       ))
-	    ((eq literal 'c)
-	     (setq skip t)
-	     (while skip
-	       (skip-chars-backward "^*" lim)
-	       (skip-chars-backward "*" lim)
-	       (setq skip (not (and (= (following-char) ?*)
-				    (= (preceding-char) ?/))))
-	       )
-	     (forward-char -1))
-	    ((eq literal 'pound)
-	     (beginning-of-line)
-	     (setq stop (<= (point) lim)))
-	    ((and (= (preceding-char) ?/)
-		  (= (char-after (- (point) 2)) ?*))
-	     (forward-char -2)
-	     (setq skip t)
-	     (while skip
-	       (skip-chars-backward "^*" lim)
-	       (skip-chars-backward "*" lim)
-	       (setq skip (not (and (= (following-char) ?*)
-				    (= (preceding-char) ?/))))
-	       )
-	     (forward-char -1))
-	    (t (setq stop t))
-	    ))))
+      (cond
+       ;; in a c++ comment
+       ((eq literal 'c++)
+	(setq skip t)
+	(while skip
+	  (skip-chars-backward "^/" lim)
+	  (skip-chars-backward "/" lim)
+	  (setq skip (not (and (= (following-char) ?/)
+			       (= (char-after (1+ (point))) ?/))))))
+       ;; in a c comment block
+       ((eq literal 'c)
+	(setq skip t)
+	(while skip
+	  (skip-chars-backward "^*" lim)
+	  (skip-chars-backward "*" lim)
+	  (setq skip (not (and (= (following-char) ?*)
+			       (= (preceding-char) ?/)))))
+	(forward-char -1))
+       ;; in a preprocessor directive
+       ((eq literal 'pound)
+	(beginning-of-line)
+	(setq stop (<= (point) lim)))
+       ;; looking at end of a c block comment
+       ((and (= (preceding-char) ?/)
+	     (= (char-after (- (point) 2)) ?*))
+	(forward-char -2)
+	(setq skip t)
+	(while skip
+	  (skip-chars-backward "^*" lim)
+	  (skip-chars-backward "*" lim)
+	  (setq skip (not (and (= (following-char) ?*)
+			       (= (preceding-char) ?/)))))
+	(forward-char -1))
+       ;; none of the above
+       (t (setq stop t))))))
 
 (defun c++-backward-to-start-of-do (&optional limit)
   "Move to the start of the last ``unbalanced'' do."
