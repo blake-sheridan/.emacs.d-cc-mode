@@ -2321,42 +2321,43 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 1 2))))
 
 (defun c-search-uplist-for-classkey (&optional search-end)
-  ;; search upwards for a classkey, but only as far as we need to.
-  ;; this should properly find the inner class in a nested class
-  ;; situation, and in a func-local class declaration.  it should not
-  ;; get confused by forward declarations.
-  ;;
-  ;; if a classkey was found, return a cons cell containing the point
-  ;; of the class's opening brace in the car, and the class's
-  ;; declaration start in the cdr, otherwise return nil.
-  (condition-case nil
-      (save-excursion
-	(let ((search-end (or search-end (point)))
-	      (lim (save-excursion
-		     (beginning-of-defun)
-		     (c-point 'bod)))
-	      donep foundp cop state)
-	  (goto-char search-end)
-	  (while (not donep)
-	    (setq foundp (re-search-backward c-class-key lim t))
-	    (save-excursion
-	      (if (and
-		   foundp
-		   (not (c-in-literal))
-		   (setq cop (c-safe (scan-lists foundp 1 -1)))
-		   (setq state (c-safe (parse-partial-sexp cop search-end)))
-		   (<= cop search-end)
-		   (<= 0 (nth 6 state))
-		   (<= 0 (nth 0 state)))
-		  (progn
-		    (goto-char (1+ foundp))
-		    (setq donep t
-			  foundp (cons (1- cop) (c-point 'boi)))
-		    )
-		(setq donep (not foundp))) ;end if
-	      ))			;end while
-	  foundp))			;end s-e
-    (error nil)))
+  (save-excursion
+    (save-restriction
+      (let ((end (or search-end (point)))
+	    (here (point))
+	    (bod2 (progn (beginning-of-defun 2) (point)))
+	    (start (progn (end-of-defun) (point)))
+	    class brace state foundp)
+	;; if the end-of-defun leaves us after `here' then the
+	;; farthest back we look is bod2
+	(if (>= start here)
+	    (setq start bod2))
+	(narrow-to-region start end)
+	(setq state (parse-partial-sexp start end))
+	(if (and (setq brace (nth 1 state))
+		 (setq start (or (c-safe (scan-lists brace -1 1))
+				 start)))
+	    (progn
+	      (goto-char start)
+	      (while (and (not foundp)
+			  (re-search-forward c-class-key brace t))
+		(setq class (match-beginning 0))
+		(if (not (c-in-literal start))
+		    (progn
+		      (goto-char class)
+		      (skip-chars-forward " \t\n")
+		      (setq class (point))
+		      ;; now find opening brace
+		      (if (= (1+ brace)
+			     (or (c-safe (scan-lists (point) 1 -1)) 0))
+			  (setq foundp (vector class brace)))
+		      )))		;end while
+	      ))			;end if
+	;; right now this returns a cons cell, but later it will
+	;; return a vector for speed
+	(and foundp
+	     (cons (aref foundp 1) (aref foundp 0)))
+	))))
 
 (defun c-inside-bracelist-p (containing-sexp)
   ;; return the buffer position of the beginning of the brace list
