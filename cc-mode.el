@@ -1537,7 +1537,8 @@ the brace is inserted inside a literal."
 				  (c-safe (progn (forward-sexp -1) t))))
 		      (setq c-state-cache
 			    (c-hack-state (point) 'open c-state-cache))
-		    (if (and (not (consp (car c-state-cache)))
+		    (if (and (car c-state-cache)
+			     (not (consp (car c-state-cache)))
 			     (< (point) (car c-state-cache)))
 			(setq c-state-cache (cdr c-state-cache))))
 		  ))
