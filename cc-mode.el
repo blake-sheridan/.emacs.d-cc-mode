@@ -1022,6 +1022,10 @@ for member initialization list."
 		 (condition-case premature-end
 		     (backward-sexp 1)
 		   (error nil))
+		 ;; is possible that the sexp we just skipped was a
+		 ;; negative number. in that case the minus won't be
+		 ;; gobbled
+		 (skip-chars-backward "-")
 		 (c++-backward-syntactic-ws bod)
 		 (= (preceding-char) ?\?))
 	  (setq c++-auto-newline nil))
