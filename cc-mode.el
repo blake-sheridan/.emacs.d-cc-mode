@@ -2270,10 +2270,10 @@ This function does not modify point or mark."
 ;; defuns for "macroizations" -- making C++ parameterized types via macros
 ;; ======================================================================
 (defun c++-macroize-region (from to arg)
-  "Insert backslashes at end of every line in region.  Useful for defining cpp
-macros.  If called with negative argument, will remove trailing backslashes,
-so that indentation will work right."
-  (interactive "r\np")
+  "Insert backslashes at end of every line in region.
+Useful for defining cpp macros.  If called with a prefix argument,
+it will remove trailing backslashes."
+  (interactive "r\nP")
   (save-excursion
     (goto-char from)
     (beginning-of-line 1)
@@ -2281,7 +2281,7 @@ so that indentation will work right."
 	  (to-line (save-excursion (goto-char to)
 				   (count-lines (point-min) (point)))))
       (while (< line to-line)
-	(c++-backslashify-current-line (> arg 0))
+	(c++-backslashify-current-line (null arg))
 	(forward-line 1) (setq line (1+ line))))))
 
 (defun c++-backslashify-current-line (doit)
