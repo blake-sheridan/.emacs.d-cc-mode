@@ -1088,13 +1088,13 @@ of the expression are preserved."
 			(setq this-indent val))))
 	    ;; Adjust line indentation according to its contents
  	    (if (looking-at "\\(public\\|private\\|protected\\):")
- 		(setq this-indent (- this-indent c-indent-level)))
- 	    (if (or (looking-at "case[ \t]")
- 		    (and (looking-at "[A-Za-z]")
- 			 (save-excursion
- 			   (forward-sexp 1)
- 			   (looking-at ":[^:]"))))
- 		(setq this-indent (max 0 (+ this-indent c-label-offset))))
+ 		(setq this-indent (+ this-indent c++-access-specifier-offset))
+	      (if (or (looking-at "case[ \t]")
+		      (and (looking-at "[A-Za-z]")
+			   (save-excursion
+			     (forward-sexp 1)
+			     (looking-at ":[^:]"))))
+		  (setq this-indent (max 0 (+ this-indent c-label-offset)))))
 	    ;; looking at a comment only line?
 	    (if (looking-at "//\\|/\\*")
 		(setq this-indent (+ this-indent
