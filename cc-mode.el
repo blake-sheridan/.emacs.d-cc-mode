@@ -4596,7 +4596,8 @@ it trailing backslashes are removed."
   (let ((reporter-prompt-for-summary-p t)
 	(reporter-dont-compact-list '(c-offsets-alist)))
     (and
-     (y-or-n-p "Do you want to submit a report on cc-mode? ")
+     (if (y-or-n-p "Do you want to submit a report on cc-mode? ")
+	 t (message "") nil)
      (require 'reporter)
      (reporter-submit-bug-report
       c-mode-help-address
