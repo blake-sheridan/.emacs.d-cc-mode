@@ -82,7 +82,7 @@
   (define-key c++-mode-map "]"         'c++-tame-insert)
   (define-key c++-mode-map "("         'c++-tame-insert)
   (define-key c++-mode-map ")"         'c++-tame-insert)
-  (define-key c++-mode-map "\C-cb"     'c++-submit-bug-report)
+  (define-key c++-mode-map "\C-c\C-b"  'c++-submit-bug-report)
   )
 
 (defvar c++-mode-syntax-table nil
