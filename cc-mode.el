@@ -2305,8 +2305,8 @@ supplied, or point is inside a literal."
 	 (prompt (concat "Offset " defstr))
 	 offset input interned raw)
     (while (not offset)
-      (setq input (completing-read prompt obarray nil nil nil
-				   c-read-offset-history)
+      (setq input (completing-read prompt obarray 'fboundp nil nil
+				   'c-read-offset-history)
 	    offset (cond ((string-equal "" input) oldoff)  ; default
 			 ((string-equal "+" input) '+)
 			 ((string-equal "-" input) '-)
