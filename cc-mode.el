@@ -800,9 +800,11 @@ if it is embedded in an expression."
        (nth 4 (parse-partial-sexp bod here 0))
        ;; special case for checking c style comment
        (let ((in-c-comment-p
-	      (progn (modify-syntax-entry ?\n " " c++-mode-syntax-table)
+	      (progn (modify-syntax-entry ?\n " "    c++-mode-syntax-table)
+		     (modify-syntax-entry ?/  ". 14" c++-mode-syntax-table)
 		     (nth 4 (parse-partial-sexp bod here 0)))))
-	 (modify-syntax-entry ?\n ">" c++-mode-syntax-table)
+	 (modify-syntax-entry ?\n ">"    c++-mode-syntax-table)
+	 (modify-syntax-entry ?/  ". 12" c++-mode-syntax-table)
 	 in-c-comment-p)))))
 
 (defun c++-in-open-string-p ()
