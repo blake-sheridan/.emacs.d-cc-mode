@@ -1217,9 +1217,10 @@ defaults to point-max."
 
 (defun c++-at-top-level-p (wrt &optional bod)
   "Return t if point is not inside a containing C++ expression, nil
-if it is embedded in an expression.  If optional WRT is supplied
-non-nil, returns nil if not at the top level with respect to an
-enclosing class, or the depth of class nesting at point."
+if it is embedded in an expression.  When WRT is non-nil, returns nil
+if not at the top level with respect to an enclosing class, or the
+depth of class nesting at point.  With WRT nil, returns nil if not at
+the \"real\" top level.  Optional BOD is the beginning of defun."
   (save-excursion
     (let ((indent-point (point))
 	  (case-fold-search nil)
