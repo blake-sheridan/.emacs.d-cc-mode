@@ -1637,8 +1637,8 @@ When semicolon is inserted, the line is re-indented unless a numeric
 arg is supplied, point is inside a literal, or there are
 non-whitespace characters on the line following the semicolon."
   (interactive "P")
-  (let* ((bod (c-point 'bod))
-	 (literal (c-in-literal bod))
+  (let* ((lim (c-most-enclosing-brace (c-parse-state)))
+	 (literal (c-in-literal lim))
 	 (here (point))
 	 ;; shut this up
 	 (c-echo-syntactic-information-p nil))
@@ -1664,13 +1664,10 @@ non-whitespace characters on the line following the semicolon."
 		     (skip-chars-backward " \t\n")
 		     (= (preceding-char) ?}))
 		   ;; make sure matching open brace isn't in a comment
-		   (not (c-in-literal)))
+		   (not (c-in-literal lim)))
 	      (delete-region (point) here))
 	  (goto-char (- (point-max) pos)))
-	;; re-indent line
-	(c-indent-line)
 	;; clean up do-whiles
-	;; TBD: make this efficient w.r.t. a backscan limit
 	(let (whilepos bracepos)
 	  (if (and (memq 'snug-do-while c-cleanup-list)
 		   (= last-command-char ?\;)
@@ -1678,7 +1675,7 @@ non-whitespace characters on the line following the semicolon."
 			     (forward-sexp -2)
 			     (setq whilepos (point))
 			     (and (looking-at "\\<while\\>[^_]")
-				  (c-backward-to-start-of-do))))
+				  (c-backward-to-start-of-do lim))))
 		   (save-excursion
 		     (goto-char whilepos)
 		     (skip-chars-backward " \t\n")
@@ -1688,6 +1685,8 @@ non-whitespace characters on the line following the semicolon."
 		(delete-region bracepos whilepos)
 		(goto-char bracepos)
 		(insert-char 32 1))))
+	;; re-indent line
+	(c-indent-line)
 	;; newline only after semicolon, but only if that semicolon is
 	;; not inside a parenthesis list (e.g. a for loop statement)
 	(and (= last-command-char ?\;)
