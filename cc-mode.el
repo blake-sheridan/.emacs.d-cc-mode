@@ -987,7 +987,7 @@ Returns nil if line starts inside a string, t if in a comment."
 	(set-fill-prefix))
       (while (looking-at fill-prefix)
 	(previous-line 1))
-      (next-line 1)
+      (forward-line 1)
       (insert-string "\n")
       (fill-paragraph nil)
       (delete-char -1)
@@ -1038,7 +1038,7 @@ so that indentation will work right."
 				   (count-lines (point-min) (point)))))
       (while (< line to-line)
 	(backslashify-current-line (> arg 0))
-	(next-line 1) (setq line (1+ line))))))
+	(forward-line 1) (setq line (1+ line))))))
 
 (defun backslashify-current-line (doit)
   "Backslashifies current line."
@@ -1079,7 +1079,7 @@ inserting \"// \" (comment-start)in front of each line."
 	    (beginning-of-line)
 	    (insert comment-start)
 	    (beginning-of-line)
-	    (next-line 1)))))
+	    (forward-line 1)))))
 
 (defun c++-uncomment-region ()
   "Uncomment all lines in region between mark and current point by deleting
@@ -1100,7 +1100,7 @@ the leading \"// \" from each line, if any."
 		  (zap-to-char 1 char)
 		  (delete-char len)))
 	    (beginning-of-line)
-	    (next-line 1)))))
+	    (forward-line 1)))))
 
 ;;; Below are two regular expressions that attempt to match defuns
 ;;; "strongly" and "weakly."  The strong one almost reconstructs the
@@ -1241,7 +1241,7 @@ function definition.")
       (c++-beginning-of-defun 1)
       (while (<= (point) end)
 	(c++-indent-line)
-	(next-line 1)
+	(forward-line 1)
 	(beginning-of-line 1)))
     (goto-char restore)))
 
