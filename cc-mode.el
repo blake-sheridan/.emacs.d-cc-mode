@@ -2958,12 +2958,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (cond
 	   ;; CASE 5A: we are looking at the first argument in an empty
 	   ;; argument list
-	   ((= char-before-ip ?\()
+	   ((memq char-before-ip '(?\( ?\[))
 	    (goto-char containing-sexp)
 	    (c-add-semantics 'arglist-intro (c-point 'boi)))
 	   ;; CASE 5B: we are looking at the arglist closing paren
 	   ((and (/= char-before-ip ?,)
-		 (= char-after-ip ?\)))
+		 (memq char-after-ip '(?\) ?\])))
 	    (goto-char containing-sexp)
 	    (c-add-semantics 'arglist-close (c-point 'boi)))
 	   ;; CASE 5C: we are inside a conditional test clause. treat
@@ -2988,7 +2988,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (not (eolp)))
 		 (save-excursion
 		   (c-beginning-of-statement)
-		   (skip-chars-backward " \t(")
+		   (skip-chars-backward " \t([")
 		   (<= (point) containing-sexp)))
 	    (goto-char containing-sexp)
 	    (c-add-semantics 'arglist-cont-nonempty (c-point 'boi)))
