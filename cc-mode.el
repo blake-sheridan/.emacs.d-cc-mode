@@ -2378,7 +2378,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
     (save-excursion
       (or
        ;; this will pick up enum lists
-       (progn (goto-char (1- containing-sexp))
+       (progn (goto-char containing-sexp)
 	      (c-beginning-of-statement)
 	      (setq bufpos (point))
 	      (and (< bufpos containing-sexp)
