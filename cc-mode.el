@@ -1675,12 +1675,18 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 		       (not (cc-in-literal)))
 		  (setq donep t
 			foundp t)
-		;; not found in this region. reset search extent and try
-		;; again
-		(setq search-end search-start
-		      search-start nil)
-		(goto-char search-end))
-	      )
+		;; if the char under search-start is a close brace,
+		;; then we just traversed a top-level defun, so
+		;; there's no way we'll find an enclosing class-key
+		;; and we need look no further.
+		(if (= (char-after search-start) ?})
+		    (setq donep t)
+		  ;; not found in this region. reset search extent and
+		  ;; try again
+		  (setq search-end search-start
+			search-start nil)
+		  (goto-char search-end))
+		))
 	     ))
 	  ;; we've search as much as we can.  if we've found a classkey,
 	  ;; then search-end should be at the class's opening brace
