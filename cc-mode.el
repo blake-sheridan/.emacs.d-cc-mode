@@ -639,7 +639,7 @@ behavior that users are familiar with.")
   (concat c-symbol-key ":\\([^:]\\|$\\)")
   "Regexp describing any label.")
 (defconst c-conditional-key
-  "\\<\\(for\\|if\\|do\\|else\\|while\\)\\>"
+  "\\<\\(for\\|if\\|do\\|else\\|while\\|switch\\)\\>"
   "Regexp describing a conditional control.")
 
 ;; main entry points for the modes
@@ -2524,7 +2524,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (goto-char indent-point)
 	  (skip-chars-forward " \t")
 	  (cond
-	   ;; CASE 8C: substatement
+	   ;; CASE 8A: substatement
 	   ((save-excursion
 	      (goto-char placeholder)
 	      (and (looking-at c-conditional-key)
@@ -2534,10 +2534,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (c-add-semantics 'substatement placeholder)
 	    (if (= char-after-ip ?{)
 		(c-add-semantics 'block-open)))
-	   ;; CASE 8A: open braces for class or brace-lists
+	   ;; CASE 8B: open braces for class or brace-lists
 	   ((= char-after-ip ?{)
 	    (cond
-	     ;; CASE 8A.1: class-open
+	     ;; CASE 8B.1: class-open
 	     ((save-excursion
 		(goto-char indent-point)
 		(skip-chars-forward " \t{")
@@ -2547,14 +2547,16 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		       (setq placeholder (cdr decl)))
 		  ))
 	      (c-add-semantics 'class-open placeholder))
-	     ;; CASE 8A.2: brace-list-open
+	     ;; CASE 8B.2: brace-list-open
 	     ((or (save-excursion
 		    (goto-char placeholder)
 		    (looking-at "\\<enum\\>"))
 		  (= char-before-ip ?=))
 	      (c-add-semantics 'brace-list-open placeholder))
+	     (t
+	      (error "CASE 8B.3? Please report this error."))
 	     ))
-	   ;; CASE 8B: iostream insertion or extraction operator
+	   ;; CASE 8C: iostream insertion or extraction operator
 	   ((looking-at "<<\\|>>")
 	    (goto-char placeholder)
 	    (while (and (re-search-forward "<<\\|>>" indent-point 'move)
