@@ -1973,8 +1973,8 @@ argument COL0-LINE-P, and the current indentation INDENT."
   "Skip backwards over syntactic whitespace.
 Syntactic whitespace is defined as lexical whitespace, C and C++ style
 comments, and preprocessor directives. Search no farther back than
-optional LIM.  If LIM is ommitted, point-min is used."
-  (let ((lim (or lim (point-min)))
+optional LIM.  If LIM is ommitted, beginning-of-defun is used."
+  (let ((lim (or lim (c++-point 'bod)))
 	literal stop skip)
     (if (and c++-backscan-limit
 	     (> (- (point) lim) c++-backscan-limit))
