@@ -1659,7 +1659,7 @@ used."
   (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-1)
   (fset 'c++-in-literal 'c++-in-literal-quick))
  ((memq 'v19 c++-emacs-features)
-  (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-1)
+  (fset 'c++-backward-syntactic-ws 'c++-fast-backward-syntactic-ws-2)
   (fset 'c++-in-literal 'c++-in-literal-quick))
  )
 
