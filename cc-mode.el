@@ -2210,7 +2210,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 		     0))))
       (goto-char (cdr langelem))
       (back-to-indentation)
-      (if (re-search-forward "/\\*[ \t]*" (1- (cc-point 'eol)) t)
+      (if (re-search-forward "/\\*[ \t]*" (cc-point 'eol) t)
 	  (goto-char (+ (match-beginning 0)
 			(cond
 			 (cc-C-block-comments-indent-p 0)
