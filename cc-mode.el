@@ -2457,10 +2457,22 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		 (= char-after-ip ?\)))
 	    (goto-char containing-sexp)
 	    (c-add-semantics 'arglist-close (c-point 'boi)))
-	   ;; CASE 5C: we are looking at an arglist continuation line,
+	   ;; CASE 5C: we are inside a conditional test clause. treat
+	   ;; these things as statements
+	   ((save-excursion
+	     (goto-char containing-sexp)
+	     (and (c-safe (progn (forward-sexp -1) t))
+		  (looking-at c-conditional-key)))
+	    (c-beginning-of-statement 1 containing-sexp)
+	    (if (= char-before-ip ?\;)
+		(c-add-semantics 'statement (point))
+	      (c-add-semantics 'statement-cont (point))
+	      ))
+	   ;; CASE 5D: we are looking at an arglist continuation line,
 	   ;; but the preceding argument is on the same line as the
 	   ;; opening paren.  This case includes multi-line
-	   ;; mathematical paren groupings
+	   ;; mathematical paren groupings, but we could be on a
+	   ;; for-list continuation line
 	   ((and (save-excursion
 		   (goto-char (1+ containing-sexp))
 		   (skip-chars-forward " \t")
@@ -2470,16 +2482,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (skip-chars-backward " \t(")
 		   (<= (point) containing-sexp)))
 	    (c-add-semantics 'arglist-cont-nonempty containing-sexp))
-	   ;; CASE 5D: two possibilities here. First, its possible
-	   ;; that the arglist we're in is really a forloop expression
-	   ;; and we are looking at one of the clauses broken up
-	   ;; across multiple lines.  ==> statement-cont
-	   ((and (not (memq char-before-ip '(?\; ?,)))
-		 (save-excursion
-		   (c-beginning-of-statement nil containing-sexp)
-		   (setq placeholder (point))
-		   (/= (point) containing-sexp)))
-	    (c-add-semantics 'statement-cont placeholder))
 	   ;; CASE 5E: we are looking at just a normal arglist
 	   ;; continuation line
 	   (t (c-add-semantics 'arglist-cont (c-point 'boi)))
