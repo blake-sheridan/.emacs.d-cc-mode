@@ -1698,6 +1698,17 @@ Henricson, Ellemtel @footnote{This document is ftp'able from
 @code{euagate.eua.ericsson.se}}.
 
 @item
+@cindex Linux style
+@code{linux} --- C coding standard for Linux development.
+
+@item
+@cindex Python style
+@code{python} --- C coding standard for Python extension
+modules@footnote{Python is a high level scripting language with a C/C++
+foreign function interface.  For more information, see
+@code{<http://www.python.org/>}.}.
+
+@item
 @cindex Java style
 @cindex java-mode
 @code{java} --- The style for editing Java code.  Note that this style is
