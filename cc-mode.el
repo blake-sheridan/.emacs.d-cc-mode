@@ -1552,12 +1552,11 @@ of the expression are preserved."
        ;; CASE 1: indent when at column zero or in lines indentation,
        ;; otherwise insert a tab
        ((not c-tab-always-indent)
-	(if (and (<= (point) (c-point 'boi))
-		 (or (looking-at "[ \t]*$")
-		     (/= (point) (c-point 'boi))
-		     (bolp)))
-	    (c-indent-via-language-element bod)
-	  (insert-tab)))
+	(if (save-excursion
+	      (skip-chars-backward " \t")
+	      (not (bolp)))
+	    (insert-tab)
+	  (c-indent-via-language-element bod)))
        ;; CASE 2: just indent the line
        ((eq c-tab-always-indent t)
 	(c-indent-via-language-element bod))
