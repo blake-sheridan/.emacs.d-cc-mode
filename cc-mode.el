@@ -2679,12 +2679,14 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	;; for us the search boundaries
 	(setq search-start (nth 1 brace-state)
 	      search-end (nth 0 brace-state)))
-      ;; if search-end is nil we are definitely not in a class
-      (if (not search-end)
+      ;; search-end cannot be a cons cell
+      (and (consp search-end)
+	   (error "consp search-end: %s" search-end))
+      ;; if search-end is nil, or if the search-end character isn't an
+      ;; open brace, we are definitely not in a class
+      (if (or (not search-end)
+	      (/= (char-after search-end) ?{))
 	  nil
-	;; search-end cannot be a cons cell
-	(and (consp search-end)
-	     (error "consp search-end: %s" search-end))
 	;; now, we need to look more closely at search-start.  if
 	;; search-start is nil, then our start boundary is really
 	;; point-min.
