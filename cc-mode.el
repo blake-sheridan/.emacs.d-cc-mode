@@ -583,7 +583,8 @@ as designated in the variable `c-file-style'.")
 To change the default style at your site, you can set this variable to
 any style defined in `c-style-alist'.  However, if cc-mode is usually
 loaded into your Emacs at compile time, you will need to set this
-variable in the `site-init.el' file and re-dump Emacs.")
+variable in the `site-init.el' file before cc-mode is loaded, then
+re-dump Emacs.")
 
 (defvar c-mode-hook nil
   "*Hook called by `c-mode'.")
