@@ -1567,7 +1567,7 @@ BOD is the beginning of the C++ definition."
       ;; cache char before indent point
       (save-excursion
 	(goto-char indent-point)
-	(c++-backward-over-syntactic-ws)
+	(c++-backward-over-syntactic-ws bod)
 	(setq char-before-ip (preceding-char)))
       (cond ((memq literal '(string))
 	     ;; in a string.
@@ -1650,7 +1650,7 @@ BOD is the beginning of the C++ definition."
 			(beginning-of-line)
 			;; we might be inside a K&R C arg decl
 			(if (save-excursion
-			      (c++-backward-over-syntactic-ws)
+			      (c++-backward-over-syntactic-ws bod)
 			      (and (eq major-mode 'c++-c-mode)
 				   (= (preceding-char) ?\))))
 			    c-argdecl-indent
