@@ -3768,7 +3768,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      ;; us before the lim we're passing in.  It should be
 	      ;; fixed, but I'm worried about side-effects at this
 	      ;; late date.  Fix for v5.
-	      (goto-char (max after-cond-placeholder (point)))
+	      (goto-char (or (and after-cond-placeholder
+				  (max after-cond-placeholder (point)))
+			     (point)))
 	      (c-add-syntax 'statement-cont (point)))
 	     )))
 	 ;; CASE 10: an else clause?
