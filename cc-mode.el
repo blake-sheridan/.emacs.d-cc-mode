@@ -2560,117 +2560,69 @@ function definition.")
   (interactive)
   (message "Using c++-mode.el %s" c++-version))
 
-(defun c++-dump-state (mode)
-  "Inserts into the c++-mode-state-buffer the current state of
-c++-mode into the bug report mail buffer. MODE is either c++-mode or
-c++-c-mode.
-
-Use \\[c++-submit-bug-report] to submit a bug report."
-  (let ((buffer (current-buffer))
-	(varlist (list
-		  'c++-C-block-comments-indent-p
-		  'c++-access-specifier-offset
-		  'c++-always-arglist-indent-p
-		  'c++-auto-hungry-initial-state
-		  'c++-auto-hungry-toggle
-		  'c++-auto-newline
-		  'c++-backscan-limit
-		  'c++-block-close-brace-offset
-		  'c++-cleanup-list
-		  'c++-comment-only-line-offset
-		  'c++-continued-member-init-offset
-		  'c++-default-macroize-column
-		  'c++-defun-header-strong-struct-equivs
-		  'c++-delete-function
-		  'c++-electric-pound-behavior
-		  'c++-empty-arglist-indent
-		  'c++-friend-offset
-		  'c++-hanging-braces
-		  'c++-hanging-member-init-colon
-		  'c++-hungry-delete-key
-		  'c++-match-header-strongly
-		  'c++-member-init-indent
-		  'c++-paren-as-block-close-p
-		  'c++-relative-offset-p
-		  'c++-tab-always-indent
-		  'c++-untame-characters
-		  'c-argdecl-indent
-		  'c-brace-imaginary-offset
-		  'c-brace-offset
-		  'c-continued-brace-offset
-		  'c-continued-statement-offset
-		  'c-indent-level
-		  'c-label-offset
-		  'tab-width
-		  )))
-    (set-buffer buffer)
-    (if c++-special-indent-hook
-	(insert "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
-		"c++-special-indent-hook is set to '"
-		(format "%s" c++-special-indent-hook)
-		".\nPerhaps this is your problem?\n"
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n"))
-    (insert (emacs-version) "\n")
-    (insert "c++-mode.el " c++-version " (editing "
-	    (if (eq mode 'c++-mode) "C++" "C")
-	    " code) \n"
-	    (if c++-emacs-is-fixed-p
-		"You've applied the (hopefully most recent) syntax patch!\n"
-	      "No syntax patch applied.\n")
-	    (if c++-emacs-is-really-fixed-p
-		"Looks like you've also got the parse-back patch. Good!\n"
-	      "No parse-back patch applied.\n")
-	    "\ncurrent state:\n==============\n(setq\n")
-    (mapcar
-     (function
-      (lambda (varsym)
-	(let ((val (eval varsym))
-	      (sym (symbol-name varsym)))
-	  (insert "     " sym " "
-		  (if (or (listp val) (symbolp val)) "'" "")
-		  (prin1-to-string val)
-		  "\n"))))
-     varlist)
-    (insert "     )\n")
-    ))
-
 (defun c++-submit-bug-report ()
-  "Submit via mail a bug report using the mailer in c++-mailer."
+  "Submit via mail a bug report on c++-mode."
   (interactive)
-  (let* ((curbuf (current-buffer))
-         (mode   major-mode)
-         (mailbuf (progn (call-interactively c++-mailer)
-                         (current-buffer))))
-    (require 'sendmail)
-    (pop-to-buffer curbuf)
-    (pop-to-buffer mailbuf)
-    ;; different mailers use different separators, some may not even
-    ;; use m-h-s, but sendmail.el stuff must have m-h-s bound.
-    (let ((mail-header-separator
-           (save-excursion
-             (re-search-forward
-              (concat
-               "^\\("			;beginning of line
-               (mapconcat
-                'identity
-                (list "[        ]*"     ;simple SMTP form
-                      "-+"              ;mh-e form
-                      mail-header-separator) ;sendmail.el form
-                "\\|")			;or them together
-               "\\)$")			;end of line
-              nil
-              'move)			;search for and move
-             (buffer-substring (match-beginning 0) (match-end 0)))))
-      (mail-position-on-field "to")
-      (insert c++-mode-help-address)
-      (mail-position-on-field "subject")
-      (insert "Bug in c++-mode.el " c++-version)
-      (re-search-forward mail-header-separator (point-max) 'move)
-      (forward-line 1)
-      (set-mark (point))                ;user should see mark change
-      (insert "\n\n")
-      (c++-dump-state mode)
-      (exchange-point-and-mark))))
+  (require 'reporter)
+  (reporter-submit-bug-report
+   c++-mode-help-address
+   (concat "c++-mode.el " c++-version " (editing "
+	   (if (eq major-mode 'c++-mode) "C++" "C")
+	   " code)")
+   (list
+    'c++-C-block-comments-indent-p
+    'c++-access-specifier-offset
+    'c++-always-arglist-indent-p
+    'c++-auto-hungry-initial-state
+    'c++-auto-hungry-toggle
+    'c++-auto-newline
+    'c++-backscan-limit
+    'c++-block-close-brace-offset
+    'c++-cleanup-list
+    'c++-comment-only-line-offset
+    'c++-continued-member-init-offset
+    'c++-default-macroize-column
+    'c++-defun-header-strong-struct-equivs
+    'c++-delete-function
+    'c++-electric-pound-behavior
+    'c++-empty-arglist-indent
+    'c++-friend-offset
+    'c++-hanging-braces
+    'c++-hanging-member-init-colon
+    'c++-hungry-delete-key
+    'c++-match-header-strongly
+    'c++-member-init-indent
+    'c++-paren-as-block-close-p
+    'c++-relative-offset-p
+    'c++-tab-always-indent
+    'c++-untame-characters
+    'c-argdecl-indent
+    'c-brace-imaginary-offset
+    'c-brace-offset
+    'c-continued-brace-offset
+    'c-continued-statement-offset
+    'c-indent-level
+    'c-label-offset
+    'tab-width
+    )
+   (function
+    (lambda ()
+      (insert
+       (if c++-emacs-is-fixed-p
+	   "You've applied the (hopefully most recent) syntax patch!\n"
+	 "No syntax patch applied.\n")
+       (if c++-emacs-is-really-fixed-p
+	   "Looks like you've also got the parse-back patch. Good!\n"
+	 "No parse-back patch applied.\n")
+       (if c++-special-indent-hook
+	  (concat "\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+		  "c++-special-indent-hook is set to '"
+		  (format "%s" c++-special-indent-hook)
+		  ".\nPerhaps this is your problem?\n"
+		  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n")
+	 "\n")
+       )))
+   nil))
 
 
 ;; this is sometimes useful
