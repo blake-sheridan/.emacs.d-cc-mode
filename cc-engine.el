@@ -540,7 +540,7 @@
 			   ;; up-list here since it might be slow.)
 			   (save-excursion
 			     (c-backward-syntactic-ws)
-			     (/= (char-before) ?\()))
+			     (not (eq (char-before) ?\())))
 			  (setq cnt (1- cnt)))
 		      (if (bobp)
 			  (setq at-bob t))))
@@ -1020,6 +1020,7 @@
 	     (while (and (setq okp (zerop (c-backward-token-1 1 t)))
 			 (not (memq (char-after) '(?{ ?\;)))
 			 (or (not (eq (char-after) ?=))
+			     (memq (char-before) '(?= ?`))
 			     (save-excursion
 			       (forward-word -1)
 			       (looking-at "operator[ \t]*=")))
