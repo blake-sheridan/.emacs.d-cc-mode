@@ -639,11 +639,13 @@ backward-delete-char-untabify."
 		mbeg mend)
 	    (if (and (memq 'brace-else-brace c++-cleanup-list)
 		     (= last-command-char ?\{)
-		     (let ((status (re-search-backward "}[ \t\n]*else[ \t\n]*{"
-						       nil t)))
+		     (let ((status
+			    (re-search-backward "}[ \t\n]*else[ \t\n]*{"
+						nil t)))
 		       (setq mbeg (match-beginning 0)
 			     mend (match-end 0))
 		       status)
+		     (= mend here)
 		     (not (c++-in-open-string-p bod))
 		     (not (c++-in-comment-p bod)))
 		(progn
