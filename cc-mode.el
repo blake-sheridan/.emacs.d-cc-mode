@@ -2361,7 +2361,7 @@ the leading `// ' from each line, if any."
      'cc-delete-function
      'cc-electric-pound-behavior
      'cc-hanging-braces-alist
-     'cc-hanging-colon-alist
+     'cc-hanging-colons-alist
      'cc-tab-always-indent
      'cc-untame-characters
      'tab-width
