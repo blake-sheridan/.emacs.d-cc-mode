@@ -429,33 +429,28 @@ backward-delete-char-untabify."
 		   t)))
 	(progn
 	  (insert last-command-char)
-	  (if (and c++-cleanup-}-else-{-p
-		   (= (preceding-char) ?\{)
-		   (save-excursion
-		     (forward-char -1)
-		     (skip-chars-backward " \t\n")
-		     (forward-word -1)
-		     (and (looking-at "else\\b")
-			  (not (c++-in-open-string-p))
-			  (not (c++-in-comment-p))
-			  (progn
-			    (skip-chars-backward " \t\n")
-			    (and (not (c++-in-open-string-p))
-				 (not (c++-in-comment-p))
-				 (= (preceding-char) ?\}))))))
-	      (progn
-		;; we should clean up brace-else-brace syntax
-		(message "cleaning up } else {...")
-		(let ((brace-point (make-marker)))
-		  (set-marker brace-point (point))
-		  (forward-char -1)
-		  (delete-region (point)
-				 (progn (skip-chars-backward "^}")
-					(point)))
-		  (insert " else ")
-		  (goto-char brace-point)
-		  (set-marker brace-point nil))
-		(message "cleaning up } else {... done.")))
+	  (let ((here (make-marker)) mbeg mend)
+	    (set-marker here (point))
+	    (if (and c++-cleanup-}-else-{-p
+		     (= last-command-char ?\{)
+		     (progn (debug) t)
+		     (let ((status (re-search-backward "}[ \t\n]*else[ \t\n]*{"
+						       nil t)))
+		       (setq mbeg (match-beginning 0)
+			     mend (match-end 0))
+		       status)
+		     (not (c++-in-open-string-p))
+		     (not (c++-in-comment-p)))
+		(progn
+		  ;; we should clean up brace-else-brace syntax
+		  (message "cleaning up } else {...")
+		  (delete-region mbeg mend)
+		  (insert-before-markers "} else {")
+		  (goto-char here)
+		  (set-marker here nil)
+		  (message "cleaning up } else {... done."))
+	      (goto-char here)
+	      (set-marker here nil)))
 	  (c++-indent-line)
 	  (if (c++-auto-newline)
 	      (progn
