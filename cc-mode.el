@@ -529,7 +529,7 @@ backward-delete-char-untabify."
       (not (or (c++-in-comment-p bod)
 	       (c++-in-open-string-p bod))))
     (let ((here (point)))
-      (skip-chars-backward "[ \t\n]")
+      (skip-chars-backward " \t\n")
       (if (/= (point) here)
 	  (delete-region (point) here)
 	(backward-delete-char-untabify 1))))
