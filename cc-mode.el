@@ -302,21 +302,21 @@ according to syntactic analysis via `c-offsets-alist', even when
 (defvar c-block-comments-indent-p nil
   "*Specifies how to re-indent C style block comments.
 
-Four styles of C block comment indentation are supported, as shown
-below.  When this variable is nil, block comments are indented as
-shown in styles 1 through 3.  If this variable is non-nil, block
-comments are indented as shown in style 4.
+Examples of the supported styles of C block comment indentation are
+shown below.  When this variable is nil, block comments are indented
+as shown in styles 1 through 4.  If this variable is non-nil, block
+comments are indented as shown in style 5.
 
 Note that cc-mode does not automatically insert any stars or block
 comment delimiters.  You must type these in manually.  This variable
 only controls how the lines within the block comment are indented when
 you hit ``\\[c-indent-command]''.
 
- style 1:       style 2:       style 3:       style 4:
- /*             /*             /*             /*
-    blah         * blah        ** blah        blah
-    blah         * blah        ** blah        blah
-    */           */            */             */")
+ style 1:    style 2 (GNU):    style 3:     style 4:     style 5:
+ /*          /*                /*           /*           /*
+    blah        blah            * blah      ** blah      blah
+    blah        blah */         * blah      ** blah      blah
+    */                          */          */           */")
 
 (defvar c-cleanup-list '(scope-operator)
   "*List of various C/C++/ObjC constructs to \"clean up\".
