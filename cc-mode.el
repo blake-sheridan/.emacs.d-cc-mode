@@ -2369,26 +2369,40 @@ Use \\[c++-submit-bug-report] to submit a bug report."
 (defun c++-submit-bug-report ()
   "Submit via mail a bug report using the mailer in c++-mailer."
   (interactive)
-  (let ((curbuf (current-buffer))
-	(mode   major-mode)
-	(mailbuf (progn (call-interactively c++-mailer)
-			(current-buffer))))
+  (let* ((curbuf (current-buffer))
+         (mode   major-mode)
+         (mailbuf (progn (call-interactively c++-mailer)
+                         (current-buffer))))
     (require 'sendmail)
     (pop-to-buffer curbuf)
     (pop-to-buffer mailbuf)
-    (mail-position-on-field "to")
-    (insert c++-mode-help-address)
-    (mail-position-on-field "subject")
-    (insert "Bug in c++-mode.el " c++-version)
-    (if (not (re-search-forward mail-header-separator (point-max) 'move))
-	(progn (goto-char (point-max))
-	       (insert "\n" mail-header-separator "\n")
-	       (goto-char (point-max)))
-      (forward-line 1))
-    (set-mark (point))			;user should see mark change
-    (insert "\n\n")
-    (c++-dump-state mode)
-    (exchange-point-and-mark)))
+    ;; different mailers use different separators, some may not even
+    ;; use m-h-s, but sendmail.el stuff must have m-h-s bound.
+    (let ((mail-header-separator
+           (save-excursion
+             (re-search-forward
+              (concat
+               "^\\("			;beginning of line
+               (mapconcat
+                'identity
+                (list "[        ]*"     ;simple SMTP form
+                      "-+"              ;mh-e form
+                      mail-header-separator) ;sendmail.el form
+                "\\|")			;or them together
+               "\\)$")			;end of line
+              nil
+              'move)			;search for and move
+             (buffer-substring (match-beginning 0) (match-end 0)))))
+      (mail-position-on-field "to")
+      (insert c++-mode-help-address)
+      (mail-position-on-field "subject")
+      (insert "Bug in c++-mode.el " c++-version)
+      (re-search-forward mail-header-separator (point-max) 'move)
+      (forward-line 1)
+      (set-mark (point))                ;user should see mark change
+      (insert "\n\n")
+      (c++-dump-state mode)
+      (exchange-point-and-mark))))
 
 
 ;; this is sometimes useful
