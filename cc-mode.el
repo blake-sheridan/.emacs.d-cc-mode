@@ -440,7 +440,7 @@ this variable to nil defeats backscan limits.")
   "Regexp which describes access specification keywords.")
 (defconst c++-class-key
   (concat
-   "\\(extern\\s +\\)?"
+   "\\(\\(extern\\|typedef\\)\\s +\\)?"
    "\\(template\\s *<[^>]*>\\s *\\)?"
    "\\<\\(class\\|struct\\|union\\)\\>")
   "Regexp which describes a class declaration, including templates.")
