@@ -2326,7 +2326,10 @@ Use \\[c++-submit-bug-report] to submit a bug report."
     (insert (emacs-version) "\n")
     (insert "c++-mode.el " c++-version " (editing "
 	    (if (eq mode 'c++-mode) "C++" "C")
-	    " code) \n\ncurrent state:\n==============\n(setq\n")
+	    " code) \n"
+	    (if c++-emacs-is-fixed-p
+		"You've applied the (hopefully most recent) syntax patch!\n")
+	    "\ncurrent state:\n==============\n(setq\n")
     (mapcar
      (function
       (lambda (varsym)
