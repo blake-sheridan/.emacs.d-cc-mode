@@ -1,6 +1,8 @@
 ;;; cc-mode.el --- major mode for editing C++ and C code
 
-;; Authors: 1992 Barry A. Warsaw <bwarsaw@cnri.reston.va.us>
+;; Copyright (C) 1985-1995 Free Software Foundation, Inc.
+
+;; Authors: 1992-1995 Barry A. Warsaw <bwarsaw@cnri.reston.va.us>
 ;;          1987 Dave Detlefs and Stewart Clamen
 ;;          1985 Richard M. Stallman
 ;; Maintainer: cc-mode-help@anthem.nlm.nih.gov
@@ -8,9 +10,7 @@
 ;; Version:         $Revision$
 ;; Last Modified:   $Date$
 ;; Keywords: C++ C Objective-C editing major-mode
-
-;; Copyright (C) 1992, 1993, 1994 Barry A. Warsaw
-;; Copyright (C) 1992, 1993, 1994 Free Software Foundation, Inc.
+;; NOTE: Read the commentary below for the right way to submit bug reports!
 
 ;; This file is part of GNU Emacs.
 
@@ -47,7 +47,8 @@
 ;; would be greatly appreciated!  Contact me or the FSF if you'd like
 ;; to volunteer.  Until the manual is finished, an accompanying README
 ;; is the only documentation available.  If you did not get the README
-;; with your copy of cc-mode, contact the help address above.
+;; with your copy of cc-mode, contact the Maintainer address given
+;; above.
 
 ;; To submit bug reports, hit "C-c C-b", and please try to include a
 ;; code sample and exact recipe so I can reproduce your problem.  If
