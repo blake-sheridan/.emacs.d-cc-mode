@@ -1473,8 +1473,6 @@ search."
 		      (not (or (c-in-literal)
 			       (looking-at c-conditional-key)))
 		      )
-	    ;; this seems bogus, but necessary
-	    (skip-chars-backward "*&:.")
 	    (if (and (not (c-in-literal))
 		     (not (looking-at c-label-key)))
 		(setq last-begin (point)
@@ -1492,7 +1490,11 @@ search."
       ;; error for condition-case
       (error (if first
 		 (backward-up-list 1)
-	       (goto-char last-begin)))
+	       (goto-char last-begin)
+	       ;; this seems bogus, but necessary
+	       (skip-chars-backward "-*&:.")
+
+	       ))
       )))
 
 (defun c-end-of-statement-1 ()
