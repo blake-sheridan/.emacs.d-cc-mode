@@ -765,7 +765,8 @@ supported list, along with the values for this variable:
   (define-key c-mode-map "\C-c\C-o"  'c-set-offset)
   (define-key c-mode-map "\C-c\C-s"  'c-show-syntactic-information)
   (define-key c-mode-map "\C-c\C-t"  'c-toggle-auto-hungry-state)
-  (define-key c-mode-map "\C-c\C-v"  'c-version)
+  ;; conflicts with OOBR
+  ;;(define-key c-mode-map "\C-c\C-v"  'c-version)
   ;; FSF Emacs 19 defines menus in the mode map. This call will return
   ;; t on FSF Emacs 19, otherwise no-op and return nil.
   (if (and (not (c-mode-fsf-menu "C" c-mode-map))
