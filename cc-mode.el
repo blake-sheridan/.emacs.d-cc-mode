@@ -1,17 +1,24 @@
-;; C++ mode editing commands for Emacs
-;; 1992 Barry Warsaw, Century Computing Inc.
-;; 1987 Dave Detlefs  (dld@cs.cmu.edu) 
-;; and  Stewart Clamen (clamen@cs.cmu.edu).
-;; Done by fairly faithful modification of:
-;; c-mode.el, Copyright (C) 1985 Richard M. Stallman.
-;;
-;; $Revision$
-;;
+;; -*- Mode: Emacs-Lisp -*-
+;; File:		c++-mode.el
+;; Description: 	Mode for editing C++ code
+;; Author:		1992 Barry A. Warsaw, Century Computing Inc.
+;;        		1987 Dave Detlefs  (dld@cs.cmu.edu)
+;;        		and  Stewart Clamen (clamen@cs.cmu.edu)
+;;        		Done by fairly faithful modification of:
+;;        		c-mode.el, Copyright (C) 1985 Richard M. Stallman.
+;; Last Modified:	$Date$
+;; Version:		$Revision$
+
 ;; If you have problems or questions, you can contact me at the
 ;; following address: c++-mode-help@anthem.nlm.nih.gov
 ;;
 ;; Do a C-h f c++-dump-state for more information on submitting bug
 ;; reports.
+;;
+;; LCD Archive Entry:
+;; c++-mode|Barry A. Warsaw|c++-mode-help@anthem.nlm.nih.gov
+;; |Mode for editing C++ code (was Detlefs' c++-mode.el)
+;; |$Date$|$Revision$|
 
 (defvar c++-mode-abbrev-table nil
   "Abbrev table in use in C++-mode buffers.")
