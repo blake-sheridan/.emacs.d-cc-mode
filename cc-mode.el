@@ -1154,10 +1154,10 @@ of the expression are preserved."
 Optional SHUTUP-P if non-nil, inhibits message printing."
   (interactive "P")
   (let ((start (point))
+	(bod (cc-point 'bod))
 	(end (progn
 	       (forward-sexp 1)
 	       (point-marker)))
-	(bod (cc-point 'bod))
 	;; keep quiet for speed
 	(cc-echo-semantic-information-p nil))
     (or shutup-p
