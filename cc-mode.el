@@ -794,17 +794,19 @@ if it is embedded in an expression."
 (defun c++-in-comment-p ()
   "Return t if in a C or C++ style comment as defined by mode's syntax."
   (save-excursion
-    (let ((here (point))
-	  ;; we need to specially handle the case of hanging open
-	  ;; braces at the top level. they will mess up
-	  ;; parse-partial-sexp
-	  (bod (save-excursion
-		 (beginning-of-defun)
-		 (if (not (looking-at "\\s("))
-		     (progn (forward-line 1)
-			    (re-search-backward "\\s(" nil 'move)
-			    (skip-chars-forward " \t")))
-		 (point))))
+    (let* ((here (point))
+	   ;; we need to specially handle the case of hanging open
+	   ;; braces at the top level. they will mess up
+	   ;; parse-partial-sexp
+	   (bod (save-excursion
+		  (if (beginning-of-defun)
+		      (if (not (looking-at "\\s("))
+			  (progn (forward-line 1)
+				 (re-search-backward "\\s(" nil 'move)
+				 (skip-chars-forward " \t")))
+		    (goto-char here)
+		    (re-search-backward "/[/*]" nil 'move))
+		  (point))))
       (or
        ;; in a c++ style comment?
        (nth 4 (parse-partial-sexp bod here 0))
