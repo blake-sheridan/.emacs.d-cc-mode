@@ -1066,8 +1066,20 @@ Returns nil if line starts inside a string, t if in a comment."
 	(while (and (not inner-loop-done)
 		    (not (and (eobp) (setq outer-loop-done t))))
 	  (setq ostate state)
-	  (setq state (parse-partial-sexp (point) (progn (end-of-line) (point))
-					  nil nil state))
+	  ;; fix by reed@adapt.net.com
+	  ;; must pass in the return past the end of line, so that
+	  ;; parse-partial-sexp finds it, and recognizes that a "//"
+	  ;; comment is over. otherwise, state is set that we're in a
+	  ;; comment, and never gets unset, causing outer-loop to only
+	  ;; terminate in (eobp). old:
+	  ;;(setq state (parse-partial-sexp (point)
+	  ;;(progn (end-of-line) (point))
+	  ;;nil nil state))
+	  (let ((start (point))
+		(line-end (progn (end-of-line) (point)))
+		(end (progn (forward-char) (point))))
+	    (setq state (parse-partial-sexp start end nil nil state))
+	    (goto-char line-end))
 	  (setq next-depth (car state))
 	  (if (and (car (cdr (cdr state)))
 		   (>= (car (cdr (cdr state))) 0))
