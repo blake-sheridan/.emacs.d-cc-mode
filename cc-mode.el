@@ -1481,8 +1481,10 @@ the brace is inserted inside a literal."
 	 (safepos (c-safe-position c-state-cache))
 	 (literal (c-in-literal safepos)))
     ;; if we're in a literal, or we're not at the end of the line, or
-    ;; a numeric arg is provided, then just insert the character
+    ;; a numeric arg is provided, or auto-newlining is turned off,
+    ;; then just insert the character.
     (if (or literal arg
+	    (not c-auto-newline)
 	    (not (looking-at "[ \t]*$")))
 	(c-insert-special-chars arg)	
       (let* ((syms '(class-open class-close defun-open defun-close 
