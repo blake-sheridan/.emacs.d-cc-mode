@@ -253,14 +253,14 @@ FSF 19 (patched):        (8-bit v19)")
     (modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
     (modify-syntax-entry ?\n "> b"    c++-mode-syntax-table))
    ((memq '1-bit c++-emacs-features)
-    ;; FSF19 has sub-optimal, but workable implementation
-    ;; Some strange behavior may be encountered.  LOBBY FSF!
+    ;; FSF19 does things differently, but we can work with it
     (modify-syntax-entry ?/  ". 124" c++-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23b" c++-mode-syntax-table)
     (modify-syntax-entry ?\n ">"     c++-mode-syntax-table))
    (t
-    ;; Vanilla GNU18 is just plain busted.  We'll do the best we can,
-    ;; but some strange behavior may be encountered.  PATCH or UPGRADE!
+    ;; Vanilla GNU18 doesn't support mult-style comments.  We'll do
+    ;; the best we can, but some strange behavior may be encountered.
+    ;; PATCH or UPGRADE!
     (modify-syntax-entry ?/  ". 124" c++-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23"  c++-mode-syntax-table)
     (modify-syntax-entry ?\n ">"     c++-mode-syntax-table))
