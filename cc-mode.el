@@ -1881,8 +1881,10 @@ BOD is the beginning of the C++ definition."
 			       (- (current-column)
 				  inclass-shift)))
 			 ;; else first check to see if its a
-			 ;; multiple inheritance continuation line
-			 (if (looking-at MI-regexp)
+			 ;; multiple inheritance continuation line,
+			 ;; but not a K&R C arg decl
+			 (if (and (not (eq major-mode 'c++-c-mode))
+				  (looking-at MI-regexp))
 			     (if (= char-before-ip ?,)
 				 (progn (goto-char (match-end 0))
 					(current-column))
