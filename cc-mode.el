@@ -1188,25 +1188,28 @@ enclosing class, or the depth of class nesting at point."
       (setq state (c++-parse-state indent-point)
 	    containing-sexp (nth 1 state)
 	    paren-depth (nth 0 state))
-      (if (or (not wrt)
-	      (null containing-sexp))
-	  (if wrt 0 (null containing-sexp))
-	(if (c++-in-parens-p)
+      (cond
+       ((eq major-mode 'c++-c-mode)
+	(and (null containing-sexp) 0))
+       ((not wrt)
+	(null containing-sexp))
+       ((c++-in-parens-p) nil)
+       ((null containing-sexp) 0)
+       (t
+	;; calculate depth wrt containing (possibly nested) classes
+	(goto-char containing-sexp)
+	(while (and (setq foundp (re-search-backward
+				  "}\\|\\<\\(class\\|struct\\)\\>"
+				  (point-min) t))
+		    (c++-in-literal)))
+	(if (= (following-char) ?})
 	    nil
-	  ;; calculate depth wrt containing (possibly nested) classes
-	  (goto-char containing-sexp)
-	  (while (and (setq foundp (re-search-backward
-				    "}\\|\\<\\(class\\|struct\\)\\>"
-				    (point-min) t))
-		      (c++-in-literal)))
-	  (if (= (following-char) ?})
-	      nil
-	    (setq state (c++-parse-state containing-sexp))
-	    (and foundp
-		 (not (nth 1 state))
-		 (nth 2 state)
-		 paren-depth))
-	  )))))
+	  (setq state (c++-parse-state containing-sexp))
+	  (and foundp
+	       (not (nth 1 state))
+	       (nth 2 state)
+	       paren-depth))
+	)))))
 
 (defun c++-in-literal (&optional lim)
   "Determine if point is in a C++ `literal'.
