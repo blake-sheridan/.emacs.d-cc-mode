@@ -2478,7 +2478,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	   ;; CASE 7C: this is just a later brace-list-entry
 	   (t (goto-char (1+ containing-sexp))
 	      (c-forward-syntactic-ws indent-point)
-	      (c-add-semantics 'brace-list-entry (point)))
+	      (c-add-semantics 'brace-list-entry (point))
+	      (if (= char-after-ip ?{)
+		  (c-add-semantics 'block-open)))
 	   ))
 	 ;; CASE 8: A continued statement
 	 ((and (not (memq char-before-ip '(?\; ?})))
