@@ -3938,7 +3938,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(if (looking-at "typedef[^_]")
 		    (progn (forward-sexp 1)
 			   (c-forward-syntactic-ws indent-point)))
-		(setq placeholder (point))
+		(setq placeholder (c-point 'bol))
 		(and (or (looking-at "enum[ \t\n]+")
 			 (= char-before-ip ?=))
 		     (save-excursion
