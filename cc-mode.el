@@ -135,7 +135,9 @@
   )
 
 (defvar c++-mode-syntax-table nil
-  "Syntax table in use in C++-mode buffers.")
+  "Syntax table used in c++-mode buffers.")
+(defvar c++-c-mode-syntax-table nil
+  "Syntax table used in c++-c-mode buffers.")
 
 (if c++-mode-syntax-table
     ()
@@ -153,6 +155,23 @@
   (modify-syntax-entry ?|  "."     c++-mode-syntax-table)
   (modify-syntax-entry ?\' "\""    c++-mode-syntax-table)
   (modify-syntax-entry ?\n ">"     c++-mode-syntax-table)
+  )
+
+(if c++-c-mode-syntax-table
+    ()
+  (setq c++-c-mode-syntax-table (make-syntax-table))
+  (modify-syntax-entry ?\\ "\\"    c++-c-mode-syntax-table)
+  (modify-syntax-entry ?/  ". 14"  c++-c-mode-syntax-table)
+  (modify-syntax-entry ?*  ". 23"  c++-c-mode-syntax-table)
+  (modify-syntax-entry ?+  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?-  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?=  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?%  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?<  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?>  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?&  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?|  "."     c++-c-mode-syntax-table)
+  (modify-syntax-entry ?\' "\""    c++-c-mode-syntax-table)
   )
 
 (defvar c++-tab-always-indent
@@ -503,6 +522,8 @@ Documentation for this mode is available by doing a
 	mode-name "C--")
   (setq comment-start "/* "
 	comment-end   " */")
+  ;; some syntax differences are necessary for C vs. C++
+  (set-syntax-table c++-c-mode-syntax-table)
   (run-hooks 'c++-c-mode-hook))
 
 (defun c++-comment-indent ()
