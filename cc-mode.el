@@ -633,7 +633,7 @@ if it is embedded in an expression."
   (save-excursion
     (let ((indent-point (point))
 	  (case-fold-search nil)
-	  state containing-sexp)
+	  state containing-sexp parse-start)
       (beginning-of-defun)
       (while (< (point) indent-point)
 	(setq parse-start (point))
