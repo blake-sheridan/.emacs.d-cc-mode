@@ -794,7 +794,16 @@ if it is embedded in an expression."
   "Return t if in a C or C++ style comment as defined by mode's syntax."
   (save-excursion
     (let ((here (point))
-	  (bod (save-excursion (beginning-of-defun) (point))))
+	  ;; we need to specially handle the case of hanging open
+	  ;; braces at the top level. they will mess up
+	  ;; parse-partial-sexp
+	  (bod (save-excursion
+		 (beginning-of-defun)
+		 (if (not (looking-at "\\s("))
+		     (progn (forward-line 1)
+			    (re-search-backward "\\s(" nil 'move)
+			    (skip-chars-forward " \t")))
+		 (point))))
       (or
        ;; in a c++ style comment?
        (nth 4 (parse-partial-sexp bod here 0))
@@ -802,6 +811,7 @@ if it is embedded in an expression."
        (let ((in-c-comment-p
 	      (progn (modify-syntax-entry ?\n " "    c++-mode-syntax-table)
 		     (modify-syntax-entry ?/  ". 14" c++-mode-syntax-table)
+		     (goto-char here)
 		     (nth 4 (parse-partial-sexp bod here 0)))))
 	 (modify-syntax-entry ?\n ">"    c++-mode-syntax-table)
 	 (modify-syntax-entry ?/  ". 12" c++-mode-syntax-table)
