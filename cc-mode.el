@@ -368,11 +368,11 @@ combination of the symbols `before' or `after'.  If the list is empty,
 no newlines are inserted either before or after the brace.
 
 When ACTION is a function symbol, the function is called with a two
-arguments: the syntactic symbol and buffer position for this brace.
-The function must return a list as described in the preceding
-paragraph.  Note that during the call to the function, the variable
-`c-syntactic-context' is set to the entire syntactic context for the
-brace line.")
+arguments: the syntactic symbol for the brace and the buffer position
+at which the brace was inserted.  The function must return a list as
+described in the preceding paragraph.  Note that during the call to
+the function, the variable `c-syntactic-context' is set to the entire
+syntactic context for the brace line.")
 
 (defvar c-hanging-colons-alist nil
   "*Controls the insertion of newlines before and after certain colons.
@@ -1498,6 +1498,7 @@ the brace is inserted inside a literal."
 			       blink-paren-hook))
 	    blink-paren-function	; emacs19
 	    blink-paren-hook		; emacs18
+	    (insertion-point (point))
 	    delete-temp-newline
 	    ;; shut this up too
 	    (c-echo-syntactic-information-p nil)
@@ -1522,7 +1523,7 @@ the brace is inserted inside a literal."
 		 (fboundp (cdr newlines)))
 	    (let ((c-syntactic-context syntax))
 	      (setq newlines
-		    (funcall (cdr newlines) (car newlines) (1- (point))))))
+		    (funcall (cdr newlines) (car newlines) insertion-point))))
 	;; does a newline go before the open brace?
 	(if (memq 'before newlines)
 	    ;; we leave the newline we've put in there before,
