@@ -3240,6 +3240,7 @@ it trailing backslashes are removed."
 (fset 'set-c-style           'c-set-style)
 ;; lemacs 19.9 + font-lock + cc-mode - c++-mode lossage
 (fset 'c++-beginning-of-defun 'beginning-of-defun)
+(fset 'c++-end-of-defun 'end-of-defun)
 
 ;; set up bc warnings for obsolete variables, but for now lets not
 ;; worry about obsolete functions.  maybe later some will be important
