@@ -1003,6 +1003,14 @@ behavior that users are familiar with.")
    )
   "Regexp describing a class or protocol declaration for Objective-C.")
 
+;; KLUDGE ALERT.  We default these variables to their `C' values so
+;; that non-cc-mode-ized modes that depend on c-mode will still work
+;; out of the box.  The most glaring example is awk-mode.  There ought
+;; to be a better way.
+(setq-default c-conditional-key c-C-conditional-key
+	      c-class-key c-C-class-key
+	      c-comment-start-regexp "/\\*")
+
 
 ;; main entry points for the modes
 ;;;###autoload
