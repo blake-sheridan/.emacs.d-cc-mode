@@ -3672,7 +3672,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	     ;; CASE 5D.4: perhaps a template list continuation?
 	     ((save-excursion
 		(skip-chars-backward "^<" lim)
-		(= (preceding-char) ?<))
+		;; not sure if this is the right test, but it should
+		;; be fast and mostly accurate.
+		(and (= (preceding-char) ?<)
+		     (not (c-in-literal lim))))
 	      ;; we can probably indent it just like and arglist-cont
 	      (c-add-syntax 'arglist-cont (point)))
 	     ;; CASE 5D.5: perhaps a top-level statement-cont
@@ -3682,6 +3685,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (if inclass-p
 		  (while (looking-at c-access-key)
 		    (forward-line 1)))
+	      ;; skip over comments, whitespace
+	      (c-forward-syntactic-ws indent-point)
 	      (c-add-syntax 'statement-cont (c-point 'boi)))
 	     ))
 	   ;; CASE 5E: we are looking at a access specifier
