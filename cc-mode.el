@@ -230,9 +230,13 @@ styles in a single mode.")
 	)
     ;; though its not optimal, these will work for older, broken
     ;; emacses. some strange behavior may be encountered. PATCH YOUR EMACS!
+    (message "using old syntax stuff...")
+    (sit-for 1)
     (modify-syntax-entry ?/  ". 124" c++-mode-syntax-table)
     (modify-syntax-entry ?*  ". 23"  c++-mode-syntax-table)
     (modify-syntax-entry ?\n ">"     c++-mode-syntax-table)
+    (message "using old syntax stuff... done")
+    (sit-for 1)
     ))
 
 (if c++-c-mode-syntax-table
@@ -252,15 +256,15 @@ styles in a single mode.")
   (if c++-emacs-is-really-fixed-p
       ;; these entries will only work with the latest patches to lemacs
       (progn
-	(modify-syntax-entry ?# "< b"     c++-mode-syntax-table)
-	(modify-syntax-entry ?\n "> b"    c++-mode-syntax-table)
-	(modify-syntax-entry ?/  ". 14" c++-mode-syntax-table)
-	(modify-syntax-entry ?*  ". 23"   c++-mode-syntax-table)
+	(modify-syntax-entry ?# "< b"   c++-c-mode-syntax-table)
+	(modify-syntax-entry ?\n "> b"  c++-c-mode-syntax-table)
+	(modify-syntax-entry ?/  ". 14" c++-c-mode-syntax-table)
+	(modify-syntax-entry ?*  ". 23" c++-c-mode-syntax-table)
 	)
     ;; though its not optimal, these will work for older, broken
     ;; emacses. some strange behavior may be encountered. PATCH YOUR EMACS!
-    (modify-syntax-entry ?/  ". 14"  c++-mode-syntax-table)
-    (modify-syntax-entry ?*  ". 23"  c++-mode-syntax-table)
+    (modify-syntax-entry ?/  ". 14"  c++-c-mode-syntax-table)
+    (modify-syntax-entry ?*  ". 23"  c++-c-mode-syntax-table)
     ))
 
 (defvar c++-tab-always-indent
