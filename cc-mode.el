@@ -2598,7 +2598,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		  (= char-before-ip ?=))
 	      (c-add-semantics 'brace-list-open placeholder))
 	     (t
-	      (error "CASE 8B.3? Please report this error."))
+	      ;; some other type of block open. one example I know of
+	      ;; is a try block open but as exceptions aren't
+	      ;; supported yet, I'll just this until further notice
+	      (c-add-semantics 'try-block-open placeholder))
 	     ))
 	   ;; CASE 8C: iostream insertion or extraction operator
 	   ((looking-at "<<\\|>>")
