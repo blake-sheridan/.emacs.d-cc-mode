@@ -1681,7 +1681,7 @@ before file offset settings (i.e. @code{c-file-offsets}).
 For most users, @code{cc-mode} will support their coding styles with
 very little need for customizations.  Usually, one of the standard
 styles defined in @code{c-style-alist} will do the trick.  At most,
-perhaps one of the syntactic symbol offsets will need to be tweeked
+perhaps one of the syntactic symbol offsets will need to be tweaked
 slightly, or maybe @code{c-basic-offset} will need to be changed.
 However, some styles require a more advanced ability for customization,
 and one of the real strengths of @code{cc-mode} is that the syntactic
@@ -2433,7 +2433,7 @@ protocols, and turning the variable @code{c-recognize-knr-p} to
 
 @vindex cc-lobotomy-pith-list
 For the former problem, you might want to investigate some of the
-speed-ups in provided for you in the file @file{cc-lobotomy.el}, which
+speed-ups provided for you in the file @file{cc-lobotomy.el}, which
 is part of the canonical @code{cc-mode} distribution.  As mentioned
 previous, @code{cc-mode} always trades accuracy for speed, however it is
 recognized that sometimes you need speed and can sacrifice some accuracy
