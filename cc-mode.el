@@ -130,9 +130,9 @@ reported and the semantic symbol is ignored.")
     (member-init-cont      . 0)
     (inher-intro           . +)
     (inher-cont            . c-lineup-multi-inher)
+    (block-open            . 0)
     ;; some people might prefer
     ;;(block-open            . c-adaptive-block-open)
-    (block-open            . 0)
     (block-close           . 0)
     (brace-list-open       . 0)
     (brace-list-close      . 0)
@@ -142,6 +142,8 @@ reported and the semantic symbol is ignored.")
     ;; some people might prefer
     ;;(statement             . c-lineup-runin-statements)
     (statement-cont        . +)
+    ;; some people might prefer
+    ;;(statement-cont        . c-lineup-math)
     (statement-block-intro . +)
     (statement-case-intro  . +)
     (substatement          . +)
@@ -535,7 +537,7 @@ supported list, along with the values for this variable:
   (define-key c-mode-map ","         'c-electric-semi&comma)
   (define-key c-mode-map "/"         'c-electric-slash)
   (define-key c-mode-map "*"         'c-electric-star)
-  (define-key c-mode-map "\C-c\C-i"  'c-indent-defun)
+  (define-key c-mode-map "\C-c\C-q"  'c-indent-defun)
   (define-key c-mode-map "\C-c\C-\\" 'c-backslash-region)
   ;; TBD: where if anywhere, to put c-backward|forward-into-nomenclature
   (define-key c-mode-map "\C-c\C-a"  'c-toggle-auto-state)
@@ -3017,6 +3019,22 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  (skip-chars-forward " \t")
 	  (- (current-column) curcol)))
     0))
+
+(defun c-lineup-math (langelem)
+  ;; line up math statement-cont after the equals
+  (save-excursion
+    (let ((curcol (progn
+		    (goto-char (cdr langelem))
+		    (current-column))))
+      (skip-chars-forward "^=" (c-point 'eol))
+      (if (/= (following-char) ?=)
+	  ;; there's no equal sign on the line
+	  c-basic-offset
+	;; calculate indentation column after equals and ws
+	(forward-char 1)
+	(skip-chars-forward " \t")
+	(- (current-column) curcol))
+      )))
 
 
 ;; commands for "macroizations" -- making C++ parameterized types via
