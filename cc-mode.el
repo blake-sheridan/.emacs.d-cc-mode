@@ -2208,39 +2208,34 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 (defun c-parse-state ()
   ;; Find all open parens between BOD and point. BOD is optional and
   ;; defaults to `beginning-of-defun'
-  (unwind-protect
-      ;; we're only interested in brace levels, so we're going to
-      ;; temporarily make parens not have paren class
-      (let ((pos (save-excursion
-		   (beginning-of-defun 2)
-		   (point)))
-	    (here (save-excursion
-		    ;;(skip-chars-forward " \t}")
-		    (point)))
-	    state sexp-end)
-	(modify-syntax-entry ?\( ".")
-	(modify-syntax-entry ?\) ".")
-	(while (and pos (< pos here))
-	  (if (and (setq pos (c-safe (scan-lists pos 1 -1)))
-		   (<= pos here))
-	      (progn
-		(setq sexp-end (c-safe (scan-sexps (1- pos) 1)))
-		(if (and sexp-end
-			 (<= sexp-end here))
-		    ;; we want to record both the start and end of
-		    ;; this sexp, but we only want to record the
-		    ;; last-most of any of them before here
-		    (setq state (cons (cons (1- pos) sexp-end)
-				      (if (consp (car state))
-					  (cdr state)
-					state))
-			  pos sexp-end)
-		  ;; otherwise just put pos on front of list
-		  (setq state (cons (1- pos) state)))
-		)))
-	state)
-    (modify-syntax-entry ?\( "()")
-    (modify-syntax-entry ?\) ")(")))
+  (let ((pos (save-excursion
+	       (beginning-of-defun 2)
+	       (point)))
+	(here (save-excursion
+		;;(skip-chars-forward " \t}")
+		(point)))
+	state sexp-end)
+    (while (and pos (< pos here))
+      (if (and (setq pos (c-safe (scan-lists pos 1 -1)))
+	       (<= pos here))
+	  (progn
+	    (setq sexp-end (c-safe (scan-sexps (1- pos) 1)))
+	    (if (and sexp-end
+		     (<= sexp-end here))
+		;; we want to record both the start and end of this
+		;; sexp, but we only want to record the last-most of
+		;; any of them before here
+		(progn
+		  (if (= (char-after (1- pos)) ?\{)
+		      (setq state (cons (cons (1- pos) sexp-end)
+					(if (consp (car state))
+					    (cdr state)
+					  state))))
+		  (setq pos sexp-end))
+	      ;; we're contained in this sexp so put pos on front of list
+	      (setq state (cons (1- pos) state)))
+	    )))
+    state))
 
 (defun c-beginning-of-inheritance-list (&optional lim)
   ;; Go to the first non-whitespace after the colon that starts a
