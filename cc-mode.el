@@ -1478,7 +1478,7 @@ are non-whitespace characters present on the line after the brace, or
 the brace is inserted inside a literal."
   (interactive "P")
   (let* ((c-state-cache (c-parse-state))
-	 (safepos (c-safe-position c-state-cache))
+	 (safepos (c-safe-position (point) c-state-cache))
 	 (literal (c-in-literal safepos)))
     ;; if we're in a literal, or we're not at the end of the line, or
     ;; a numeric arg is provided, or auto-newlining is turned off,
@@ -3241,11 +3241,18 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; was found.
   (c-most-enclosing-brace (nreverse state)))
 
-(defun c-safe-position (state)
-  ;; return the closest known safe position
-  (if (consp (car state))
-      (cdr (car state))
-    (car state)))
+(defun c-safe-position (bufpos state)
+  ;; return the closest known safe position higher up than point
+  (let ((safepos nil))
+    (while state
+      (setq safepos
+	    (if (consp (car state))
+		(cdr (car state))
+	      (car state)))
+      (if (< safepos bufpos)
+	  (setq state nil)
+	(setq state (cdr state))))
+    safepos))
 
 (defun c-narrow-out-enclosing-class (state lim)
   ;; narrow the buffer so that the enclosing class is hidden
@@ -3805,11 +3812,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 ;; CASE 14: block close brace, possibly closing the defun or
 	 ;; the class
 	 ((= char-after-ip ?})
-	  (let ((relpos (save-excursion
-			  (goto-char containing-sexp)
-			  (if (/= (point) (c-point 'boi))
-			      (c-beginning-of-statement-1 lim))
-			  (c-point 'boi))))
+	  (let* ((lim (c-safe-position containing-sexp fullstate))
+		 (relpos (save-excursion
+			   (goto-char containing-sexp)
+			   (if (/= (point) (c-point 'boi))
+			       (c-beginning-of-statement-1 lim))
+			   (c-point 'boi))))
 	    (cond
 	     ;; CASE 14A: does this close an inline?
 	     ((progn
@@ -3915,7 +3923,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (if (/= (point) (c-point 'boi))
 		  (c-beginning-of-statement-1
 		   (if (= (point) lim)
-		       (c-safe-position state) lim)))
+		       (c-safe-position (point) state) lim)))
 	      (c-add-syntax 'statement-block-intro (c-point 'boi))
 	      (if (= char-after-ip ?{)
 		  (c-add-syntax 'block-open)))
