@@ -7,7 +7,7 @@
 ;; Created: a long, long, time ago. adapted from the original c-mode.el
 ;; Version:         $Revision$
 ;; Last Modified:   $Date$
-;; Keywords: C++ C editing major-mode
+;; Keywords: C++ C Objective-C editing major-mode
 
 ;; Copyright (C) 1992, 1993, 1994 Barry A. Warsaw
 ;; Copyright (C) 1992, 1993, 1994 Free Software Foundation, Inc.
@@ -961,7 +961,7 @@ Key bindings:
 ;;;###autoload
 (defun objc-mode ()
   "Major mode for editing Objective C code.
-cc-mode $Revision$
+cc-mode Revision: $Revision$
 To submit a problem report, enter `\\[c-submit-bug-report]' from an
 objc-mode buffer.  This automatically sets up a mail buffer with
 version information already added.  You just need to add a description
