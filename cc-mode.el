@@ -1185,7 +1185,10 @@ Key bindings:
   (or (assq 'c-auto-hungry-string minor-mode-alist)
       (setq minor-mode-alist
 	    (cons '(c-auto-hungry-string c-auto-hungry-string)
-		  minor-mode-alist))))
+		  minor-mode-alist)))
+  ;; the default style is now GNU.  This can be overridden in
+  ;; c-mode-common-hook or {c,c++,objc}-mode-hook.
+  (c-set-style "GNU"))
 
 (defun c-postprocess-file-styles ()
   "Function that post processes relevent file local variables.
