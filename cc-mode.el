@@ -2885,7 +2885,7 @@ move backward across a preprocessor conditional."
 
 ;; commands to indent lines, regions, defuns, and expressions
 (defun c-indent-command (&optional whole-exp)
-  "Indent current line as C++ code, or in some cases insert a tab character.
+  "Indent current line as C code, and/or insert some whitespace.
 
 If `c-tab-always-indent' is t, always just indent the current line.
 If nil, indent the current line only if point is at the left margin or
@@ -2901,9 +2901,10 @@ of the expression are preserved.
 
   [*] The amount and kind of whitespace inserted is controlled by the
   variable `c-insert-tab-function', which is called to do the actual
-  insertion of whitespace.  Normally this variable just inserts a tab
-  character, or the equivalent number of spaces, depending on the
-  variable `indent-tabs-mode'."
+  insertion of whitespace.  Normally function in this variable just
+  inserts a tab character, or the equivalent number of spaces,
+  depending on the variable `indent-tabs-mode'."
+
   (interactive "P")
   (let ((bod (c-point 'bod)))
     (if whole-exp
