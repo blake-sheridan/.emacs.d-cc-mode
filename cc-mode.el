@@ -2903,7 +2903,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
   ;; after the containing paren which starts the arglist.
   (save-excursion
     (let* ((containing-sexp (save-excursion
-			      (goto-char (cdr langelem))
 			      ;; arglist-cont-nonempty gives relpos ==
 			      ;; to boi of containing-sexp paren. This
 			      ;; is good when offset is +, but bad
@@ -2911,8 +2910,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 			      ;; have to special case a kludge here.
 			      (if (eq (car langelem) 'arglist-cont-nonempty)
 				  (progn
-				    (end-of-line)
-				    (backward-up-list 1)))
+				    (backward-up-list 1)
+				    (skip-chars-forward " \t" (c-point 'eol)))
+				(goto-char (cdr langelem)))
 			      (point)))
 	   (cs-curcol (save-excursion
 			(goto-char (cdr langelem))
