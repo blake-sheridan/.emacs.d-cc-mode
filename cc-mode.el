@@ -2721,52 +2721,47 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      foundp))
 	  )))))
 
-(defun c-inside-bracelist-p (containing-sexp)
+(defun c-inside-bracelist-p (containing-sexp brace-state)
   ;; return the buffer position of the beginning of the brace list
   ;; statement if we're inside a brace list, otherwise return nil.
   ;; CONTAINING-SEXP is the buffer pos of the innermost containing
-  ;; paren
-  (let (donep bufpos)
-    (save-excursion
-      (or
-       ;; this will pick up enum lists
-       (progn (goto-char containing-sexp)
-	      (c-beginning-of-statement)
-	      ;; c-b-o-s could have left us at point-min
-	      (and (bobp)
-		   (c-forward-syntactic-ws))
-	      (setq bufpos (point))
-	      (and (< bufpos containing-sexp)
-		   (looking-at "\\(typedef[ \t]+\\)?enum[ \t\n]+")
-		   (save-excursion
-		     (skip-chars-forward "^;" containing-sexp)
-		     (= (point) containing-sexp))))
-       ;; this will pick up array/aggregate init lists, even if they
-       ;; are nested
-       (progn (goto-char containing-sexp)
-	      (while (not donep)
-		(c-backward-syntactic-ws)
-		(cond
-		 ;; CASE 1: we've hit the beginning of the aggregate list
-		 ((= (preceding-char) ?=)
-		  (c-beginning-of-statement)
-		  (setq donep t
-			bufpos (point)))
-		 ;; CASE 2: maybe we're in a nested aggregate?
-		 ((= (preceding-char) ?{)
-		  (c-safe (forward-char -1)))
-		 ;; CASE 3: in a nested list, after the first one
-		 ;; perhaps?
-		 ((and (= (preceding-char) ?,)
-		       (= (char-after (- (point) 2)) ?}))
-		  (forward-char -1)
-		  (backward-sexp 1))
-		 ;; CASE 4: nope, we're done
-		 (t (setq donep t
-			  bufpos nil))
-		 )))
-       ))
-    bufpos))
+  ;; paren. BRACE-STATE is the remainder of the state of enclosing braces
+  (or
+   ;; this will pick up enum lists
+   (save-excursion
+     (goto-char containing-sexp)
+     (c-beginning-of-statement)
+     ;; c-b-o-s could have left us at point-min
+     (and (bobp)
+	  (c-forward-syntactic-ws))
+     (if (and (< (point) containing-sexp)
+	      (looking-at "\\(typedef[ \t]+\\)?enum[ \t\n]+")
+	      (save-excursion
+		(skip-chars-forward "^;" containing-sexp)
+		(= (point) containing-sexp)))
+	 (point)))
+   ;; this will pick up array/aggregate init lists, even if they are nested.
+   (save-excursion
+     (let ((firstp t)
+	   bufpos)
+       (while (and (not bufpos)
+		   (or firstp brace-state))
+	 (setq firstp nil)
+	 (goto-char containing-sexp)
+	 (c-backward-syntactic-ws)
+	 (if (/= (preceding-char) ?=)
+	     ;; lets see if we're nested. find the most nested
+	     ;; containing brace
+	     (while (and brace-state
+			 (progn
+			   (setq containing-sexp (car brace-state)
+				 brace-state (cdr brace-state))
+			   (consp containing-sexp))))
+	   ;; we've hit the beginning of the aggregate list
+	   (c-beginning-of-statement)
+	   (setq bufpos (point))))
+       bufpos))
+   ))
 
 
 ;; defuns for calculating the syntactic state and indenting a single
@@ -3171,7 +3166,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (c-add-syntax 'inher-cont (point))
 	    )))
 	 ;; CASE 8: we are inside a brace-list
-	 ((setq placeholder (c-inside-bracelist-p containing-sexp))
+	 ((setq placeholder (c-inside-bracelist-p containing-sexp state))
 	  (cond
 	   ;; CASE 8A: brace-list-close brace
 	   ((and (= char-after-ip ?})
