@@ -2192,7 +2192,9 @@ search."
 			 (foundp (progn
 				   (c-backward-syntactic-ws lim)
 				   (forward-word -1)
-				   (and (not (c-in-literal lim))
+				   (and lim
+					(<= lim (point))
+					(not (c-in-literal lim))
 					(looking-at c-conditional-key)))))
 		     ;; did we find a conditional?
 		     (if (not foundp)
