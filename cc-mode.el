@@ -277,7 +277,7 @@ Here is the current list of valid syntactic element symbols:
  arglist-intro          -- the first line in an argument list
  arglist-cont           -- subsequent argument list lines when no
                            arguments follow on the same line as the
-                           the arglist opening paren
+                           arglist opening paren
  arglist-cont-nonempty  -- subsequent argument list lines when at
                            least one argument follows on the same
                            line as the arglist opening paren
