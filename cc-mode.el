@@ -2051,7 +2051,11 @@ search."
 		(if (= (preceding-char) ?\()
 		    (setq last-begin (point))))
 	      (goto-char last-begin)
-	      (setq donep t)))
+	      ;; but we always do want to skip over non-whitespace
+	      ;; modifier characters that didn't get skipped above
+	      (skip-chars-backward "-+!*&:.~" (c-point 'boi))
+	      (setq last-begin (point)
+		    donep t)))
 
 	(setq maybe-labelp nil)
 	;; see if we're in a literal. if not, then this bufpos may be
