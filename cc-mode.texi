@@ -1575,7 +1575,12 @@ called @code{c-mode-common-hook} which is run by all four modes
 @emph{before} the language specific hook.  Thus, to make changes
 consistently across all supported @code{cc-mode} modes, use
 @code{c-mode-common-hook}.  Most of the examples in this section will
-assume you are using the common hook.
+assume you are using the common hook@footnote{The interaction between
+@code{java-mode} and the hook variables is slightly different than for
+the other modes.  @code{java-mode} sets the style @ref{Styles} of the
+buffer to "java" @emph{before} running the @code{c-mode-common-hook} or
+@code{java-mode-hook}.  You need to be aware of this so any style
+settings in @code{c-mode-common-hook} doesn't clobber your Java style.}.
 
 Here's a simplified example of what you can add to your @file{.emacs}
 file to make the changes described in the previous section
