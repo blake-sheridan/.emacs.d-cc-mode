@@ -1191,23 +1191,29 @@ Returns nil if line starts inside a string, t if in a comment."
 			 (current-indentation))))))))))))
 
 (defun c++-backward-to-noncomment (lim)
-  "Skip backwards to first preceding non-comment character."
-  (let (opoint stop)
+  "Skip backwards to first preceding non-comment character.
+Search no farther back than LIM."
+  (let (literal stop)
     (while (not stop)
       (skip-chars-backward " \t\n\r\f" lim)
-      (setq opoint (point))
-      (cond ((and (>= (point) (+ 2 lim))
-		  (save-excursion
-		    (forward-char -2)
-		    (looking-at "\\*/")))
-	     (search-backward "/*" lim 'move))
-	    ((and
-	      (let ((sblim (max (c++-point-bol) lim)))
-		(if (< (point) sblim)
-		    nil
-		  (search-backward "//" sblim 'move)))
-	      (not (c++-in-open-string-p))))
-	    (t (setq stop (<= (point) lim)))))))
+      (setq literal (c++-in-literal))
+      (cond ((eq literal 'c++)
+	     (let ((sblim (max (c++-point-bol) lim))
+		   (here (point)))
+	       (goto-char sblim)
+	       (if (search-forward "//" here 'move)
+		   (goto-char (match-beginning 0))
+		 (goto-char sblim))))
+	    ((eq literal 'c)
+	     (if (search-backward "/*" lim 'move)
+		 (goto-char (match-beginning 0))
+	       (setq stop t)))
+	    ((and (= (preceding-char) ?/)
+		  (progn (forward-char -1)
+			 (= (preceding-char) ?*)))
+	     (forward-char -1))
+	    (t (setq stop t))
+	    ))))
 
 (defun c++-backward-to-start-of-do (&optional limit)
   "Move to the start of the last ``unbalanced'' do."
