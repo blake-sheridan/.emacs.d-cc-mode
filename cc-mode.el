@@ -3919,7 +3919,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	  ;; we need to catch multi-paragraph C comments
 	  (while (and (zerop (forward-line -1))
 		      (looking-at "^[ \t]*$")))
-	  (c-add-syntax literal (c-point 'bol)))
+	  (c-add-syntax literal (c-point 'boi)))
 	 ;; CASE 3: in a cpp preprocessor
 	 ((eq literal 'pound)
 	  (c-beginning-of-macro lim)
