@@ -422,7 +422,7 @@ Only currently supported behavior is `alignleft'.")
     ("Ellemtel"
      (c-basic-offset . 3)
      (c-comment-only-line-offset . 0)
-     (c-hanging-braces-alist     . ((substatement-open before)))
+     (c-hanging-braces-alist     . ((substatement-open before after)))
      (c-offsets-alist . ((topmost-intro      . 0)
                          (topmost-intro-cont . 0)
                          (substatement       . 3)
