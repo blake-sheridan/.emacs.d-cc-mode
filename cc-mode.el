@@ -2268,6 +2268,7 @@ optional LIM.  If LIM is ommitted, beginning-of-defun is used."
 	(limit (or limit (c++-point 'bod))))
     (while (and (not (bobp))
 		(not (zerop if-level)))
+      (c++-backward-syntactic-ws)
       (c++-backward-sexp 1)
       (cond ((looking-at "else\\b")
 	     (setq if-level (1+ if-level)))
