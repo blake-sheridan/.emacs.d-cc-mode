@@ -626,7 +626,7 @@ The expansion is entirely correct because it uses the C preprocessor."
    "[ \t]+\\)\\s_")
   "Regexp describing base classes in a derived class definition.")
 (defconst c-switch-label-key
-  "\\(\\(case[ \t]+\\(\\s_\\|[']\\)+\\)\\|default\\)[ \t]*:"
+  "\\(\\(case[ \t]+\\(\\s_\\|[']\\|-?[0-9]+\\)+\\)\\|default\\)[ \t]*:"
   "Regexp describing a switch's case or default label")
 (defconst c-access-key
   (concat c-protection-key ":")
