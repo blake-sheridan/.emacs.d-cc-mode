@@ -280,12 +280,17 @@ When non-nil (the default), indentation is calculated relative to the
 first statement in the block.  When nil, the indentation is calculated
 without regard to how the first statement is indented.")
 
-(defvar c++-untame-characters '(?\( ?\) ?\' ?\{ ?\} ?\[ ?\])
+(defvar c++-untame-characters '(?\')
   "*Utilize a backslashing workaround of an emacs scan-lists bug.
 If non-nil, this variable should contain a list of characters which
 will be prepended by a backslash in comment regions.  By default, the
-list contains all characters which can potentially cause problems if
-they exist unbalanced within comments.
+list contains only the most troublesome character, the single quote.
+To be completely safe, set this variable to:
+
+    '(?\( ?\) ?\' ?\{ ?\} ?\[ ?\])
+
+This is the full list of characters which can potentially cause
+problems if they exist unbalanced within comments.
 
 Setting this variable to nil will defeat this feature, but be
 forewarned!  Un-escaped characters in comment regions will break many
