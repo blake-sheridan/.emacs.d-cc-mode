@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 1985-1995 Free Software Foundation, Inc.
 
-;; Authors: 1992-1995 Barry A. Warsaw
+;; Authors: 1992-1996 Barry A. Warsaw
 ;;          1987 Dave Detlefs and Stewart Clamen
 ;;          1985 Richard M. Stallman
 ;; Maintainer: cc-mode-help@merlin.cnri.reston.va.us
