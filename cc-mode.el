@@ -1652,7 +1652,7 @@ With arg, to it arg times."
 With optional ARG, move that many times.  If ARG is negative, move
 forward."
   (interactive "p")
-  (c-forward-into-nomenclature (- (or arg 1)))
+  (c-forward-into-nomenclature (- arg))
   (c-keep-region-active))
 
 (defun c-scope-operator ()
