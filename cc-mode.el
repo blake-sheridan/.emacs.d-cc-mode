@@ -538,7 +538,7 @@ Documentation for this mode is available by doing a
   (interactive)
   (c++-mode)
   (setq major-mode 'c++-c-mode
-	mode-name "C--")
+	mode-name "C")
   (setq comment-start "/* "
 	comment-end   " */")
   ;; some syntax differences are necessary for C vs. C++
