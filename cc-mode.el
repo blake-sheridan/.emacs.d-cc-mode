@@ -3513,6 +3513,7 @@ it trailing backslashes are removed."
      'c-hanging-braces-alist
      'c-hanging-colons-alist
      'c-tab-always-indent
+     'defun-prompt-regexp
      'tab-width
      )
     (function
