@@ -981,10 +981,10 @@ If `c++-hungry-delete-key' is nil, just call `backward-delete-char-untabify'."
 		(save-excursion
 		  (let ((here (point-marker)))
 		    (goto-char (- (point) 2))
-		    (c++-indent-line)
+		    (c++-indent-line bod)
 		    (setq insertpos (- (goto-char here) 2))
 		    (set-marker here nil)))
-		(c++-indent-line)))
+		(c++-indent-line bod)))
 	  (save-excursion
 	    (if insertpos (goto-char (1+ insertpos)))
 	    (delete-char -1))))
