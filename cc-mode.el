@@ -2667,7 +2667,14 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	 ;; CASE 7: we are inside a brace-list
 	 ((setq placeholder (c-inside-bracelist-p containing-sexp))
 	  (cond
-	   ;; CASE 7A: we're looking at the first line in a brace-list
+	   ;; CASE 7A: brace-list-close brace
+	   ((and (= char-after-ip ?})
+		 (c-safe (progn (forward-char 1)
+				(backward-sexp 1)
+				t))
+		 (= (point) containing-sexp))
+	    (c-add-semantics 'brace-list-close (c-point 'boi)))
+	   ;; CASE 7B: we're looking at the first line in a brace-list
 	   ((save-excursion
 	      (goto-char indent-point)
 	      (c-backward-syntactic-ws containing-sexp)
@@ -2676,13 +2683,6 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	    (c-add-semantics 'brace-list-intro (c-point 'boi))
 	    (if (= char-after-ip ?{)
 		(c-add-semantics 'block-open)))
-	   ;; CASE 7B: brace-list-close brace
-	   ((and (= char-after-ip ?})
-		 (c-safe (progn (forward-char 1)
-				(backward-sexp 1)
-				t))
-		 (= (point) containing-sexp))
-	    (c-add-semantics 'brace-list-close (c-point 'boi)))
 	   ;; CASE 7C: this is just a later brace-list-entry
 	   (t (goto-char (1+ containing-sexp))
 	      (c-forward-syntactic-ws indent-point)
