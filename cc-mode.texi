@@ -1160,17 +1160,20 @@ Indentation Engine} for details.
 @vindex tab-always-indent (c-)
 @kindex TAB
 @cindex literal
+@vindex indent-tabs-mode
 To indent a single line of code, use @kbd{TAB}
 (@code{c-indent-command}).  The behavior of this command is controlled
 by the variable @code{c-tab-always-indent}.  When this variable is
 @code{t}, @kbd{TAB} always just indents the current line.  When
-@code{nil}, the line is indented only if point is at the left
-margin, or on or before the first non-whitespace character on the line,
-otherwise a real tab character is inserted.  If this variable's value is
-something other that @code{t} or @code{nil} (e.g. @code{'other}), then a
-real tab character is inserted only when point is inside a
-literal (see @ref{Auto-newline insertion}), otherwise the line is
-indented.
+@code{nil}, the line is indented only if point is at the left margin, or
+on or before the first non-whitespace character on the line, otherwise a
+real tab character is inserted.  If this variable's value is something
+other that @code{t} or @code{nil} (e.g. @code{'other}), then a
+@emph{real} tab character@footnote{Note that the value of the
+@code{indent-tabs-mode} variable will control whether an actual tab
+character is inserted, or the equivalent number of spaces.} is inserted
+only when point is inside a literal (see @ref{Auto-newline insertion}),
+otherwise the line is indented.
 
 @kindex M-C-q
 @findex c-indent-exp
