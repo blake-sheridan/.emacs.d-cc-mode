@@ -657,13 +657,6 @@ The list of variables to buffer localize are:
     )
   "Basic XEmacs 19 menu for C/C++/ObjC/Java modes.")
 
-;; Sadly we need this for a macro in Emacs 19.
-(eval-when-compile
-  ;; Imenu isn't used in XEmacs, so just ignore load errors.
-  (condition-case ()
-      (require 'imenu)
-    (error nil)))
-
 (defvar cc-imenu-c++-generic-expression
   (` 
    ((nil
