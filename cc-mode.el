@@ -388,8 +388,7 @@ Only currently supported behavior is `alignleft'.")
 This variable is needed because of ambiguities in C syntax that make
 fast recognition of K&R constructs problematic, and slow.  If you are
 coding with ANSI prototypes, set this variable to nil to speed up
-recognition of certain constructs.  Make sure you do this in your
-language-mode specific hook, not in `c-mode-common-hook'.
+recognition of certain constructs.
 
 This variable is nil by default in `c++-mode', and t by default in
 `c-mode' and `objc-mode'.  This variable is buffer-local.")
@@ -944,14 +943,15 @@ Key bindings:
   (set-syntax-table c++-mode-syntax-table)
   (setq major-mode 'c++-mode
 	mode-name "C++"
-	local-abbrev-table c++-mode-abbrev-table)
+	local-abbrev-table c++-mode-abbrev-table
+	;; should be set before c-common-init call
+	c-recognize-knr-p nil)
   (use-local-map c++-mode-map)
   (c-common-init)
   (setq comment-start "// "
 	comment-end ""
 	c-conditional-key c-C++-conditional-key
-	c-comment-start-regexp "//\\|/\\*"
-	c-recognize-knr-p nil)
+	c-comment-start-regexp "//\\|/\\*")
   (run-hooks 'c++-mode-hook))
 
 ;;;###autoload
@@ -979,14 +979,15 @@ Key bindings:
   (set-syntax-table c-mode-syntax-table)
   (setq major-mode 'c-mode
 	mode-name "C"
-	local-abbrev-table c-mode-abbrev-table)
+	local-abbrev-table c-mode-abbrev-table
+	;; should be set before c-common-init call
+	c-recognize-knr-p t)
   (use-local-map c-mode-map)
   (c-common-init)
   (setq comment-start "/* "
 	comment-end   " */"
 	c-conditional-key c-C-conditional-key
-	c-comment-start-regexp "/\\*"
-	c-recognize-knr-p t)
+	c-comment-start-regexp "/\\*")
   (run-hooks 'c-mode-hook))
 
 ;;;###autoload
@@ -1015,14 +1016,15 @@ Key bindings:
   (set-syntax-table objc-mode-syntax-table)
   (setq major-mode 'objc-mode
 	mode-name "ObjC"
-	local-abbrev-table objc-mode-abbrev-table)
+	local-abbrev-table objc-mode-abbrev-table
+	;; should be set before c-common-init call
+	c-recognize-knr-p t)
   (use-local-map objc-mode-map)
   (c-common-init)
   (setq comment-start "// "
 	comment-end   ""
 	c-conditional-key c-C-conditional-key
-	c-comment-start-regexp "//\\|/\\*"
-	c-recognize-knr-p t)
+	c-comment-start-regexp "//\\|/\\*")
   (run-hooks 'objc-mode-hook))
 
 (defun c-common-init ()
