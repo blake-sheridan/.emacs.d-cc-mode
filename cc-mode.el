@@ -3935,6 +3935,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		;; c-b-o-s could have left us at point-min
 		(and (bobp)
 		     (c-forward-syntactic-ws indent-point))
+		(if (looking-at "typedef[^_]")
+		    (progn (forward-sexp 1)
+			   (c-forward-syntactic-ws indent-point)))
 		(setq placeholder (point))
 		(and (or (looking-at "enum[ \t\n]+")
 			 (= char-before-ip ?=))
