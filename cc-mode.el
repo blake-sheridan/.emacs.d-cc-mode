@@ -413,9 +413,9 @@ Emacs.")
     (modify-syntax-entry ?\n "> b"    cc-c++-mode-syntax-table))
    ((memq '1-bit cc-emacs-features)
     ;; FSF19 does things differently, but we can work with it
-    (modify-syntax-entry ?/  ". 124" cc-c++-mode-syntax-table)
-    (modify-syntax-entry ?*  ". 23b" cc-c++-mode-syntax-table)
-    (modify-syntax-entry ?\n ">"     cc-c++-mode-syntax-table))
+    (modify-syntax-entry ?/  ". 124b" cc-c++-mode-syntax-table)
+    (modify-syntax-entry ?*  ". 23"   cc-c++-mode-syntax-table)
+    (modify-syntax-entry ?\n "> b"    cc-c++-mode-syntax-table))
    (t
     ;; Vanilla GNU18 doesn't support mult-style comments.  We'll do
     ;; the best we can, but some strange behavior may be encountered.
@@ -1484,7 +1484,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing."
 	   (state (parse-partial-sexp lim (point))))
       (cond
        ((nth 3 state) 'string)
-       ((nth 4 state) (if (nth 7 state) 'c 'c++))
+       ((nth 4 state) (if (nth 7 state) 'c++ 'c))
        ((progn
 	  (goto-char here)
 	  (beginning-of-line)
