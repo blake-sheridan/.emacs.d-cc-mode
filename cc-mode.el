@@ -1024,7 +1024,8 @@ of the expression are preserved."
 		     (>= (car indent-stack) 0))
 		;; Line is on an existing nesting level.
 		;; Lines inside parens are handled specially.
-		(if (/= (char-after (car contain-stack)) ?{)
+		(if (or (/= (char-after (car contain-stack)) ?{)
+			(c++-at-top-level-p t))
 		    (setq this-indent (car indent-stack))
 		  ;; Line is at statement level.
 		  ;; Is it a new statement?  Is it an else?
