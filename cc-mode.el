@@ -148,7 +148,6 @@
 ;; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 (defconst c++-emacs-features
-;;(defun c++-emacs-features ()
   (let ((mse-spec 'no-dual-comments)
 	(scanner 'v18))
     (if (= 7 (length (parse-partial-sexp (point) (point))))
