@@ -2694,7 +2694,7 @@ comment."
     (if (and sentence-flag
 	     (or (nth 3 state)
 		 (nth 4 state)
-		 (looking-at (concat "[ \t]*" comment-start-skip))
+;		 (looking-at (concat "[ \t]*" comment-start-skip))
 		 (save-excursion
 		   (skip-chars-backward " \t")
 		   (goto-char (- (point) 2))
