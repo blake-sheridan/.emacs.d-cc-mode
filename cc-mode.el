@@ -2804,7 +2804,7 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		   (= (preceding-char) ?\)))
 		 (save-excursion
 		   (c-beginning-of-statement)
-		   (not (looking-at "typedef"))))
+		   (not (looking-at "typedef[ \t\n]+"))))
 	    (goto-char placeholder)
 	    (c-add-semantics 'knr-argdecl (c-point 'boi)))
 	   ;; CASE 4H: we are at the topmost level, make sure we skip
