@@ -1147,8 +1147,8 @@ defaults to point-max."
 (defun c++-at-top-level-p (&optional wrt)
   "Return t if point is not inside a containing C++ expression, nil
 if it is embedded in an expression.  If optional WRT is supplied
-non-nil, returns t if point at the top level with respect to the
-containing class definition (useful for inline functions)."
+non-nil, returns nil if not at the top level with respect to an
+enclosing class, or the depth of class nesting at point."
   (save-excursion
     (let ((indent-point (point))
 	  (case-fold-search nil)
@@ -1161,17 +1161,20 @@ containing class definition (useful for inline functions)."
       (if (or (not wrt)
 	      (null containing-sexp))
 	  (if wrt 0 (null containing-sexp))
-	;; calculate depth wrt containing (possibly nested) classes
-	(goto-char containing-sexp)
-	(while (and (setq foundp (re-search-backward
-				  "\\<\\(class\\|struct\\)\\>" (point-min) t))
-		    (c++-in-literal)))
-	(setq state (c++-parse-state containing-sexp))
-	(and foundp
-	     (not (nth 1 state))
-	     (nth 2 state)
-	     paren-depth))
-      )))
+	(if (c++-in-parens-p)
+	    nil
+	  ;; calculate depth wrt containing (possibly nested) classes
+	  (goto-char containing-sexp)
+	  (while (and (setq foundp (re-search-backward
+				    "\\<\\(class\\|struct\\)\\>"
+				    (point-min) t))
+		      (c++-in-literal)))
+	  (setq state (c++-parse-state containing-sexp))
+	  (and foundp
+	       (not (nth 1 state))
+	       (nth 2 state)
+	       paren-depth))
+	))))
 
 (defun c++-in-literal (&optional lim)
   "Determine if point is in a C++ `literal'.
