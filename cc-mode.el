@@ -3482,13 +3482,13 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 (defun c-skip-conditional ()
   ;; skip forward over conditional at point, including any predicate
   ;; statements in parentheses. No error checking is performed.
-  (forward-sexp
-   ;; else if()
-   (if (looking-at "\\<else\\>[ \t]+\\<if\\>")
-       3
-     ;; do and else aren't followed by parens
-     (if (looking-at "\\<\\(do\\|else\\)\\>")
-	 1 2))))
+  (forward-sexp (cond
+		 ;; else if()
+		 ((looking-at "\\<else\\>[ \t]+\\<if\\>") 3)
+		 ;; do, else, try
+		 ((looking-at "\\<\\(do\\|else\\|try\\)\\>") 1)
+		 ;; for, if, while, switch, catch
+		 (t 2))))
 
 (defun c-skip-case-statement-forward (state &optional lim)
   ;; skip forward over case/default bodies, with optional maximal
