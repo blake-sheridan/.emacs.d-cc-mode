@@ -1617,8 +1617,7 @@ optional LIM.  If LIM is omitted, `beginning-of-defun' is used."
 		(modify-syntax-entry ?# "< b" c++-mode-syntax-table)
 		(while (/= here (point))
 		  (setq here (point))
-		  (forward-comment -1)
-		  (skip-chars-backward " \t\n")))
+		  (forward-comment -1)))
 	    (modify-syntax-entry ?# "." c++-mode-syntax-table)))
       )))
 
