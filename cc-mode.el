@@ -1465,13 +1465,13 @@ preserving the comment indentation or line-starting decorations."
 	      (narrow-to-region (point)
 				(save-excursion
 				  (forward-line 1)
-				  (while (looking-at "[ \t]*//"))
-				  (forward-line 1))
-				(point)))
-	    (insert fill-prefix)
-	    (fill-paragraph arg)
-	    (delete-region (point-min)
-			   (+ (point-min) (length fill-prefix))))))
+				  (while (looking-at "[ \t]*//")
+				    (forward-line 1))
+				  (point)))
+	      (insert fill-prefix)
+	      (fill-paragraph arg)
+	      (delete-region (point-min)
+			     (+ (point-min) (length fill-prefix)))))))
     (if (or first-line
 	    ;; t if we enter a comment between start of function and this line.
 	    (eq (calculate-c-indent) t)
