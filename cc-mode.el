@@ -753,11 +753,7 @@ literal, nothing special happens."
 	(setq semantics (cc-guess-basic-semantics bod)))
       ;; now adjust the line's indentation
       (cc-indent-via-language-element bod semantics)
-      ;; does a newline go after the brace?
-      (if (memq 'after (cdr-safe newlines))
-	  (progn
-	    (newline)
-	    (cc-indent-via-language-element)))
+      ;; Do all appropriate clean ups
       (let ((here (point))
 	    (pos (- (point-max) (point))))
 	;; clean up empty defun braces
@@ -785,6 +781,12 @@ literal, nothing special happens."
 	    (delete-region mbeg mend))
 	(goto-char (- (point-max) pos))
 	)
+      ;; does a newline go after the brace?
+      (if (memq 'after (cdr-safe newlines))
+	  (progn
+	    (newline)
+	    (cc-indent-via-language-element)))
+      ;; blink the paren
       (and (= last-command-char ?\})
 	   old-blink-paren-function
 	   (save-excursion
