@@ -1848,7 +1848,7 @@ search."
 	  (setq last-begin (point)
 		donep t))
 	 ;; CASE 5: have we crossed a statement barrier?
-	 ((let (crossedp (here (point)))
+	 ((let (crossedp)
 	    (save-excursion
 	      (while (and (not crossedp)
 			  (< (point) last-begin))
