@@ -389,7 +389,6 @@ currently not supported for this variable.")
 
 (defvar c-hanging-semi&comma-criteria '(c-semi&comma-inside-parenlist)
   "*List of functions that decide whether to insert a newline or not.
-
 The functions in this list are called, in order, whenever the
 auto-newline minor mode is activated (as evidenced by a `/a' or `/ah'
 string in the mode line), and a semicolon or comma is typed (see
