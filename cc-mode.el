@@ -1483,7 +1483,11 @@ For use with the variable `java-mode-hook'."
 	outline-level 'c-outline-level
 	comment-column 32
 	comment-start-skip "/\\*+ *\\|// *"
-	adaptive-fill-regexp nil)
+	;; For all but XEmacs 19.13, the default should be nil
+	adaptive-fill-regexp (and (memq 'v19 c-emacs-features)
+				  (= emacs-minor-version 13)
+				  "[ \t]*\\([#;>*]+ +\\)?")
+	)
   ;; we have to do something special for c-offsets-alist so that the
   ;; buffer local value has its own alist structure.
   (setq c-offsets-alist (copy-alist c-offsets-alist))
