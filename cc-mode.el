@@ -1388,9 +1388,9 @@ offset for that syntactic element.  Optional ADD says to add SYMBOL to
   (interactive
    (let* ((langelem
 	   (intern (completing-read
-		    (concat "Langelem symbol to change"
+		    (concat "Syntactic symbol to change"
 			    (if current-prefix-arg " or add" "")
-			    ": ")
+			    " (do not quote): ")
 		    (mapcar
 		     (function
 		      (lambda (langelem)
