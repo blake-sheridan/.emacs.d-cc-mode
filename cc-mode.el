@@ -2654,7 +2654,8 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		(if inclass-p
 		    (c-add-semantics 'inline-close relpos)
 		  (c-add-semantics 'defun-close relpos))
-	      (c-add-semantics 'block-close relpos)
+	      (goto-char relpos)
+	      (c-add-semantics 'block-close (c-point 'boi))
 	      )))
 	 ;; CASE 14: statement catchall
 	 (t
