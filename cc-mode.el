@@ -258,7 +258,7 @@ Valid symbols are:
 			lines. Note that certain C++ constructs can
 			generate ambiguous situations.")
 
-(defvar c-hanging-braces-alist nil
+(defvar c-hanging-braces-alist '((brace-list-open))
   "*Controls the insertion of newlines before and after open braces.
 This variable contains an association list with elements of the
 following form: (LANGELEM . (NL-LIST)).
@@ -2464,7 +2464,10 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	      (goto-char indent-point)
 	      (c-backward-syntactic-ws containing-sexp)
 	      (= (point) (1+ containing-sexp)))
-	    (c-add-semantics 'brace-list-intro placeholder))
+	    (goto-char containing-sexp)
+	    (c-add-semantics 'brace-list-intro (c-point 'boi))
+	    (if (= char-after-ip ?{)
+		(c-add-semantics 'block-open)))
 	   ;; CASE 7B: brace-list-close brace
 	   ((and (= char-after-ip ?})
 		 (c-safe (progn (forward-char 1)
@@ -2473,10 +2476,9 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 		 (= (point) containing-sexp))
 	    (c-add-semantics 'brace-list-close (c-point 'boi)))
 	   ;; CASE 7C: this is just a later brace-list-entry
-	   (t
-	    (goto-char (1+ containing-sexp))
-	    (c-forward-syntactic-ws indent-point)
-	    (c-add-semantics 'brace-list-entry (point)))
+	   (t (goto-char (1+ containing-sexp))
+	      (c-forward-syntactic-ws indent-point)
+	      (c-add-semantics 'brace-list-entry (point)))
 	   ))
 	 ;; CASE 8: A continued statement
 	 ((and (not (memq char-before-ip '(?\; ?})))
