@@ -751,7 +751,7 @@ behavior that users are familiar with.")
   (concat
    "\\(\\(extern\\|typedef\\)\\s +\\)?"
    "\\(template\\s *<[^>]*>\\s *\\)?"
-   "[^<][ \t]*class\\|struct\\|union")
+   "\\([^<a-zA-Z0-9_]\\|\\`\\)[ \t]*class\\|struct\\|union")
   "Regexp describing a class declaration, including templates.")
 (defconst c-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
@@ -2410,6 +2410,12 @@ Optional SHUTUP-P if non-nil, inhibits message printing and error checking."
 	       (progn
 		 (goto-char (1+ (car inclass-p)))
 		 (skip-chars-forward " \t\n" indent-point)
+		 ;; if point is now left of the class opening brace,
+		 ;; we're hosed, so try a different tact
+		 (if (<= (c-point 'bol) (car inclass-p))
+		     (progn
+		       (goto-char (1+ (car inclass-p)))
+		       (c-forward-syntactic-ws indent-point)))
 		 (c-point 'bol))
 	       (progn
 		 (goto-char indent-point)
