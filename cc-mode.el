@@ -329,7 +329,7 @@ Valid symbols are:
 This variable contains an association list with elements of the
 following form: (SYNTACTIC-SYMBOL . (NL-LIST)).
 
-SYNTACTIC-SYMBOL can be any of: defun-open, defun-cloase, class-open,
+SYNTACTIC-SYMBOL can be any of: defun-open, defun-close, class-open,
 class-close, inline-open, inline-close, block-open,
 block-close, substatement-open, brace-list-open, or
 brace-list-close. See `c-offsets-alist' for details.
