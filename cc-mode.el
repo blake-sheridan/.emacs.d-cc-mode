@@ -1194,9 +1194,6 @@ Key bindings:
   (setq major-mode 'c-mode
 	mode-name "C"
 	local-abbrev-table c-mode-abbrev-table)
-  ;; Install language specific feature properties
-  ;;
-  ;; Complete common initialization
   (use-local-map c-mode-map)
   (c-common-init)
   (setq comment-start "/* "
@@ -1234,7 +1231,6 @@ Key bindings:
   (setq major-mode 'c++-mode
 	mode-name "C++"
 	local-abbrev-table c++-mode-abbrev-table)
-  ;; Complete common initialization
   (use-local-map c++-mode-map)
   (c-common-init)
   (setq comment-start "// "
@@ -1273,7 +1269,6 @@ Key bindings:
   (setq major-mode 'objc-mode
 	mode-name "ObjC"
 	local-abbrev-table objc-mode-abbrev-table)
-  ;; Complete common initialization
   (use-local-map objc-mode-map)
   (c-common-init)
   (setq comment-start "// "
@@ -1313,7 +1308,6 @@ Key bindings:
   (setq major-mode 'java-mode
  	mode-name "Java"
  	local-abbrev-table java-mode-abbrev-table)
-  ;; Complete common initialization
   (use-local-map java-mode-map)
   (c-common-init)
   (setq comment-start "// "
