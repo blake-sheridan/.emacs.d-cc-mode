@@ -461,18 +461,24 @@ this variable to nil defeats backscan limits.")
 (make-variable-buffer-local 'c++-hungry-delete-key)
 
 (defconst c++-access-key "\\<\\(public\\|protected\\|private\\)\\>:"
-  "Regexp which describes access specification keywords.")
+  "Regexp describing access specification keywords.")
 (defconst c++-class-key
   (concat
    "\\(\\(extern\\|typedef\\)\\s +\\)?"
    "\\(template\\s *<[^>]*>\\s *\\)?"
    "\\<\\(class\\|struct\\|union\\)\\>")
-  "Regexp which describes a class declaration, including templates.")
+  "Regexp describing a class declaration, including templates.")
 (defconst c++-inher-key
   (concat "\\(\\<static\\>\\s +\\)?"
 	  c++-class-key
 	  "[ \t]+\\(\\(\\w\\|_\\)+[ \t]*:[ \t]*\\)?")
-  "Regexp which describes a class inheritance declaration.")
+  "Regexp describing a class inheritance declaration.")
+(defconst c++-baseclass-key
+  (concat
+   ":?[ \t]*\\(virtual[ \t]+\\)?"
+   "\\(\\(public\\|private\\|protected\\)[ \t]+\\)?"
+   "\\(\\w\\|_\\)+")
+  "Regexp describing base classes in a derived class definition.")
 
 
 ;; ======================================================================
@@ -2194,19 +2200,15 @@ BOD is the beginning of the C++ definition."
 	    ;; inheritance continuation line, but not a K&R C arg decl
 	    ((and (not (eq major-mode 'c++-c-mode))
 		  (or (looking-at c++-inher-key)
-		      (looking-at
-		       (concat ":?[ \t]*\\(public\\|private\\|protected\\)?"
-			       "\\(\\w\\|_\\)+"))))
+		      (looking-at c++-baseclass-key)))
 	     (if (= char-before-ip ?,)
 		 (let ((pnt (match-end 0))
 		       (boi (c++-point 'boi)))
 		   ;; check to see if inheritance is on same line as
 		   ;; class decl, or on next line
-		   ;; TBD: HERE'S A BUG
 		   (if (/= (char-after boi) ?:)
 		       (if (looking-at c++-inher-key)
-			   (goto-char pnt)
-			 (goto-char pnt))
+			   (goto-char pnt))
 		     (goto-char boi)
 		     (forward-char 1)
 		     (skip-chars-forward " \t"))
