@@ -1323,7 +1323,7 @@ BOD is the beginning of the C++ definition."
 			      (if (looking-at
 				   (concat "\\(class\\|struct\\)"
 					   "[ \t]+"
-					   "\\(\\w+[ \t]*:[ \t]*\\)*"))
+					   "\\(\\w+[ \t]*:[ \t]*\\)?"))
 				  (if (progn (goto-char indent-point)
 					     (skip-chars-backward " \t\n")
 					     (= (preceding-char) ?,))
