@@ -3070,8 +3070,8 @@ the whitespace before and after the code.  The clean-up happens when
 the closing brace is typed.  If the variable
 @code{c-max-one-liner-length} is set, the cleanup is only done if the
 resulting line would be no longer than the value of that variable.
-This clean-up is intended mainly for short AWK pattern/action pairs.
-For example, this:
+
+For example, consider this AWK code:
 
 @example
 @group
