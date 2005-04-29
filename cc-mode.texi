@@ -1,13 +1,8 @@
 \input texinfo
-<<<<<<< cc-mode.texi
-=======
-
 @comment
 @comment FIXME: cc-subword docs.
 @comment
 
-@c $Id$
->>>>>>> 5.212
 @c Notes to self regarding line handling:
 @c
 @c Empty lines are often significant before @end directives; avoid them.
