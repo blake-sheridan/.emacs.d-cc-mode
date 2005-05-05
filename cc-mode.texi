@@ -98,7 +98,10 @@ CC Mode
 @comment !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 @comment Define an index for syntactic symbols.
+@ifnottex @c In texi2dvi, the @defindex would create an empty cc-mode.ss
+          @c For Info, unlike tex, @syncodeindex needs a matching @defindex.
 @defindex ss
+@end ifnottex
 
 @comment Combine key, syntactic symbol and concept indices into one.
 @syncodeindex ss cp
