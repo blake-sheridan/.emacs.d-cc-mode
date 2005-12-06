@@ -1,4 +1,19 @@
-2005-11-30  Aland Mackenzie  <bug-cc-mode@gnu.org>
+2005-12-06  Alan Mackenzie  <bug-cc-mode@gnu.org>
+
+	* Release 5.31.1
+
+2005-12-06  Alan Mackenzie  <bug-cc-mode@gnu.org>
+
+	* NEWS: Correct the spelling of Masatake YAMATO's name (with
+	apologies to him).
+
+2005-12-06  Alan Mackenzie  <bug-cc-mode@gnu.org>
+
+	* cc-defs.el (c-version): <- 5.31.1
+
+	* cc-defs.el: Restore the (correct) (c-external-require 'cl).
+
+2005-11-30  Alan Mackenzie  <bug-cc-mode@gnu.org>
 
 	* Release 5.31.
 
