@@ -2587,7 +2587,8 @@ style system is initialised (@pxref{Config Basics}), this setting will
 override the one that the style system would have given the variable.
 
 To set a buffer's style interactively, use the command @kbd{C-c .}
-(@pxref{Other Commands}).
+(@pxref{Other Commands}).  To set it from a file's local variable
+list, @ref{File Styles}.
 
 @defopt c-default-style
 @vindex default-style (c-)
