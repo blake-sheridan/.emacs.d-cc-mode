@@ -1924,7 +1924,11 @@ one of `c-type-list-kwds', `c-ref-list-kwds',
   (c c++) '(;; GCC extension.
 	    "__attribute__"
 	    ;; MSVC extension.
-	    "__declspec"))
+	    "__declspec"
+	    ;; C11
+	    "_Alignas" "_Alignof"
+	    ;; C++11
+	    "alignas" "alignof"))
 
 (c-lang-defconst c-decl-hangon-key
   ;; Adorned regexp matching `c-decl-hangon-kwds'.
