@@ -2288,6 +2288,7 @@ This construct is \"<keyword> <expression> :\"."
   "Keywords for constants."
   t	  nil
   (c c++) '("NULL" ;; Not a keyword, but practically works as one.
+	    "nullptr"
 	    "false" "true")		; Defined in C99.
   objc	  '("nil" "Nil" "YES" "NO" "NS_DURING" "NS_HANDLER" "NS_ENDHANDLER")
   idl	  '("TRUE" "FALSE")
