@@ -8878,12 +8878,24 @@ comment at the start of cc-engine.el for more info."
   ;; c-other-block-decl-kwds".	It doesn't work with "class" or "struct"
   ;; or anything like that.
   (save-excursion
-    (let ((boi (c-point 'boi bracepos)))
+    (let ((boi (c-point 'boi bracepos))
+          (result nil))
       (goto-char bracepos)
-      (while (and (> (point) boi)
-		  (not (looking-at c-other-decl-block-key)))
-	(c-backward-token-2))
-      (if (> (point) boi) (point) boi))))
+      (while (not result)
+        (if (<= (point) boi)
+          (setq result boi)
+          (if (looking-at c-other-decl-block-key)
+            (progn
+              (setq result (point)) ; Which we may still update
+              (if (and (c-major-mode-is 'c++-mode)
+                    (looking-at "namespace"))
+                (progn
+                  (c-backward-token-2)
+                  (if (and (>= (point) boi) (looking-at "inline"))
+                    (setq result (point))))))
+            (progn
+              (c-backward-token-2)))))
+      result)))
 
 (defsubst c-add-syntax (symbol &rest args)
   ;; A simple function to prepend a new syntax element to
