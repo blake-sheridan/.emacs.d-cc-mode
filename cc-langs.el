@@ -966,7 +966,7 @@ since CC Mode treats every identifier as an expression."
 
       ;; Unary.
       (prefix "++" "--" "+" "-" "!" "~"
-	      ,@(when (c-major-mode-is 'c++-mode) '("not" "compl" "noexcept"))
+	      ,@(when (c-major-mode-is 'c++-mode) '("not" "compl" "decltype" "noexcept"))
 	      ,@(when (c-major-mode-is '(c-mode c++-mode))
 		  '("*" "&" "sizeof" "??-"))
 	      ,@(when (c-major-mode-is 'objc-mode)
