@@ -973,7 +973,7 @@ since CC Mode treats every identifier as an expression."
 		  '("@selector" "@protocol" "@encode"))
 	      ;; The following need special treatment.
 	      ,@(cond ((c-major-mode-is 'c++-mode)
-		       '("new" "delete"))
+		       '("new" "delete" "static_assert"))
 		      ((c-major-mode-is 'java-mode)
 		       '("new"))
 		      ((c-major-mode-is 'pike-mode)
